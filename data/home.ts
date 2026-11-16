@@ -23,8 +23,8 @@ export type HomeContent = {
 
 export const home: HomeContent = {
   ownerName: null,
-  disciplines: ["Computer Science", "Software Engineering", "AI", "Robotics"],
-  statement: "Builder and engineer working across software, hardware, and AI.",
+  disciplines: ["Software", "AI", "Robotics"],
+  statement: "I build software, intelligent systems, and robots for the real world.",
   portrait: {
     src: "/images/home/graduation.webp",
     alt: "The portfolio owner in a black graduation cap and gown outside an arena.",
