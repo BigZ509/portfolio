@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import styles from "./home.module.css";
 
 /*
- * Original Victorian-gothic night city for the homepage. Every shape is drawn here for AFTERIMAGE:
+ * Original Victorian-gothic night city for the homepage. Every shape is drawn here for MARC'S WORLD:
  * no external artwork. The scene is a composed 1920×1080 plate split into depth layers. Each layer
  * is cropped to the band it occupies and placed by percentage inside a shared 16:9 frame, so the
  * layers stay registered at any viewport size. Continuous motion is only ever applied to whole
@@ -288,6 +288,59 @@ const ORRERY_TICKS = Array.from({ length: 24 }, (_, index) => {
   return `M${r(Math.cos(angle) * 112)} ${r(Math.sin(angle) * 112)}L${r(Math.cos(angle) * outer)} ${r(Math.sin(angle) * outer)}`;
 }).join("");
 
+/*
+ * Luminous energy atmosphere. Original artwork drawn for MARC'S WORLD in the same hand as the city
+ * above: shaped gradients and seeded motes, nothing sampled or ported. The real particle simulation
+ * arrives in a later phase and replaces the motes; these shapes carry the look before it lands.
+ */
+
+/** Rift shafts rising off the horizon: [centre x, half-width, height]. */
+const RIFT_BEAMS: readonly [number, number, number][] = [
+  [255, 140, 430], [612, 104, 322], [978, 168, 520], [1340, 122, 384], [1688, 152, 446],
+];
+
+/** Aurora ribbons of cursed energy banding the sky above the city. */
+const ribbon = (a: number, b: number, m: number, d: number, c: number, t: number) =>
+  `M-60 ${a}Q500 ${b} 980 ${m}Q1500 ${d} 1990 ${c}L1990 ${c + t}Q1500 ${d + t} 980 ${m + t}Q500 ${b + t} -60 ${a + t}Z`;
+
+const AURORA: readonly string[] = [
+  ribbon(336, 214, 300, 244, 192, 62),
+  ribbon(474, 362, 432, 384, 332, 46),
+  ribbon(252, 152, 216, 172, 132, 34),
+];
+
+/** Energy plumes venting between the rooftops: [centre x, base y, height, width]. */
+const PLUMES: readonly [number, number, number, number][] = [
+  [208, 980, 300, 92], [432, 952, 232, 74], [690, 936, 352, 104], [906, 1000, 266, 86],
+  [1226, 956, 320, 98], [1470, 1032, 300, 110], [1736, 1000, 252, 88],
+];
+
+const plume = (x: number, base: number, h: number, w: number) =>
+  `M${r(x - w / 2)} ${r(base)}Q${r(x - w * 0.22)} ${r(base - h * 0.6)} ${r(x)} ${r(base - h)}Q${r(x + w * 0.22)} ${r(base - h * 0.6)} ${r(x + w / 2)} ${r(base)}Z`;
+
+/** Ember motes drifting through the middle distance, split into three independently drifting sets. */
+const EMBERS = (() => {
+  const rand = prng(777);
+  const groups: [ReactNode[], ReactNode[], ReactNode[]] = [[], [], []];
+  for (let index = 0; index < 88; index++) {
+    const x = rand() * W;
+    const y = 360 + rand() * 580;
+    const radius = 1.7 + rand() * rand() * 4.8;
+    const opacity = 0.44 + rand() * 0.52;
+    groups[index % 3].push(
+      <circle
+        key={index}
+        cx={r(x)}
+        cy={r(y)}
+        r={r(radius)}
+        opacity={r(opacity)}
+        className={index % 4 === 0 ? styles.emberCyan : styles.ember}
+      />,
+    );
+  }
+  return groups;
+})();
+
 export function HomeScene() {
   return (
     <div className={styles.scene} aria-hidden="true">
@@ -342,6 +395,50 @@ export function HomeScene() {
           </div>
         </div>
 
+        {/* Horizon rift: the energy source the whole city is lit by. */}
+        <div className={styles.layer} data-depth="7">
+          <div className={`${styles.sway} ${styles.swayFar}`}>
+            <div className={styles.frame}>
+              <Art box={[0, 80, W, 580]} className={styles.aurora}>
+                <defs>
+                  <linearGradient id="home-aurora" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stopColor="#8f7ff0" stopOpacity="0" />
+                    <stop offset="0.28" stopColor="#b49bff" stopOpacity="0.62" />
+                    <stop offset="0.6" stopColor="#8fe0f2" stopOpacity="0.5" />
+                    <stop offset="1" stopColor="#8fe0f2" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                {AURORA.map((d, index) => (
+                  <path key={index} className={index % 2 === 0 ? styles.auroraA : styles.auroraB} d={d} fill="url(#home-aurora)" />
+                ))}
+              </Art>
+              <Art box={[0, 470, W, 480]} className={styles.riftGlow}>
+                <defs>
+                  <radialGradient id="home-rift" cx="0.52" cy="1" r="0.86">
+                    <stop offset="0" stopColor="#b6a4ff" stopOpacity="0.7" />
+                    <stop offset="0.42" stopColor="#7183e0" stopOpacity="0.34" />
+                    <stop offset="1" stopColor="#3b4790" stopOpacity="0" />
+                  </radialGradient>
+                  <linearGradient id="home-rift-beam" x1="0" y1="1" x2="0" y2="0">
+                    <stop offset="0" stopColor="#d6c8ff" stopOpacity="0.62" />
+                    <stop offset="0.55" stopColor="#a8bcff" stopOpacity="0.26" />
+                    <stop offset="1" stopColor="#9bedf8" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                <ellipse cx={r(W * 0.52)} cy="946" rx="1040" ry="306" fill="url(#home-rift)" />
+                {RIFT_BEAMS.map(([x, half, height], index) => (
+                  <path
+                    key={index}
+                    className={index % 2 === 0 ? styles.beamA : styles.beamB}
+                    d={`M${r(x)} ${r(946 - height)}L${r(x + half)} 946H${r(x - half)}Z`}
+                    fill="url(#home-rift-beam)"
+                  />
+                ))}
+              </Art>
+            </div>
+          </div>
+        </div>
+
         {/* Far skyline, hazed by distance. */}
         <div className={styles.layer} data-depth="9">
           <div className={`${styles.sway} ${styles.swayFar}`}>
@@ -366,6 +463,21 @@ export function HomeScene() {
         <div className={styles.layer} data-depth="13">
           <div className={`${styles.sway} ${styles.swayLandmark}`}>
             <div className={styles.frame}>
+              {/* Energy corona behind the tower, drawn before it so the silhouette stays crisp. */}
+              <Art box={[TOWER_X - 380, 110, 760, 790]} className={styles.towerAura}>
+                <defs>
+                  <radialGradient id="home-tower-aura">
+                    <stop offset="0" stopColor="#c4aeff" stopOpacity="0.6" />
+                    <stop offset="0.38" stopColor="#8d83e6" stopOpacity="0.24" />
+                    <stop offset="1" stopColor="#6a74c8" stopOpacity="0" />
+                  </radialGradient>
+                </defs>
+                <circle cx={TOWER_X} cy={CLOCK_Y} r="346" fill="url(#home-tower-aura)" />
+                <g transform={`translate(${TOWER_X} ${CLOCK_Y})`}>
+                  <ellipse rx="190" ry="75" className={styles.auraRing} />
+                  <ellipse rx="246" ry="98" className={styles.auraRingDash} transform="rotate(-9)" />
+                </g>
+              </Art>
               <Art box={[TOWER_X - 140, 100, 280, 980]}>
                 <defs>
                   <radialGradient id="home-clock-face">
@@ -447,6 +559,34 @@ export function HomeScene() {
         </div>
 
         <div className={`${styles.fog} ${styles.fogC}`} />
+
+        {/* Energy venting between the rooftops, with ember motes carried up through it. */}
+        <div className={styles.layer} data-depth="20">
+          <div className={`${styles.sway} ${styles.swayMid}`}>
+            <div className={styles.frame}>
+              <Art box={[0, 560, W, 520]} className={styles.plumes}>
+                <defs>
+                  <linearGradient id="home-plume" x1="0" y1="1" x2="0" y2="0">
+                    <stop offset="0" stopColor="#b7a2ff" stopOpacity="0.68" />
+                    <stop offset="0.5" stopColor="#92a3f2" stopOpacity="0.3" />
+                    <stop offset="1" stopColor="#8fe4f2" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                {PLUMES.map(([x, base, height, width], index) => (
+                  <path
+                    key={index}
+                    className={index % 2 === 0 ? styles.plumeA : styles.plumeB}
+                    d={plume(x, base, height, width)}
+                    fill="url(#home-plume)"
+                  />
+                ))}
+              </Art>
+              <Art box={[0, 410, W, 580]} className={styles.motesA}>{EMBERS[0]}</Art>
+              <Art box={[0, 410, W, 580]} className={styles.motesB}>{EMBERS[1]}</Art>
+              <Art box={[0, 410, W, 580]} className={styles.motesC}>{EMBERS[2]}</Art>
+            </div>
+          </div>
+        </div>
 
         {/* Foreground rooftops: the darkest plane, with the strongest parallax. */}
         <div className={styles.layer} data-depth="24">

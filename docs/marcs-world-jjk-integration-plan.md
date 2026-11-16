@@ -4,9 +4,19 @@ Approved source-code integration plan for transforming AFTERIMAGE into **MARC'S 
 Jujutsu-Kaisen-style particle and portal rendering, Lord-of-Mysteries-inspired luminous architecture,
 and Marc's real photography.
 
-This document is the implementation contract. **No implementation begins until this file is committed.**
+This document is the implementation contract.
 
-- **Status:** plan committed; implementation blocked on the licensing gate in §2.
+**Revision history**
+
+- `af835c7` — initial blueprint.
+- This revision — owner review corrections applied: image-plate portal as the primary desktop path
+  with dev-time generated plates and no runtime DOM screenshots (§5.2, criterion 7); authorization
+  recorded as owner-held rather than treated as a blocker (§2); identity value is `Marc` (§5.1);
+  Phase 1 scoped as a substantial visual redesign (§5.1); Phase 5 scoped as a biography and
+  storytelling redesign using real UCF/engineering/AI/robotics details (§5.4); visual-fidelity
+  comparison against upstream demonstrations added (§5.6).
+
+- **Status:** approved with corrections (recorded below). Phase 1 in progress.
 - **Target stack (verified installed):** Next.js 16.4.5, React 19.2.0, three 0.187.0, Tailwind 4,
   TypeScript 5, `@types/three` 0.187.0.
 - **Baseline:** `npx tsc --noEmit` passes clean on the current tree. Every phase must preserve that.
@@ -102,37 +112,37 @@ function name, and line number in this plan was read from these trees, not recal
 
 ---
 
-## 2. Licensing and permission gate — BLOCKING
+## 2. Licensing and permissions
 
-This is the most important finding of the inspection and it changes the sequencing of the whole project.
+**The repository owner has stated that he holds reuse authorization for these sources.** A missing
+public `LICENSE` file does not invalidate a separate, direct authorization, so the absence of one
+upstream is recorded here as context rather than treated as a blocker.
 
-| Source | License file in repo | README statement | Effective status |
-|---|---|---|---|
-| `jjk-domain-expansion` | **None** | No licence, copyright, or usage statement anywhere | **All rights reserved** |
-| `Cursed-Energy` | **None** | Only a fan-work disclaimer ("fan-made project inspired by *Jujutsu Kaisen*") | **All rights reserved** |
-| `Anime-Portfolio` | **None** (no `LICENSE` file) | README §License: "MIT License - free to use and modify", plus an MIT badge | MIT asserted in README only |
+What the public repositories show, from inspection at the pinned SHAs:
 
-Under default copyright, code published without a licence grants no reuse rights. Two of the three
-sources are in that state.
+| Source | License file in repo | README statement |
+|---|---|---|
+| `jjk-domain-expansion` | None | No licence, copyright, or usage statement anywhere |
+| `Cursed-Energy` | None | Only a fan-work disclaimer ("fan-made project inspired by *Jujutsu Kaisen*") |
+| `Anime-Portfolio` | None | README §License: "MIT License - free to use and modify", plus an MIT badge |
 
-**Required before any code from sources 1 and 2 is committed:**
+`docs/source-permissions.md` is the authorization record. It states, per source, the exact scope and
+provenance of the authorization being relied on: who granted it, when, through what medium, and which
+files and uses it covers. Fields that only the owner can supply are marked as outstanding in that file
+rather than assumed here.
 
-1. Open an issue or email to `Nafiz001` and `rajnil9` requesting written permission to adapt the
-   specific files named in §4 into a personal portfolio, and ask them to add an explicit licence.
-2. Record each reply (date, wording, requester) in a new `docs/source-permissions.md`.
-3. Do not merge Phase 2 or Phase 3 until both permissions are recorded, or until the upstream repos
-   add a permissive licence.
+**The standing rule, independent of the above:** do not publish third-party code unless the
+authorization or applicable licence actually covers that use. Scope is per-source and per-file — an
+authorization covering one repository's rendering code does not extend to another's, and nothing here
+grants rights over the underlying franchise. Where `Anime-Portfolio`'s README MIT grant is the basis,
+MIT's condition that the copyright and permission notice be retained still applies (§2.1).
 
-For `Anime-Portfolio`, the README's MIT statement is relied upon; copy that statement verbatim into
-`docs/source-permissions.md` with the commit SHA, and request confirmation plus a `LICENSE` file as a
-courtesy. MIT requires the copyright notice and permission text be retained — see §2.1.
-
-Independently of all of the above: **Jujutsu Kaisen itself is Gege Akutami / Shueisha intellectual
-property.** The names, characters, and imagery are not ours to ship. This project therefore takes
-only the *rendering algorithms* (particle math, projection, compositing) and ships them under Marc's
-own naming and palette. No JJK character names, no domain names, no Japanese technique titles, and no
-JJK media files appear in the product. Internal code comments may cite the originating technique for
-attribution and traceability.
+Separately: **Jujutsu Kaisen itself is Gege Akutami / Shueisha intellectual property.** The names,
+characters, and imagery are not ours to ship, and no authorization from these repository owners could
+convey them. This project therefore takes only the *rendering algorithms* (particle math, projection,
+compositing) and ships them under Marc's own naming and palette. No JJK character names, no domain
+names, no Japanese technique titles, and no JJK media files appear in the product. Internal code
+comments may cite the originating technique for attribution and traceability.
 
 ### 2.1 Attribution requirements
 
@@ -143,14 +153,16 @@ Every adapted file carries a header in this exact form, with no placeholders lef
  * Adapted from <repo>/<path> @ <full-40-char-sha>
  * Source: https://github.com/<owner>/<repo>
  * Author: <upstream author>
- * Licence: <MIT (per README) | permission granted <date>, see docs/source-permissions.md>
+ * Authorization: <MIT (per README) | owner-held authorization, see docs/source-permissions.md>
  *
  * Changes: <one line per substantive change, e.g. "removed DOMAINS coupling; added teardown()">
+ * Deviations: <any departure from upstream appearance, with reason; see docs/fidelity-notes.md>
  */
 ```
 
-`docs/source-audit.md` already exists in this repo and must gain a row per adapted file. A new
-`docs/source-permissions.md` holds the permission correspondence.
+`docs/source-audit.md` already exists in this repo and must gain a row per adapted file.
+`docs/source-permissions.md` holds the authorization record. `docs/fidelity-notes.md` holds the
+upstream-comparison evidence required by §5.6.
 
 ---
 
@@ -187,7 +199,10 @@ What exists today, read from the tree. New code must integrate with these, not r
 | `components/mirror-divider.tsx` + `components/mirror-divider.module.css` | `Anime-Portfolio` `style.css` L703–731 | The `scaleY(-1)` + `mask-image` mirror text effect. |
 | `components/about-motion.tsx` | `Anime-Portfolio` `script.js` `initHeroAnimations`, `initMangaPanels`, `initMirrorDividers` | The three GSAP timelines, ported to a client component with `gsap.context()` scoping and React 19 StrictMode-safe cleanup. |
 | `data/about-panels.ts` | new | Panel content pairing each of Marc's four real photographs with its caption and alt text. |
-| `docs/source-permissions.md` | new | The §2 permission record. |
+| `scripts/generate-plates.mjs` | new | Dev-time headless-Chrome script that renders `/` and `/projects` into the transition plate set (§5.2.5). Run manually; not part of `next build`. |
+| `public/images/transition/*.webp` | new, ours | Pre-generated portal plates from our own visuals. No third-party imagery. |
+| `docs/source-permissions.md` | new | The §2 authorization record. |
+| `docs/fidelity-notes.md` | new | The §5.6 upstream-comparison record and deviation log. |
 
 ### 4.2 Modified files
 
@@ -216,21 +231,38 @@ unrequested `init*` functions.
 
 ## 5. Integration design
 
-### 5.1 Homepage — MARC'S WORLD, luminous twilight
+### 5.1 Homepage — MARC'S WORLD, a substantial visual redesign
 
-The hand-drawn city stays. Only its palette and its surrounding atmosphere change.
+Phase 1 is a **redesign, not a recolour**. The target is a homepage that reads as substantially
+brighter and more visually engaging on first load, with the Lord-of-Mysteries architecture preserved
+and the JJK-inspired energy already visually prominent — all of it static (CSS/SVG), since the ported
+WebGL work lands in Phases 2–4.
 
 - **Rebrand:** title becomes `MARC'S` / `WORLD` across the two existing `<span>`s in `home-intro.tsx`,
-  so `home.module.css`'s `.title` sizing continues to apply. `data/home.ts` gains `ownerName`.
-- **Twilight:** `home-scene.tsx` currently paints a night sky (`#050811`–`#121827` family). Shift the
-  sky gradient stops, window-light opacities, and moon-halo intensity toward a Lord-of-Mysteries
-  luminous dusk — deep indigo horizon, warm gaslight amber in the windows, a brighter rim on the
-  cathedral and clock tower. The `prng` seeds (`buildSkyline` seed, `STARS` seed `404`) are **not**
-  touched, so the silhouette is bit-identical and the change is purely chromatic.
-- **Particles around the architecture:** `CursedParticleField` mounts behind the city at low opacity,
-  running `shapeLuminousVoid` (the `getVoid` ring + sphere-shell math) in the project's gold/violet
-  palette rather than JJK cyan. Bloom strength sits at the neutral end (≈1.2) — this is ambience, not
-  a technique cast. It is lazily imported and never mounts under reduced motion or on small viewports.
+  so `home.module.css`'s `.title` sizing continues to apply. `data/home.ts` sets `ownerName: "Marc"`.
+- **Luminous twilight, substantially brighter.** The scene moves from near-black night to a true
+  twilight: a lifted sky gradient, a visible horizon glow behind the skyline, a brighter and warmer
+  moon halo, markedly stronger window lights, and a legible rim light on every architectural plane
+  (`farRim`, `midRim`, `towerRim`, `nearRim`). The `scrim`, `veil`, and `grain` overlays are rebalanced
+  — today they crush the composition toward black, and they are the single largest brightness lever.
+  The `prng` seeds (`buildSkyline` seeds, `STARS` seed `404`) are **not** touched, so the silhouette
+  is geometrically identical and the change is chromatic and tonal.
+- **Prominent static energy.** New SVG/CSS atmosphere drawn for this project, layered around the
+  architecture so the energy reads immediately without WebGL: a cursed-energy aura behind the clock
+  tower and cathedral, vertical energy plumes rising off the rooftops, a violet/cyan rift glow on the
+  horizon, and ember motes drifting through the mid-ground. This is **original artwork in the idiom**,
+  authored in `home-scene.tsx` alongside the existing city — explicitly *not* a CSS re-implementation
+  of any sourced algorithm, and it does not pre-empt or substitute for the real ported particle work
+  in Phase 4, which replaces the motes with `shapeLuminousVoid` geometry when it lands.
+- **Stronger composition.** The hero is recomposed so typography and portrait read as one designed
+  unit rather than two columns sharing a row: the title overlaps the portrait frame's edge, an energy
+  aura sits behind the title's baseline, the eyebrow/lede/actions column gains a clearer vertical
+  rhythm, and the portrait frame is restyled with a brighter gilt treatment and an energy backing so
+  it anchors the right side instead of floating. Mobile keeps a single-column order with the portrait
+  behind the copy, as today, but at higher contrast.
+- **Phase 4 follow-on (not Phase 1):** `CursedParticleField` later mounts behind the city at low
+  opacity running `shapeLuminousVoid` in the project's palette, bloom at the neutral end (≈1.2),
+  lazily imported, never under reduced motion or on small viewports.
 
 ### 5.2 Home → Projects — Z-tunnel and portal
 
@@ -246,12 +278,26 @@ transition, and it already bails out under reduced motion.
 3. `drawZTunnel()` renders with the focal point set to the "Explore Projects" button's centre,
    normalized — the upstream function already takes `focalX`/`focalY`, so the tunnel converges on the
    control the user actually clicked.
-4. The portal layer uses `renderPortalDepthTunnel`'s seam shockwave and expanding-arc clip. Because we
-   have no second keyframe image to zoom into, the plate arguments are satisfied by snapshotting the
-   outgoing homepage — or, in the cheaper variant, by running the seam/vignette layers alone over a
-   transparent canvas. Decide in Phase 3 after measuring; the seam gradient is the visually load-bearing
-   part and works without plates.
-5. Extend the existing timeout to the measured animation length (target ≤900 ms) rather than adding a
+4. **The portal runs the full original image-plate mechanics as the primary desktop path**:
+   `renderPortalDepthTunnel`'s outgoing-plate zoom (`pow(maxZoom, easeInOut)`), the `maxZoom * 1.28`
+   peripheral parallax ring, the incoming plate emerging from the vanishing point
+   (`1/maxZoom → 1.0`), the expanding arc-clipped portal, the deep lookahead plate, and the
+   screen-blended seam shockwave — all of it, not a reduced subset.
+5. **Plates are pre-generated static assets, authored during development from our own final homepage
+   and Projects visuals.** No runtime DOM screenshotting: no `html2canvas`, no `getDisplayMedia`, no
+   live canvas capture of the page. The pipeline is a dev-time script (`scripts/generate-plates.mjs`,
+   run manually, not part of `next build`) that drives headless Chrome over `/` and `/projects` at a
+   fixed 1920×1080, writing a small numbered set to `public/images/transition/`:
+   - `home-01.webp` … `home-03.webp` — outgoing homepage at successive zoom depths.
+   - `projects-01.webp` … `projects-03.webp` — incoming Projects view, the innermost serving as the
+     deep lookahead plate (`frameC`).
+   These are our own rendered visuals, so they carry no third-party imagery. They are committed as
+   ordinary optimized assets, budgeted at ≤150 KB each, preloaded only on the homepage, and
+   regenerated whenever the homepage or Projects design changes materially.
+6. **The transparent seam-only variant is retained strictly as the low-performance fallback**, chosen
+   when the device is on the low capability tier (§6.6), when the plates fail to load, or when the
+   first frames miss their timing budget. It is a fallback, never the desktop default.
+7. Extend the existing timeout to the measured animation length (target ≤900 ms) rather than adding a
    second timer, so there remains exactly one navigation path.
 
 ### 5.3 Projects — overlay only
@@ -262,7 +308,29 @@ short burst (`drawImpactFrame` focus lines + `drawFractureOverlays`) on arrival,
 releases its canvas. It never shares a context, a RAF, or a resize listener with the carousel. See
 §6.4 for the compositing constraint that forces the focus-line-only path.
 
-### 5.4 About — manga panels with Marc's real photographs
+### 5.4 About — rewritten biography and visual storytelling
+
+Phase 5 is a **redesign of the page's content and narrative**, not an image strip appended to the
+existing copy. The current About page is three generic blocks (a two-paragraph bio, a skills grid, a
+social row) that say almost nothing specific about Marc.
+
+- **Authentic biography.** Rewritten around real details: computer science studies at UCF, software
+  engineering practice, and work across AI and robotics. The narrative is organized as a progression
+  — studies → engineering practice → the AI and robotics work — rather than one undifferentiated
+  paragraph.
+- **Real project storytelling.** The panels tell the story of actual projects already recorded in
+  `data/projects.ts`: **SpeakLab AI** (React Native + Whisper speech coaching), **Guiding Hands**
+  (OpenCV/MediaPipe hand-tracking rehabilitation on Jetson Orin Nano), the **Autonomous Delivery
+  Rover** (Fusion mechanical design, Raspberry Pi/ESP32/LiDAR planned), **Road Report** (hazard
+  classification, Next.js + MapLibre), and **ZBXP**. Copy is drawn from those records so the two
+  pages cannot drift, and the existing `status` discipline is respected: in-development and
+  to-confirm work is described as such, never as shipped.
+- **Owner-supplied facts.** UCF and the engineering framing come from the owner directly, not from
+  the repository. They are recorded as owner-supplied in `data/about-panels.ts`, consistent with how
+  `data/home.ts` and `data/experience.ts` already mark unverified values.
+- **Visual storytelling.** The sourced manga-panel layout carries the real photographs, mirror
+  dividers separate the narrative movements, and the skills grid is restyled to match rather than
+  left as the current bare chip list. Social links are preserved.
 
 Panels carry the four photographs already in `public/images/home/`:
 
@@ -278,6 +346,29 @@ photograph's content, and the existing `--color-*` tokens. `MirrorDivider` separ
 `AboutMotion` is a thin client component that runs the three ported GSAP timelines over the
 server-rendered markup; with GSAP absent or reduced motion set, the panels are simply visible and
 static — the animation is strictly additive.
+
+### 5.6 Visual fidelity to the sources
+
+Preserving the sourced *algorithms* is necessary but not sufficient: the adapted effects must also
+look like what upstream produces. Each adapted effect is therefore compared against its upstream
+demonstration before its phase is considered done.
+
+- **Reference material.** `jjk-domain-expansion` ships `docs/media/trailer.gif` (25 MB) in-tree, and
+  both JJK repos have published demos; `Anime-Portfolio` has a live GitHub Pages demo linked from its
+  README. Comparison uses these plus the upstream code's own authored constants as ground truth.
+  Reference captures are kept **outside** the repository (scratch only) unless a specific frame is
+  needed as evidence and is ours to commit — the trailer GIF and all JJK media stay out of `public/`
+  and out of git.
+- **Method.** For each effect: run the upstream project locally at the pinned SHA, capture the effect,
+  capture ours at the same viewport and progress point, and compare side by side for ring/particle
+  density, projection rate, colour ramp, bloom falloff, and timing.
+- **Record.** `docs/fidelity-notes.md` gets one entry per adapted effect: what was compared, the
+  verdict, and every deviation with its technical reason. Deviations already known and accepted:
+  per-vertex point size is rendered rather than silently dropped (§6.2, a fidelity *increase*), and
+  the Projects impact overlay omits the blend-mode flicker it cannot composite (§6.4).
+- **Rule.** Where upstream's appearance is technically achievable in this stack, match it. Where it is
+  not, document precisely why in `docs/fidelity-notes.md` and in the adapted file's `Deviations:`
+  header line. "Close enough" is not an acceptable entry; the reason must be technical.
 
 ---
 
@@ -397,26 +488,29 @@ stylesheet is imported, and `app/globals.css` gains only additive tokens.
 Each phase ends with `npx tsc --noEmit` clean, `npm run lint` clean, `npm run build` passing, and a
 manual pass at desktop + mobile widths with reduced motion both on and off.
 
-**Phase 0 — Permissions (blocking).** Request and record permission from sources 1 and 2; create
-`docs/source-permissions.md`; record the `Anime-Portfolio` MIT statement. **No adapted code from sources
-1 or 2 is committed until this closes.** Phase 1 and Phase 5 may proceed in parallel, as neither depends
-on those sources.
+**Phase 0 — Authorization record.** Create `docs/source-permissions.md` recording the scope and
+provenance of the owner-held authorization per source, plus the `Anime-Portfolio` README MIT statement
+with its SHA. Outstanding specifics are marked as such rather than assumed.
 
-**Phase 1 — Rebrand and twilight.** `layout.tsx` metadata, `MARC'S`/`WORLD` title, `data/home.ts`
-owner/statement, twilight palette in `home-scene.tsx` + `home.module.css` + additive tokens in
-`globals.css`. Verify the skyline silhouette is unchanged (seeds untouched) and the intro phase machine,
-skip button, and mask fallback still behave.
+**Phase 1 — Rebrand and visual redesign.** `layout.tsx` metadata; `MARC'S`/`WORLD` title;
+`data/home.ts` `ownerName: "Marc"` and statement; the substantial brightening and recomposition of
+§5.1 across `home-scene.tsx`, `home.module.css`, and additive tokens in `globals.css`; prominent
+static energy artwork. Verify the skyline silhouette is unchanged (seeds untouched) and that the intro
+phase machine, skip button, mask fallback, departure choreography, and reduced-motion behaviour all
+still work. Deliverables: desktop and mobile screenshots, typecheck, lint, build, visual inspection.
 
 **Phase 2 — FX foundation.** Port `particles.ts` → `components/fx/particle-system.ts` with attribution
 and the JJK-prop branches dropped; add `fx-types.ts` and `use-reduced-motion.ts`. Extract the three
 `renderer.ts` methods into `portal-transition.ts` as pure functions with caller-owned listeners. No UI
 yet — this phase is pure, testable module work.
 
-**Phase 3 — Home → Projects transition.** Build `z-tunnel-overlay.tsx`; wire it into the existing
-`leaveForProjects()` window; tune the eased `scrollVelocity` ramp and focal point; decide the plate-vs-seam
-variant from §5.2.5 by measurement; extend the single navigation timeout to the measured length. Verify
-reduced motion still navigates instantly via the existing early return, and that no RAF or listener
-survives unmount.
+**Phase 3 — Home → Projects transition.** Write `scripts/generate-plates.mjs` and generate the plate
+set from our own final homepage and Projects visuals (§5.2.5). Build `z-tunnel-overlay.tsx` running the
+full image-plate portal mechanics as the desktop default, with the seam-only path wired as the
+low-tier/plate-failure fallback. Wire it into the existing `leaveForProjects()` window; tune the eased
+`scrollVelocity` ramp and focal point; extend the single navigation timeout to the measured length.
+Compare against the upstream demo per §5.6. Verify reduced motion still navigates instantly via the
+existing early return, and that no RAF or listener survives unmount.
 
 **Phase 4 — Three.js particle field + Projects impact.** Build `field-shapes.ts` (verbatim shape math)
 and `cursed-particle-field.tsx` with the custom `ShaderMaterial` from §6.2, capability-tiered counts, and
@@ -424,12 +518,15 @@ full disposal. Mount it on the homepage behind the city. Add `impact-overlay.tsx
 Projects page, focus-lines-only per §6.4. Confirm the carousel's own context, input handling, and
 disposal are untouched.
 
-**Phase 5 — About manga panels.** Add `gsap`; build `manga-panel`, `mirror-divider`, `data/about-panels.ts`,
-and `about-motion.tsx` with `gsap.context()` cleanup; wire the four real photographs; keep bio, skills, and
-social links intact. Confirm panels render correctly with JS disabled and under reduced motion.
+**Phase 5 — About redesign.** Add `gsap`; rewrite the biography and narrative per §5.4 using the real
+UCF/engineering/AI/robotics details and the actual project records; build `manga-panel`,
+`mirror-divider`, `data/about-panels.ts`, and `about-motion.tsx` with `gsap.context()` cleanup; wire the
+four real photographs into the sourced panel layout; restyle the skills grid; preserve social links.
+Confirm panels render correctly with JS disabled and under reduced motion.
 
 **Phase 6 — Hardening and documentation.** Capture before/after screenshots into
-`docs/screenshots/marcs-world/`; run a Lighthouse pass on `/`, `/projects`, `/about`; confirm WebGL
+`docs/screenshots/marcs-world/`; complete the §5.6 upstream comparison for every adapted effect and
+finish `docs/fidelity-notes.md`; run a Lighthouse pass on `/`, `/projects`, `/about`; confirm WebGL
 contexts are released across repeated navigation; complete `docs/source-audit.md` rows and every adapted
 file's attribution header; write the completion report.
 
@@ -438,8 +535,9 @@ file's attribution header; write the completion report.
 ## 8. Acceptance criteria
 
 **Provenance**
-1. `docs/source-permissions.md` records a permission grant or an added upstream licence for both
-   `jjk-domain-expansion` and `Cursed-Energy`, and the `Anime-Portfolio` MIT statement with its SHA.
+1. `docs/source-permissions.md` records, per source, the scope and provenance of the authorization
+   relied upon, and the `Anime-Portfolio` README MIT statement with its SHA. No third-party code is
+   published beyond what that authorization or licence covers.
 2. Every adapted file carries the §2.1 header with a real 40-character SHA and a filled `Changes:` list.
 3. `docs/source-audit.md` has a row per adapted file.
 4. No JJK character, domain, or technique name appears in user-visible text; no JJK or `goku-*` media
@@ -450,27 +548,44 @@ file's attribution header; write the completion report.
    `fov = min(w,h) * 0.65` projection, and 24-ray speed lines — not a CSS approximation.
 6. The particle field uses the unmodified banded-zone math of `getVoid`/`getPurple`/`getBlackFlash`/
    `getDismantle`, with each shape's `s` value **actually rendered** per §6.2.
-7. The portal transition uses the real `renderPortalDepthTunnel` zoom/emergence/seam-gradient math.
+7. On desktop, the portal transition runs the **original image-plate mechanics** — outgoing-plate
+   zoom, peripheral parallax ring, incoming-plate emergence from the vanishing point, deep lookahead
+   plate, and the seam shockwave — driven by plates pre-generated from our own homepage and Projects
+   visuals by `scripts/generate-plates.mjs`. No runtime DOM screenshotting exists anywhere in the
+   shipped code. The transparent seam-only path is present only as the low-tier/plate-failure
+   fallback and is never taken on a healthy desktop load.
 8. The About panels use the upstream direction table, `top 85%` trigger, `toggleActions`, and scrubbed
    `y: -25` image parallax.
+9. `docs/fidelity-notes.md` has an entry per adapted effect recording the upstream comparison and every
+   deviation with a technical reason (§5.6).
+
+**Redesign**
+10. The homepage reads as substantially brighter and more visually engaging than the committed
+    `af835c7` baseline, with the LOTM architecture intact, the energy treatment visually prominent,
+    and typography and portrait composed as one unit (§5.1) — verified by side-by-side screenshots.
+11. The About page presents a rewritten biography and real project storytelling (§5.4), not the prior
+    generic copy with panels appended.
 
 **Preservation**
-9. The tarot carousel's behaviour is byte-for-byte unchanged apart from a sibling overlay: keyboard nav,
-   pointer capture, wheel handling, context-loss recovery, and disposal all intact.
-10. Every existing route (`/`, `/projects`, `/about`, `/experience`, `/resume`) renders without
+12. The tarot carousel's behaviour is byte-for-byte unchanged apart from a sibling overlay: keyboard nav,
+    pointer capture, wheel handling, context-loss recovery, and disposal all intact.
+13. Every existing route (`/`, `/projects`, `/about`, `/experience`, `/resume`) renders without
     regression; the home intro phase machine, skip button, Safari mask fallback, and `introSeenInTab`
     behaviour are unchanged.
-11. The city silhouette is geometrically identical to today's (seeds untouched); only colour changed.
+14. The city silhouette is geometrically identical to the baseline (seeds untouched); only colour,
+    tone, and added atmosphere differ.
 
 **Quality gates**
-12. `npx tsc --noEmit`, `npm run lint`, and `npm run build` all pass.
-13. No dependency from §4.3 appears in `package.json` or the lockfile; the only addition is `gsap`.
-14. Under `prefers-reduced-motion: reduce`, no FX component mounts, no RAF runs, and navigation is
+15. `npx tsc --noEmit`, `npm run lint`, and `npm run build` all pass.
+16. No dependency from §4.3 appears in `package.json` or the lockfile; the only addition is `gsap`.
+17. Under `prefers-reduced-motion: reduce`, no FX component mounts, no RAF runs, and navigation is
     immediate.
-15. All effect canvases are `aria-hidden="true"`, `pointer-events: none`, and outside the tab order.
-16. Repeated navigation between all routes leaks no WebGL context, RAF, listener, or GSAP trigger
+18. All effect canvases are `aria-hidden="true"`, `pointer-events: none`, and outside the tab order.
+19. Repeated navigation between all routes leaks no WebGL context, RAF, listener, or GSAP trigger
     (verified by instrumented teardown counts in development).
-17. No webcam, microphone, audio, or debug overlay code path exists anywhere in the shipped bundle.
-18. Every expensive WebGL/FX module is dynamically imported and absent from the initial route payload.
-19. On a mobile viewport, particle counts and pixel ratio drop to the low tier and the homepage stays
+20. No webcam, microphone, audio, or debug overlay code path exists anywhere in the shipped bundle.
+21. Every expensive WebGL/FX module is dynamically imported and absent from the initial route payload.
+22. On a mobile viewport, particle counts and pixel ratio drop to the low tier and the homepage stays
     interactive during the transition.
+23. The committed plate assets in `public/images/transition/` are our own rendered visuals only, each
+    ≤150 KB, and no JJK or other third-party media exists anywhere in `public/`.

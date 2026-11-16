@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import styles from "./project-showcase-environment.module.css";
 
 /*
- * Original Victorian-gothic night city for the project showcase (all shapes drawn for AFTERIMAGE).
+ * Original Victorian-gothic night city for the project showcase (all shapes drawn for MARC'S WORLD).
  * Each city layer is a 1600×900 tile whose left and right edges match, repeated three times and
  * translated by exactly one tile, so the drift loops seamlessly. Layers drift at different speeds
  * (parallax depth); mouse parallax is applied through CSS variables set on the stage.

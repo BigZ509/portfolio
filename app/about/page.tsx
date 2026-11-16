@@ -7,7 +7,7 @@ import { socialLinks } from "@/data/social-links";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About — AFTERIMAGE",
+  title: "About — MARC'S WORLD",
 };
 
 function SocialIcon({ icon }: { icon: string }) {

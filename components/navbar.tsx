@@ -25,7 +25,7 @@ export function Navbar() {
           href="/"
           className="font-[family-name:var(--font-display)] text-lg tracking-[0.12em] text-[var(--color-antique-gold)] no-underline transition-opacity hover:opacity-80"
         >
-          AFTERIMAGE
+          MARC&rsquo;S WORLD
         </Link>
 
         <ul className="flex list-none gap-1 sm:gap-2" role="list">

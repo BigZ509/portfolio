@@ -112,7 +112,7 @@ export function HomeIntro() {
       <section className={styles.hero} aria-labelledby="home-title">
         <div className={styles.copy}>
           <p className={styles.eyebrow}><span className={styles.eyebrowLine} />{home.disciplines.join(" / ")}</p>
-          <h1 id="home-title" className={styles.title}><span>AFTER</span><span>IMAGE</span></h1>
+          <h1 id="home-title" className={styles.title}><span>MARC&rsquo;S</span><span>WORLD</span></h1>
           {home.ownerName && <p className={styles.ownerName}>By {home.ownerName}</p>}
           <p className={styles.lede}>{home.statement}</p>
           <div className={styles.actions}>

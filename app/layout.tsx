@@ -3,8 +3,8 @@ import { Navbar } from "@/components/navbar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AFTERIMAGE",
-  description: "Personal portfolio",
+  title: "MARC'S WORLD",
+  description: "Software, intelligent systems, and robotics — the portfolio of Marc.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

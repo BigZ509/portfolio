@@ -6,7 +6,7 @@ import { experiences } from "@/data/experience";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Experience — AFTERIMAGE",
+  title: "Experience — MARC'S WORLD",
 };
 
 export default function ExperiencePage() {

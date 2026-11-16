@@ -22,12 +22,12 @@ export type HomeContent = {
 };
 
 export const home: HomeContent = {
-  ownerName: null,
+  ownerName: "Marc",
   disciplines: ["Software", "AI", "Robotics"],
   statement: "I build software, intelligent systems, and robots for the real world.",
   portrait: {
     src: "/images/home/graduation.webp",
-    alt: "The portfolio owner in a black graduation cap and gown outside an arena.",
+    alt: "Marc in a black graduation cap and gown outside an arena.",
     width: 1152,
     height: 1536,
     caption: "The person behind the work",

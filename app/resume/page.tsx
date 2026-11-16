@@ -6,7 +6,7 @@ import { socialLinks } from "@/data/social-links";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Resume — AFTERIMAGE",
+  title: "Resume — MARC'S WORLD",
 };
 
 export default function ResumePage() {
