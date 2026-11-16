@@ -15,26 +15,31 @@ export type Skill = {
   evidence: readonly string[];
 };
 
+/**
+ * The four groups, in the order the About page presents them. Each pairs with one element card in
+ * `components/skills/chakra-skills.tsx` (Lightning, Fire, Earth, Water — the upstream order).
+ * `subtitle` is the short line under each card title; keep it to a few words.
+ */
 export const skillGroups = [
-  {
-    key: "engineering" as const,
-    label: "Software engineering",
-    blurb: "Building and shipping the application and the service behind it.",
-  },
   {
     key: "intelligence" as const,
     label: "AI, vision & real-time systems",
-    blurb: "Making a program respond to speech, motion and the world as it happens.",
+    subtitle: "Perception in real time",
+  },
+  {
+    key: "engineering" as const,
+    label: "Software engineering & APIs",
+    subtitle: "Apps and the services behind them",
   },
   {
     key: "physical" as const,
-    label: "Robotics, embedded & CAD",
-    blurb: "Taking the work off the screen and into hardware.",
+    label: "Robotics, hardware & CAD",
+    subtitle: "Work that leaves the screen",
   },
   {
     key: "toolkit" as const,
-    label: "Languages & tools",
-    blurb: "The everyday kit underneath all of it.",
+    label: "Languages & development tools",
+    subtitle: "The everyday kit",
   },
 ] as const;
 

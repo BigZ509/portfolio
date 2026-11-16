@@ -98,6 +98,7 @@ generated for this project.
 | `jjk-domain-expansion` | Owner-held authorization (asserted 2026-11-16) | Not yet — Phases 2–4 | No — §1 specifics outstanding |
 | `Cursed-Energy` | Owner-held authorization (asserted 2026-11-16) | Not yet — Phases 2–4 | No — §2 specifics outstanding |
 | `Anime-Portfolio` | README MIT grant + owner-held authorization | **Yes, since Phase 5** | Partly — canonical notice outstanding |
+| `rishabhaiml/Portfolio` | README MIT grant ("for your own portfolio") | **Yes, since Phase 6** | Partly — canonical notice outstanding (§7) |
 
 The outstanding items for sources 1 and 2 do not block Phases 1 or 5, neither of which uses their
 code. They should be completed before any adapted code from those two sources is published.
@@ -120,3 +121,41 @@ outside this repository because the demo renders third-party anime artwork.
 no `LICENSE` file and no copyright notice, so our headers name `GarunJad` as the holder and cite the
 README grant plus the pinned SHA as the licence's source. Ask the author to add a `LICENSE` file, or
 supply the copyright line, so the notice can be reproduced exactly as MIT requires.
+
+---
+
+## 7. rishabhaiml/Portfolio (Naruto skills section) — added Phase 6
+
+- **Commit relied upon:** `411b99a1890562c65f25e3d35b694d3ef8d0f223`
+- **Public licence in repository:** no `LICENSE` file. `README.md` §License states, verbatim:
+
+  > ## 📄 License
+  >
+  > MIT License - Feel free to use for your own portfolio!
+
+- **Basis relied upon:** the README MIT grant above. Its own wording ("for your own portfolio")
+  matches this use exactly.
+- **Files covered by the intended use:** `src/lib/sections/SkillsSection.svelte` — its markup
+  structure, reactive toggle logic, IntersectionObserver reveal and the full `<style>` block.
+- **Adapted into:** `components/skills/chakra-skills.tsx`, `components/skills/chakra-skills.module.css`.
+  Both carry the plan's §2.1 attribution header.
+- **MIT condition:** the copyright and permission notice must be retained. As with `Anime-Portfolio`,
+  upstream ships no `LICENSE` file or copyright line, so the headers name `rishabhaiml` as holder and
+  cite the README grant and SHA. **Outstanding:** request the canonical copyright line or a `LICENSE`
+  file from the author.
+
+### What this grant does not cover
+
+The MIT grant is Rishabh's, over Rishabh's code. It conveys nothing over **Naruto**, which is the
+intellectual property of Masashi Kishimoto and Shueisha. The upstream code depicts franchise material
+that is therefore **not** used here:
+
+| Upstream material | Status |
+|---|---|
+| `SharinganEye.svelte` — Mangekyō Sharingan designs tied to specific characters (Sasuke, Itachi, Madara, Shisui, Obito) | **Not used.** Replaced by an original sigil, `components/skills/element-sigil.tsx` |
+| `src/lib/assets/effects/*.mp3`, `quotes/*.opus`, `theme/*.opus` — character voice lines and themes | **Not used.** Plan constraint: no audio; also franchise audio |
+| "Lightning Release", "Chakra Nature", "Jutsu" naming | **Not used** in visible text |
+| Rishabh's own skill claims | **Not used.** Cards are built from `data/skills.ts` |
+
+The kanji 雷 火 土 水 are ordinary Japanese characters for the classical elements and are retained.
+The sigil's inner glyphs are the classical alchemical element symbols, which are public domain.

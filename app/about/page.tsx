@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import { AboutMotion } from "@/components/about-motion";
 import { MangaGrid, MangaPanel } from "@/components/manga-panel";
 import { MirrorDivider } from "@/components/mirror-divider";
+import { ChakraSkills } from "@/components/skills/chakra-skills";
 import { aboutIntro, buildPanels, connect, photoPanels } from "@/data/about";
-import { skillGroups, skills } from "@/data/skills";
 import { publicSocialLinks } from "@/data/social-links";
 import styles from "@/components/about.module.css";
 
@@ -174,25 +174,12 @@ export default function AboutPage() {
               <p className={styles.chapterTag}>Chapter 04</p>
               <h2 id="tools-heading">What I reach for</h2>
               <p>
-                Grouped by what they&rsquo;re actually for, rather than ranked. No percentages — a bar
-                chart of my own ability would be a guess, and you can judge the work instead.
+                Four kinds of work, and the tools each one has needed so far. Open a card to see what&rsquo;s
+                in it.
               </p>
             </header>
 
-            <div className={styles.toolGrid}>
-              {skillGroups.map((group) => {
-                const groupSkills = skills.filter((skill) => skill.group === group.key);
-                return (
-                  <section key={group.key} className={styles.toolGroup}>
-                    <h3>{group.label}</h3>
-                    <p className={styles.toolBlurb}>{group.blurb}</p>
-                    <ul className={styles.toolList}>
-                      {groupSkills.map((skill) => <li key={skill.name}>{skill.name}</li>)}
-                    </ul>
-                  </section>
-                );
-              })}
-            </div>
+            <ChakraSkills />
           </section>
 
           {/* ---- Chapter 05 ---- */}

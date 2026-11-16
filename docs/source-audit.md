@@ -55,3 +55,17 @@ functions (`initPreloader`, `initCursor`, `initParticles`, `initCounters`, `init
 
 Dependency added: `gsap@3.15.1` (exact pin), which ships ScrollTrigger and its TypeScript types in
 the free standard package. Imported as an ES module; no CDN script tags were introduced.
+
+## rishabhaiml/Portfolio @ `411b99a1890562c65f25e3d35b694d3ef8d0f223` — added Phase 6
+
+Basis: MIT stated in the upstream README; code only. See `docs/source-permissions.md` §7.
+
+| This repository | Upstream origin | What was taken |
+|---|---|---|
+| `components/skills/chakra-skills.tsx` | `src/lib/sections/SkillsSection.svelte` `<script>` and markup | Four-element structure and order, the `toggleElement` single-open logic, the IntersectionObserver reveal at threshold 0.2, per-card colour and glow variables, staggered `index × 0.1s` reveal, the pentagon diagram SVG |
+| `components/skills/chakra-skills.module.css` | `SkillsSection.svelte` `<style>` | The full style block: grid, card, `cardAppear`, `chakraFlow`, `symbolPulse`, seal ring, kanji, watermark slot, list expansion, chevron, diagram, and both responsive breakpoints |
+
+Not taken: `SharinganEye.svelte` and every Mangekyō variant, all audio (`effects/`, `quotes/`, `theme/`),
+the global stores, `ChakraParticles`, `KamuiTransition`, `RasenganLoader`, and the rest of the site.
+
+Original replacement: `components/skills/element-sigil.tsx` fills the watermark slot.

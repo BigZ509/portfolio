@@ -1,0 +1,488 @@
+/*
+ * Adapted from rishabhaiml/Portfolio @ 411b99a1890562c65f25e3d35b694d3ef8d0f223
+ * Source: https://github.com/rishabhaiml/Portfolio  (src/lib/sections/SkillsSection.svelte, <style>)
+ * Author: Rishabh (rishabhaiml)
+ * Authorization: MIT, as stated in the upstream README ("MIT License - Feel free to use for your own
+ *   portfolio!"); the repository ships no LICENSE file. Code only — see docs/source-permissions.md §7.
+ *
+ * Changes (each is a framework, accessibility, or rights requirement — see docs/fidelity-notes.md):
+ * - Ported from a Svelte <style> block into a scoped CSS Module. Upstream's --bg-* / --text-* /
+ *   --font-* variables are resolved to local values here; no upstream global CSS is imported.
+ * - The card is a <div> holding a <button>, not a <button> holding a <ul>. Upstream nests the skills
+ *   list inside the button, which is invalid HTML and makes a screen reader announce the entire list
+ *   as the button's name. The button is stretched over the whole card so any click still toggles,
+ *   exactly as upstream, and `.card` re-creates the browser's button centring with flexbox so the
+ *   stretched row partner still sits vertically centred as it does in the running upstream demo.
+ * - Muted text #666666 → #8c8c8c. Upstream's value measures ~3.0:1 on its card; 4.5:1 is required.
+ * - The Lightning label uses a lifted tint (#b57bf9) for text only; #a855f7 measured 4.4:1 at
+ *   .7rem. Rings, borders and glows keep the exact upstream colour.
+ * - Expanded `max-height` is per-card (`--list-max`). Upstream's fixed 200px is sized for exactly
+ *   five skills; two of Marc's groups have eight, which 200px would clip.
+ * - Cards are visible by default and only start hidden once JavaScript arms them, so content renders
+ *   without JS. Upstream hides them in CSS and depends on its IntersectionObserver to reveal them.
+ * - prefers-reduced-motion branch added; upstream has none.
+ * - Heading font: upstream loads 'Outfit' from Google Fonts. This uses the site's existing geometric
+ *   sans (--font-body: Avenir Next) at the same weight, rather than adding a font dependency.
+ *
+ * Preserved verbatim: grid, gap and 800px max-width; card padding, 16px radius and fill; every
+ * transition duration and the cubic-bezier(.16, 1, .3, 1) curve; the cardAppear, chakraFlow and
+ * symbolPulse keyframes; seal-ring, inner-disc and kanji dimensions at all three breakpoints; the
+ * watermark's -20px offset, .05 → .15 opacity and 15deg → 0deg / 1.1 scale; the card-bg radial at
+ * .3; the chevron's .5 opacity and 180deg turn; and the pentagon diagram and its .5s-delayed fade.
+ */
+
+.skills {
+  position: relative;
+  padding-bottom: clamp(0rem, 4vw, 3rem);
+}
+
+/* Elements Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Element Card */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: rgba(20, 20, 20, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #f5f5f5;
+  font-family: var(--font-body);
+  /* Upstream's card is a <button>, and browsers give buttons line-height: normal rather than the
+     inherited page value. Measured against the running demo, that is what sets its text rhythm. */
+  line-height: normal;
+  text-align: left;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Hidden only once JavaScript is present to reveal it; otherwise always visible. */
+.grid[data-armed] .card {
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+}
+
+.grid[data-armed] .card.visible {
+  animation: cardAppear 0.5s ease forwards;
+}
+
+@keyframes cardAppear {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card:hover,
+.card.active {
+  border-color: var(--element-color);
+  box-shadow: 0 0 30px var(--element-glow);
+  transform: translateY(-5px);
+}
+
+/*
+ * Faithful to upstream, and worth knowing: cardAppear runs with `forwards`, and a filled animation
+ * outranks normal declarations in the cascade. So once a card has been revealed, the
+ * `translateY(-5px)` lift above is masked and only the border, glow and tint respond to hover —
+ * which is what the running upstream demo shows (the active card sits level with its neighbour).
+ * The lift does apply when JavaScript is unavailable and no reveal animation has run.
+ */
+
+.card.active {
+  padding-bottom: 2rem;
+}
+
+/* The whole card is the hit target, as in upstream, via a stretched button. */
+.toggle {
+  all: unset;
+  display: block;
+  cursor: pointer;
+  position: static;
+}
+
+.toggle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 16px;
+}
+
+.card:has(.toggle:focus-visible) {
+  outline: 2px solid var(--element-color);
+  outline-offset: 3px;
+}
+
+/* Card Background */
+.cardBg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, var(--element-glow), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.card:hover .cardBg,
+.card.active .cardBg {
+  opacity: 0.3;
+}
+
+/* Chakra Flow Animation — the energy line along the top edge */
+.flow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--element-color), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.card:hover .flow,
+.card.active .flow {
+  opacity: 1;
+  animation: chakraFlow 2s linear infinite;
+}
+
+@keyframes chakraFlow {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(50%);
+  }
+}
+
+/* Watermark slot (upstream: .mangekyou-watermark) */
+.watermark {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  opacity: 0.05;
+  transform: rotate(15deg);
+  transition: all 0.5s ease;
+  pointer-events: none;
+  z-index: 0;
+  color: var(--element-color);
+}
+
+.card:hover .watermark {
+  opacity: 0.15;
+  transform: rotate(0deg) scale(1.1);
+}
+
+.sigil {
+  display: block;
+}
+
+.sigilTicks {
+  transform-box: view-box;
+  transform-origin: 100px 100px;
+  animation: sigilIdle 40s linear infinite;
+}
+
+@keyframes sigilIdle {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Accordion heading wrapper: no visual footprint of its own. */
+.heading {
+  margin: 0;
+  font: inherit;
+}
+
+/* Element Symbol (spans inside the button, so display is set explicitly) */
+.symbol {
+  display: block;
+  position: relative;
+  width: 60px;
+  height: 60px;
+  margin-bottom: 1rem;
+  z-index: 1;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--element-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.card:hover .ring,
+.card.active .ring {
+  box-shadow: 0 0 20px var(--element-glow);
+  animation: symbolPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes symbolPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.inner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kanji {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--element-color);
+  font-family: serif;
+  line-height: 1;
+}
+
+.symbolGlow {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--element-glow), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover .symbolGlow,
+.card.active .symbolGlow {
+  opacity: 1;
+}
+
+/* Element Info */
+.info {
+  display: block;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0.5rem;
+}
+
+.name {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--element-text, var(--element-color));
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.25rem;
+  /* Pinned to upstream's rendered value (13.3px box at 11.2px, measured in the running demo),
+     so the rhythm matches despite Avenir Next's taller "normal" metric than Outfit's. */
+  line-height: 1.19;
+}
+
+.title {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f5f5f5;
+  margin: 0 0 0.15rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  display: block;
+  font-size: 0.8rem;
+  color: #8c8c8c;
+  /* Upstream renders a 14.3px box at 12.8px; see .name. */
+  line-height: 1.12;
+}
+
+/* Skills List */
+.list {
+  position: relative;
+  z-index: 1;
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.4rem;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.list.expanded {
+  max-height: var(--list-max, 200px);
+  opacity: 1;
+  margin-top: 1rem;
+}
+
+.list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #a0a0a0;
+  padding: 0.3rem 0;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--element-color);
+  flex-shrink: 0;
+}
+
+/* Expand Indicator */
+.indicator {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  color: #8c8c8c;
+  transition: all 0.3s ease;
+  opacity: 0.5;
+  z-index: 1;
+}
+
+.card:hover .indicator {
+  color: var(--element-color);
+  opacity: 1;
+}
+
+.card.active .indicator {
+  transform: rotate(180deg);
+  color: var(--element-color);
+  opacity: 1;
+}
+
+/* Elements Diagram */
+.diagram {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.8s ease 0.5s;
+  pointer-events: none;
+}
+
+.diagram.visible {
+  opacity: 0.5;
+  transform: scale(1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+
+  .symbol {
+    width: 50px;
+    height: 50px;
+  }
+
+  .inner {
+    width: 38px;
+    height: 38px;
+  }
+
+  .kanji {
+    font-size: 1.25rem;
+  }
+
+  .diagram {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 1rem;
+  }
+
+  .symbol {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 0.75rem;
+  }
+
+  .inner {
+    width: 34px;
+    height: 34px;
+  }
+
+  .kanji {
+    font-size: 1.1rem;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .list li {
+    font-size: 0.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid[data-armed] .card,
+  .grid[data-armed] .card.visible {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .card,
+  .card:hover,
+  .card.active {
+    transform: none;
+    transition: border-color 0.01ms, box-shadow 0.01ms;
+  }
+
+  .card:hover .flow,
+  .card.active .flow,
+  .card:hover .ring,
+  .card.active .ring,
+  .sigilTicks {
+    animation: none;
+  }
+
+  .watermark,
+  .card:hover .watermark,
+  .indicator,
+  .card.active .indicator,
+  .list,
+  .diagram {
+    transition: none;
+  }
+
+  .card:hover .watermark {
+    transform: rotate(15deg);
+  }
+}
