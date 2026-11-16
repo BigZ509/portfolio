@@ -1,10 +1,16 @@
 import type { Project, ProjectStatus } from "@/data/projects";
 import styles from "./project-details.module.css";
 
-const STATUS_LABELS: Record<ProjectStatus, string> = {
+/**
+ * Public status labels. `to-confirm` maps to null on purpose: it is an internal audit state meaning
+ * "not yet verified by a maintainer", and showing it to a visitor reads as a defect in the project
+ * rather than a note to ourselves. The value stays in the data for future verification; the badge
+ * is simply omitted. `in-development` is kept and shown, because that is a real, honest status.
+ */
+const STATUS_LABELS: Record<ProjectStatus, string | null> = {
   complete: "Complete",
   "in-development": "In development",
-  "to-confirm": "Status to be confirmed",
+  "to-confirm": null,
 };
 
 /** Placeholder copy in the data starts with "TODO" and must never be shown as project content. */
@@ -47,7 +53,9 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
       </div>
 
       <h2 id={titleId} className={styles.title}>{project.title}</h2>
-      <p className={styles.status} data-status={project.status}>{STATUS_LABELS[project.status]}</p>
+      {STATUS_LABELS[project.status] && (
+        <p className={styles.status} data-status={project.status}>{STATUS_LABELS[project.status]}</p>
+      )}
 
       <p id={summaryId} className={summary ? styles.summary : styles.pending}>
         {summary ?? "A verified project summary is coming soon."}
@@ -72,9 +80,11 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
         )}
       </section>
 
-      <section className={styles.section} aria-labelledby={`${titleId}-links`}>
-        <h3 id={`${titleId}-links`} className={styles.sectionTitle}>Links</h3>
-        {links.length > 0 ? (
+      {/* Omitted entirely when a project has no public links: an empty section only draws
+          attention to the gap. Nothing is fabricated to fill it. */}
+      {links.length > 0 && (
+        <section className={styles.section} aria-labelledby={`${titleId}-links`}>
+          <h3 id={`${titleId}-links`} className={styles.sectionTitle}>Links</h3>
           <ul className={styles.links}>
             {links.map((link) => (
               <li key={link.href}>
@@ -85,10 +95,8 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
               </li>
             ))}
           </ul>
-        ) : (
-          <p className={styles.pending}>No public links yet.</p>
-        )}
-      </section>
+        </section>
+      )}
     </article>
   );
 }

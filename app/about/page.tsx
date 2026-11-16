@@ -1,13 +1,18 @@
-import { AtmosphericBackground } from "@/components/atmospheric-background";
-import { DecorativeFrame } from "@/components/decorative-frame";
-import { PageContainer } from "@/components/page-container";
-import { SectionHeading } from "@/components/section-heading";
-import { skills, skillCategories } from "@/data/skills";
-import { socialLinks } from "@/data/social-links";
+import Image from "next/image";
+import Link from "next/link";
 import type { Metadata } from "next";
+import { AboutMotion } from "@/components/about-motion";
+import { MangaGrid, MangaPanel } from "@/components/manga-panel";
+import { MirrorDivider } from "@/components/mirror-divider";
+import { aboutIntro, buildPanels, connect, photoPanels } from "@/data/about";
+import { skillGroups, skills } from "@/data/skills";
+import { publicSocialLinks } from "@/data/social-links";
+import styles from "@/components/about.module.css";
 
 export const metadata: Metadata = {
   title: "About — MARC'S WORLD",
+  description:
+    "Marc is a computer science student at the University of Central Florida, building across software, AI and robotics.",
 };
 
 function SocialIcon({ icon }: { icon: string }) {
@@ -37,84 +42,194 @@ function SocialIcon({ icon }: { icon: string }) {
 
 export default function AboutPage() {
   return (
-    <main className="relative isolate min-h-screen overflow-hidden pt-20 pb-[var(--space-5)] sm:pt-24 sm:pb-[var(--space-6)]">
-      <AtmosphericBackground />
-      <PageContainer>
-        <SectionHeading as="h1" className="mb-[var(--space-4)] text-center text-4xl sm:text-5xl">
-          About
-        </SectionHeading>
+    <main className={`${styles.page} min-h-screen`}>
+      <div className={styles.ground} aria-hidden="true" />
 
-        {/* Bio section */}
-        <DecorativeFrame className="mx-auto mb-[var(--space-4)] max-w-3xl">
-          <p className="text-lg leading-relaxed text-[var(--color-ivory)]">
-            Builder and engineer working across software, hardware, and AI. I make tools that solve
-            real problems — from computer-vision rehabilitation games and AI speech coaches to
-            autonomous rovers and civic-tech platforms.
-          </p>
-          <p className="mt-[var(--space-2)] leading-relaxed text-[var(--color-text-muted)]">
-            My work spans full-stack web development, embedded systems, and machine learning. I care
-            about accessibility, performance, and building things that actually ship.
-          </p>
-        </DecorativeFrame>
+      <AboutMotion>
+        <div className={styles.inner}>
+          {/* ---- Chapter 01 ---- */}
+          <section className={styles.hero} aria-labelledby="about-title">
+            <div className={styles.heroCopy}>
+              <p className={styles.chapterTag} data-hero="chapter">{aboutIntro.chapter}</p>
+              <p className={styles.kicker} data-hero="kicker">Marc&rsquo;s World</p>
+              <h1 id="about-title" className={styles.heroTitle}>
+                <span data-hero-line="">The person</span>
+                <span data-hero-line="">behind the projects</span>
+              </h1>
+              <p className={styles.lede} data-hero="lede">{aboutIntro.lede}</p>
+              <div className={styles.body} data-hero="body">
+                {aboutIntro.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              </div>
+              <div className={styles.heroActions} data-hero="actions">
+                <Link className={styles.primaryAction} href="/projects">
+                  <span>See the projects</span>
+                  <span aria-hidden="true">↗</span>
+                </Link>
+                <Link className={styles.secondaryAction} href="/experience">
+                  What I&rsquo;ve worked on <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </div>
 
-        {/* Skills */}
-        <section aria-labelledby="skills-heading" className="mx-auto mb-[var(--space-4)] max-w-3xl">
-          <h2
-            id="skills-heading"
-            className="mb-[var(--space-3)] font-[family-name:var(--font-display)] text-2xl text-[var(--color-ivory)]"
-          >
-            Skills & Technologies
-          </h2>
+            <figure className={styles.heroPhoto}>
+              <div className={styles.heroGlow} aria-hidden="true" data-hero="glow" />
+              <div className={styles.heroFrame}>
+                <Image
+                  className={styles.heroImage}
+                  src={aboutIntro.photo.src}
+                  alt={aboutIntro.photo.alt}
+                  width={aboutIntro.photo.width}
+                  height={aboutIntro.photo.height}
+                  sizes="(max-width: 700px) 70vw, (max-width: 1024px) 50vw, 30vw"
+                  priority
+                  data-hero="photo"
+                />
+              </div>
+              <figcaption className={styles.heroCaption}>
+                <span>Fig. I</span>
+                <span>{aboutIntro.photo.caption}</span>
+              </figcaption>
+            </figure>
+          </section>
 
-          <div className="grid gap-[var(--space-3)] sm:grid-cols-2">
-            {skillCategories.map(({ key, label }) => {
-              const categorySkills = skills.filter((s) => s.category === key);
-              return (
-                <div key={key}>
-                  <h3 className="mb-[var(--space-1)] text-sm font-medium uppercase tracking-wider text-[var(--color-antique-gold)]">
-                    {label}
-                  </h3>
-                  <div className="flex flex-wrap gap-1.5">
-                    {categorySkills.map((skill) => (
-                      <span
-                        key={skill.name}
-                        className="inline-block rounded-[var(--radius-sm)] border border-[rgb(201_174_120_/_15%)] bg-[rgb(9_11_16_/_50%)] px-2.5 py-1 text-sm text-[var(--color-text-muted)]"
+          {/* ---- Chapter 02 ---- */}
+          <MirrorDivider text="WHAT I BUILD" />
+
+          <section className={styles.section} aria-labelledby="build-heading">
+            <header className={styles.chapterHead}>
+              <p className={styles.chapterTag}>Chapter 02</p>
+              <h2 id="build-heading">Five things I wanted to find out</h2>
+              <p>
+                Each of these started as a question I couldn&rsquo;t answer from the outside. Some are
+                further along than others, and the ones that aren&rsquo;t say so.
+              </p>
+            </header>
+
+            <div className={styles.buildGrid}>
+              {buildPanels.map((panel, index) => (
+                <article key={panel.id} className={styles.buildCard} data-panel="">
+                  <span className={styles.buildNumeral} aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  {panel.inDevelopment && <span className={styles.flag}>In development</span>}
+                  <span className={styles.discipline}>{panel.discipline}</span>
+                  <h3 className={styles.buildTitle}>{panel.title}</h3>
+                  <p className={styles.buildDesc}>{panel.description}</p>
+                  {panel.image && (
+                    <div className={styles.buildMedia}>
+                      <Image
+                        src={panel.image.src}
+                        alt={panel.image.alt}
+                        width={panel.image.width}
+                        height={panel.image.height}
+                        sizes="(max-width: 700px) 90vw, 46vw"
+                        data-panel-img=""
+                      />
+                    </div>
+                  )}
+                  <ul className={styles.tech}>
+                    {panel.technologies.map((tech) => <li key={tech}>{tech}</li>)}
+                  </ul>
+                  <Link className={styles.cardLink} href="/projects">
+                    See it in the showcase
+                    <span aria-hidden="true">↗</span>
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          {/* ---- Chapter 03 ---- */}
+          <MirrorDivider text="BEYOND THE SCREEN" />
+
+          <section className={styles.section} aria-labelledby="life-heading">
+            <header className={styles.chapterHead}>
+              <p className={styles.chapterTag}>Chapter 03</p>
+              <h2 id="life-heading">There is a person doing all this</h2>
+              <p>
+                Coursework and commits are only part of it. Here&rsquo;s the rest — campus, the coast,
+                and the rooms worth showing up for.
+              </p>
+            </header>
+
+            <MangaGrid>
+              {photoPanels.map((panel, index) => (
+                <MangaPanel
+                  key={panel.id}
+                  span={panel.span}
+                  numeral={String(index + 1).padStart(2, "0")}
+                  label={panel.label}
+                  caption={panel.caption}
+                  image={{ src: panel.src, alt: panel.alt, width: panel.width, height: panel.height }}
+                />
+              ))}
+            </MangaGrid>
+          </section>
+
+          {/* ---- Chapter 04 ---- */}
+          <MirrorDivider text="TOOLS OF THE TRADE" />
+
+          <section className={styles.section} aria-labelledby="tools-heading">
+            <header className={styles.chapterHead}>
+              <p className={styles.chapterTag}>Chapter 04</p>
+              <h2 id="tools-heading">What I reach for</h2>
+              <p>
+                Grouped by what they&rsquo;re actually for, rather than ranked. No percentages — a bar
+                chart of my own ability would be a guess, and you can judge the work instead.
+              </p>
+            </header>
+
+            <div className={styles.toolGrid}>
+              {skillGroups.map((group) => {
+                const groupSkills = skills.filter((skill) => skill.group === group.key);
+                return (
+                  <section key={group.key} className={styles.toolGroup}>
+                    <h3>{group.label}</h3>
+                    <p className={styles.toolBlurb}>{group.blurb}</p>
+                    <ul className={styles.toolList}>
+                      {groupSkills.map((skill) => <li key={skill.name}>{skill.name}</li>)}
+                    </ul>
+                  </section>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* ---- Chapter 05 ---- */}
+          <MirrorDivider text="SAY HELLO" />
+
+          <section className={styles.section} aria-labelledby="connect-heading">
+            <header className={styles.chapterHead}>
+              <p className={styles.chapterTag}>{connect.chapter}</p>
+              <h2 id="connect-heading">{connect.heading}</h2>
+            </header>
+
+            <div className={styles.connect}>
+              <p>{connect.body}</p>
+              {publicSocialLinks.length > 0 && (
+                <ul className={styles.connectLinks}>
+                  {publicSocialLinks.map((link) => (
+                    <li key={link.label}>
+                      <a
+                        className={styles.connectLink}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
-                        {skill.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Social links */}
-        <section aria-labelledby="connect-heading" className="mx-auto max-w-3xl">
-          <h2
-            id="connect-heading"
-            className="mb-[var(--space-3)] font-[family-name:var(--font-display)] text-2xl text-[var(--color-ivory)]"
-          >
-            Connect
-          </h2>
-
-          <div className="flex flex-wrap gap-3">
-            {socialLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[rgb(201_174_120_/_15%)] bg-[rgb(9_11_16_/_50%)] px-4 py-2.5 text-[var(--color-text-muted)] no-underline transition-colors hover:border-[var(--color-antique-gold)] hover:text-[var(--color-ivory)]"
-              >
-                <SocialIcon icon={link.icon} />
-                {link.label}
-              </a>
-            ))}
-          </div>
-        </section>
-      </PageContainer>
+                        <SocialIcon icon={link.icon} />
+                        <span>
+                          {link.label}
+                          {link.note && <span className={styles.connectNote}>{link.note}</span>}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+        </div>
+      </AboutMotion>
     </main>
   );
 }

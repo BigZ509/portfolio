@@ -131,14 +131,14 @@ export function HomeIntro() {
       <div className={styles.footerRule} aria-hidden="true"><span>EST. IN CURIOSITY</span><span className={styles.footStar}>✦</span><span>SCROLL TO EXPLORE</span></div>
       <section className={styles.fieldNote} aria-labelledby="field-note-title">
         <div className={styles.fieldNoteCopy}>
-          <p className={styles.fieldLabel}>FROM THE FIELD / 02</p>
-          <h2 id="field-note-title">Ideas are meant to leave the page.</h2>
-          <p>From hands-on workshops to ambitious prototypes, I work where technical curiosity becomes something people can use.</p>
-          <Link href="/experience">Explore my experience <span aria-hidden="true">↗</span></Link>
+          <p className={styles.fieldLabel}>BEYOND THE EDITOR / 02</p>
+          <h2 id="field-note-title">Beyond the editor.</h2>
+          <p>From computer-vision experiments to workshops and hackathon prototypes, I&rsquo;m drawn to the moment an idea stops being code on a screen and becomes something people can actually use.</p>
+          <Link href="/about">Read my story <span aria-hidden="true">↗</span></Link>
         </div>
         <figure className={styles.fieldImage}>
-          <Image src="/images/home/workshop-ctoc.webp" alt="A student-led cybersecurity workshop with diagrams shown across two presentation screens." width={1152} height={1536} sizes="(max-width: 700px) 85vw, 30vw" />
-          <figcaption>A workshop in progress</figcaption>
+          <Image src="/images/home/workshop-ctoc.webp" alt="A system design workshop in the CTOC Labs room: students at tables watch two screens of system-design diagrams while a presenter points at one." width={1152} height={1536} sizes="(max-width: 700px) 85vw, 30vw" />
+          <figcaption>A system design workshop at CTOC Labs</figcaption>
         </figure>
       </section>
       <div className={styles.departureFog} aria-hidden="true" />

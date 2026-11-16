@@ -1,0 +1,74 @@
+/*
+ * Adapted from GarunJad/Anime-Portfolio @ a2700feea9e022a1f95b94d971e9956173265553
+ * Source: https://github.com/GarunJad/Anime-Portfolio  (style.css, .mirror-divider L703–731)
+ * Author: GarunJad
+ * Authorization: MIT (per README) + owner-held authorization, see docs/source-permissions.md
+ *
+ * Changes:
+ * - Ported from a global stylesheet into a scoped CSS Module.
+ * - Retokenized onto this project's fonts and twilight palette; the reflection picks up a violet
+ *   tint so it reads against the violet-and-gold identity rather than upstream's neutral white.
+ *
+ * Preserved verbatim: the reflected copy produced by `transform: scaleY(-1)`, the
+ * `mask-image: linear-gradient(to bottom, rgba(0,0,0,.6) 0%, transparent 80%)` fade (with the
+ * -webkit- prefix upstream carries), the 0.08 / 0.04 opacity pair, the clamp(3rem, 8vw, 6rem)
+ * type scale and the 10px letter-spacing.
+ */
+
+.divider {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: clamp(36px, 6vw, 60px) 0 clamp(24px, 4vw, 40px);
+  overflow: hidden;
+}
+
+.top,
+.bottom {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6rem);
+  letter-spacing: 10px;
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+}
+
+.top {
+  color: #f3ead7;
+  opacity: .1;
+}
+
+.bottom {
+  color: #c4aeff;
+  opacity: .06;
+  transform: scaleY(-1);
+  mask-image: linear-gradient(to bottom, rgb(0 0 0 / 60%) 0%, transparent 80%);
+  -webkit-mask-image: linear-gradient(to bottom, rgb(0 0 0 / 60%) 0%, transparent 80%);
+}
+
+/*
+ * Mobile. Upstream drops to a flat `font-size: 3rem`, which suits its short divider labels
+ * ("SUBJECT FILE", "FEATURED BATTLES"); ours run longer, so the size is responsive instead.
+ * Upstream's computed `white-space` is `normal` — verified against the running demo at the pinned
+ * SHA — so long labels wrap rather than clip, and this port matches that. (An earlier draft of
+ * this file added `white-space: nowrap`, which made "BEYOND THE SCREEN" render as "'OND THE SCRE"
+ * inside the `overflow: hidden` container on a phone. That was our bug, not upstream's.)
+ * Opacity lifts slightly so the smaller type stays legible.
+ */
+@media (max-width: 700px) {
+  .top,
+  .bottom {
+    font-size: clamp(1.5rem, 7.2vw, 3rem);
+    letter-spacing: 4px;
+  }
+
+  .top {
+    opacity: .14;
+  }
+
+  .bottom {
+    opacity: .08;
+  }
+}

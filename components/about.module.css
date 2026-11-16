@@ -1,0 +1,537 @@
+/*
+ * About page: the five chapters of MARC'S WORLD.
+ *
+ * Original styling for this project, carrying the homepage's violet-and-gold twilight into an
+ * editorial layout. The manga panel and mirror divider rules live in their own adapted modules
+ * (manga-panel.module.css, mirror-divider.module.css) with their upstream attribution.
+ */
+
+.page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* A lighter ground than the other routes: this chapter should not read as another dark dashboard. */
+.ground {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 72% 46% at 16% 4%, rgb(146 126 230 / 42%), transparent 70%),
+    radial-gradient(ellipse 56% 40% at 88% 22%, rgb(104 194 214 / 24%), transparent 72%),
+    radial-gradient(ellipse 64% 42% at 52% 98%, rgb(176 146 108 / 20%), transparent 74%),
+    linear-gradient(176deg, #2a3163 0%, #232a53 44%, #1b2142 100%);
+}
+
+.ground::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, 92vw);
+  margin: 0 auto;
+  padding: clamp(6rem, 10vw, 8.5rem) 0 clamp(4rem, 8vw, 7rem);
+}
+
+/* ---- Chapter 01 ---- */
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(260px, .85fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+
+.heroCopy {
+  position: relative;
+}
+
+.chapterTag {
+  display: inline-block;
+  margin: 0 0 1rem;
+  padding: 5px 12px;
+  border: 1px solid rgb(180 155 255 / 40%);
+  border-radius: 999px;
+  background: rgb(124 104 220 / 14%);
+  font-size: .64rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: #cdbcff;
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  margin: 0 0 1rem;
+  font-size: clamp(.6rem, .9vw, .74rem);
+  font-weight: 600;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: #f0d9a6;
+}
+
+.kicker::before {
+  content: "";
+  width: 30px;
+  height: 1px;
+  background: linear-gradient(90deg, #e0c48e, #b49bff);
+}
+
+.heroTitle {
+  margin: 0 0 1.6rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.8rem, 6.2vw, 5.4rem);
+  line-height: .95;
+  letter-spacing: -.035em;
+  color: #fdf7ea;
+  text-shadow: 0 3px 0 rgb(92 74 116 / 55%), 0 10px 26px rgb(8 10 22 / 55%), 0 0 70px rgb(180 155 255 / 26%);
+}
+
+.heroTitle span {
+  display: block;
+}
+
+.heroTitle span:nth-child(2) {
+  margin-left: clamp(.6rem, 2.4vw, 2.4rem);
+  color: #f2d6a0;
+}
+
+.lede {
+  max-width: 44ch;
+  margin: 0 0 1.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 1.7vw, 1.5rem);
+  line-height: 1.4;
+  color: #fbf5ea;
+}
+
+.body p {
+  max-width: 54ch;
+  margin: 0 0 1rem;
+  line-height: 1.75;
+  color: #d6dae6;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.4rem;
+  margin-top: 1.8rem;
+}
+
+.primaryAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.6rem;
+  padding: .9rem 1.1rem;
+  border: 1px solid #f3d49b;
+  background: linear-gradient(135deg, #e8c488, #c9a876);
+  color: #15121f;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 8px 30px rgb(6 8 18 / 45%), 0 0 42px rgb(226 192 128 / 26%);
+  transition: background .25s, transform .25s;
+}
+
+.primaryAction:hover {
+  background: linear-gradient(135deg, #f7e0ae, #dfbd87);
+  transform: translateY(-3px);
+}
+
+.secondaryAction {
+  padding: .5rem 0;
+  border-bottom: 1px solid #cdb189;
+  color: #f6ecd9;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.secondaryAction:hover {
+  color: #f3cf94;
+}
+
+/* Portrait with an energy backing, echoing the homepage frame. */
+.heroPhoto {
+  position: relative;
+  margin: 0;
+  justify-self: center;
+  width: 100%;
+  max-width: 390px;
+}
+
+.heroGlow {
+  position: absolute;
+  inset: -14% -12%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 45%, rgb(160 140 245 / 42%), rgb(122 219 234 / 12%) 52%, transparent 72%);
+  filter: blur(26px);
+}
+
+.heroFrame {
+  position: relative;
+  padding: 10px;
+  border: 1px solid #e2bb7c;
+  background: #191832;
+  box-shadow: inset 0 0 0 3px #1e2038, inset 0 0 0 4px #c4a473, 0 20px 50px rgb(6 8 18 / 55%), 0 0 46px rgb(150 130 230 / 24%);
+  overflow: hidden;
+}
+
+.heroImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: saturate(.98) contrast(1.05) brightness(1.08);
+}
+
+.heroCaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .7rem .2rem;
+  border-bottom: 1px solid #a98f67;
+  color: #d8c49c;
+  font-size: .62rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+/* ---- Chapter headers ---- */
+
+.chapterHead {
+  max-width: 62ch;
+  margin: 0 0 clamp(2rem, 4vw, 3rem);
+}
+
+.chapterHead h2 {
+  margin: .4rem 0 .9rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.02;
+  letter-spacing: -.02em;
+  color: #fbf3e2;
+}
+
+.chapterHead p {
+  margin: 0;
+  max-width: 56ch;
+  line-height: 1.7;
+  color: #d6dae6;
+}
+
+.section {
+  margin-top: clamp(1rem, 2vw, 2rem);
+}
+
+/* ---- Chapter 02: what I build ---- */
+
+.buildGrid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(14px, 1.8vw, 26px);
+  align-items: start;
+}
+
+.buildCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  padding: clamp(1.3rem, 2.2vw, 2rem);
+  border: 1px solid rgb(201 174 120 / 22%);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(165deg, rgb(32 36 70 / 88%), rgb(22 26 52 / 92%));
+  box-shadow: 0 18px 44px rgb(6 8 18 / 40%);
+  overflow: hidden;
+  transition: transform .4s, border-color .4s, box-shadow .4s;
+}
+
+.buildCard:hover {
+  transform: scale(.985);
+  border-color: rgb(226 187 124 / 60%);
+  box-shadow: 0 18px 44px rgb(6 8 18 / 50%), 0 0 40px rgb(146 128 224 / 22%);
+}
+
+/* Asymmetric placement: a wide opener, two mid cards, then an offset pair. */
+.buildCard:nth-child(1) { grid-column: span 7; }
+.buildCard:nth-child(2) { grid-column: span 5; margin-top: clamp(20px, 3vw, 48px); }
+.buildCard:nth-child(3) { grid-column: span 5; }
+.buildCard:nth-child(4) { grid-column: span 7; }
+.buildCard:nth-child(5) { grid-column: 4 / span 6; }
+
+.buildNumeral {
+  position: absolute;
+  top: -.4rem;
+  right: .6rem;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 5vw, 5rem);
+  line-height: 1;
+  color: rgb(255 255 255 / 5%);
+  pointer-events: none;
+  transition: color .4s, top .4s;
+}
+
+.buildCard:hover .buildNumeral {
+  top: -.8rem;
+  color: rgb(180 155 255 / 14%);
+}
+
+.discipline {
+  font-size: .66rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #e2c492;
+}
+
+.buildTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.1vw, 1.75rem);
+  line-height: 1.12;
+  color: #fbf3e2;
+}
+
+.buildDesc {
+  margin: 0;
+  max-width: 58ch;
+  line-height: 1.65;
+  color: #d6dae6;
+}
+
+.buildMedia {
+  margin: .4rem 0 0;
+  border: 1px solid rgb(201 174 120 / 26%);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  max-height: 260px;
+}
+
+.buildMedia img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: .2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tech li {
+  padding: 4px 9px;
+  border: 1px solid rgb(180 155 255 / 34%);
+  border-radius: 2px;
+  background: rgb(124 104 220 / 12%);
+  font-size: .68rem;
+  letter-spacing: .05em;
+  color: #cdbcff;
+}
+
+.flag {
+  align-self: flex-start;
+  padding: 3px 9px;
+  border: 1px solid rgb(122 219 234 / 45%);
+  border-radius: 999px;
+  background: rgb(80 170 190 / 14%);
+  font-size: .62rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #a8ebf6;
+}
+
+.cardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: .3rem;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #cdae79;
+  color: #eed5a2;
+  font-size: .72rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  align-self: flex-start;
+}
+
+.cardLink:hover {
+  color: #fbf3e2;
+  border-color: #fbf3e2;
+}
+
+/* ---- Chapter 04: tools ---- */
+
+.toolGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: clamp(16px, 2.2vw, 30px);
+}
+
+.toolGroup {
+  padding: clamp(1.2rem, 2vw, 1.8rem);
+  border: 1px solid rgb(201 174 120 / 18%);
+  border-left: 2px solid rgb(180 155 255 / 55%);
+  border-radius: var(--radius-sm);
+  background: rgb(26 30 58 / 62%);
+}
+
+.toolGroup h3 {
+  margin: 0 0 .35rem;
+  font-family: var(--font-display);
+  font-size: 1.22rem;
+  color: #fbf3e2;
+}
+
+.toolBlurb {
+  margin: 0 0 1rem;
+  font-size: .86rem;
+  line-height: 1.55;
+  color: #b9c0d2;
+}
+
+.toolList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.toolList li {
+  padding: 4px 10px;
+  border-bottom: 1px solid rgb(226 196 146 / 40%);
+  font-size: .82rem;
+  color: #ead9b8;
+}
+
+/* ---- Chapter 05: connect ---- */
+
+.connect {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, .7fr);
+  align-items: center;
+  gap: clamp(1.6rem, 4vw, 4rem);
+  margin-top: clamp(1rem, 3vw, 2rem);
+  padding: clamp(1.8rem, 3.6vw, 3rem);
+  border: 1px solid rgb(201 174 120 / 22%);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(ellipse 60% 70% at 12% 20%, rgb(146 128 224 / 20%), transparent 70%),
+    linear-gradient(150deg, rgb(32 36 70 / 86%), rgb(20 24 48 / 90%));
+}
+
+.connect p {
+  margin: 0;
+  max-width: 54ch;
+  font-size: 1.02rem;
+  line-height: 1.72;
+  color: #e2e6ef;
+}
+
+.connectLinks {
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.connectLink {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  padding: .85rem 1.1rem;
+  border: 1px solid rgb(201 174 120 / 28%);
+  border-radius: var(--radius-sm);
+  background: rgb(14 18 38 / 55%);
+  color: #f6ecd9;
+  text-decoration: none;
+  transition: border-color .25s, color .25s, transform .25s;
+}
+
+.connectLink:hover {
+  border-color: #e2bb7c;
+  color: #fbf3e2;
+  transform: translateY(-2px);
+}
+
+.connectNote {
+  display: block;
+  font-size: .72rem;
+  letter-spacing: .04em;
+  color: #a9b1c6;
+}
+
+@media (max-width: 1024px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .heroPhoto {
+    order: -1;
+    max-width: 330px;
+  }
+
+  .buildCard:nth-child(n) {
+    grid-column: span 6;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero {
+    gap: 2rem;
+  }
+
+  .heroPhoto {
+    max-width: 260px;
+  }
+
+  .buildCard:nth-child(n) {
+    grid-column: 1 / -1;
+  }
+
+  .connect {
+    grid-template-columns: 1fr;
+  }
+
+  .buildMedia {
+    max-height: 200px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buildCard,
+  .buildCard:hover,
+  .connectLink:hover,
+  .primaryAction:hover {
+    transition: none;
+    transform: none;
+  }
+}

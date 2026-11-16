@@ -22,9 +22,11 @@ export type HomeContent = {
 };
 
 export const home: HomeContent = {
-  ownerName: "Marc",
+  // The hero copy now introduces Marc by name, so a separate byline under the giant
+  // MARC'S WORLD heading would only repeat it. The field stays supported for future use.
+  ownerName: null,
   disciplines: ["Software", "AI", "Robotics"],
-  statement: "I build software, intelligent systems, and robots for the real world.",
+  statement: "Hey, I'm Marc. I study computer science at UCF, and I build things that bring software into the real world.",
   portrait: {
     src: "/images/home/graduation.webp",
     alt: "Marc in a black graduation cap and gown outside an arena.",

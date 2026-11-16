@@ -124,10 +124,18 @@ body {
   }
 }
 
-/* The homepage keeps all five destinations visible on a narrow opening scene. */
+/*
+ * Narrow screens keep all five destinations visible and drop the wordmark.
+ *
+ * This was previously scoped to the homepage via `body:has([data-phase])`. The longer MARC'S WORLD
+ * wordmark wraps to two lines on a phone and squeezes the link row, so on About, Experience,
+ * Projects and Resume the last destination ("Resume") was being pushed out of sight. The nav's own
+ * Home link already returns to the homepage, so the wordmark is the right thing to drop, and the
+ * rule now applies on every route rather than only the one that was checked.
+ */
 @media (max-width: 700px) {
-  body:has([data-phase]) nav[aria-label="Main navigation"] > div { padding-left: 10px; padding-right: 10px; }
-  body:has([data-phase]) nav[aria-label="Main navigation"] > div > a { display: none; }
-  body:has([data-phase]) nav[aria-label="Main navigation"] ul { width: 100%; justify-content: space-between; gap: 0; }
-  body:has([data-phase]) nav[aria-label="Main navigation"] li a { padding: 6px 5px; font-size: clamp(11px, 3.3vw, 13px); }
+  nav[aria-label="Main navigation"] > div { padding-left: 10px; padding-right: 10px; }
+  nav[aria-label="Main navigation"] > div > a { display: none; }
+  nav[aria-label="Main navigation"] ul { width: 100%; justify-content: space-between; gap: 0; }
+  nav[aria-label="Main navigation"] li a { padding: 6px 5px; font-size: clamp(11px, 3.3vw, 13px); }
 }

@@ -1,81 +1,102 @@
-import { AtmosphericBackground } from "@/components/atmospheric-background";
-import { DecorativeFrame } from "@/components/decorative-frame";
-import { PageContainer } from "@/components/page-container";
-import { SectionHeading } from "@/components/section-heading";
-import { experiences } from "@/data/experience";
+import Link from "next/link";
 import type { Metadata } from "next";
+import { MirrorDivider } from "@/components/mirror-divider";
+import { involvement, type InvolvementKind } from "@/data/experience";
+import styles from "@/components/experience.module.css";
 
 export const metadata: Metadata = {
   title: "Experience — MARC'S WORLD",
+  description: "Engineering work, hackathon projects and workshops — what Marc has actually built.",
+};
+
+const KIND_LABELS: Record<InvolvementKind, string> = {
+  project: "Project",
+  hackathon: "Hackathon",
+  workshop: "Workshop",
 };
 
 export default function ExperiencePage() {
   return (
-    <main className="relative isolate min-h-screen overflow-hidden pt-20 pb-[var(--space-5)] sm:pt-24 sm:pb-[var(--space-6)]">
-      <AtmosphericBackground />
-      <PageContainer>
-        <SectionHeading as="h1" className="mb-[var(--space-5)] text-center text-4xl sm:text-5xl">
-          Experience
-        </SectionHeading>
+    <main className={`${styles.page} min-h-screen`}>
+      <div className={styles.ground} aria-hidden="true" />
 
-        <div className="mx-auto max-w-3xl">
-          {/* Timeline */}
-          <ol className="relative border-l border-[rgb(201_174_120_/_20%)] pl-0 list-none">
-            {experiences.map((exp) => (
-              <li key={exp.id} className="mb-[var(--space-4)] ml-6 last:mb-0">
-                {/* Timeline dot */}
-                <span
-                  aria-hidden="true"
-                  className="absolute -left-[5px] mt-1.5 h-2.5 w-2.5 rounded-full border border-[var(--color-antique-gold)] bg-[var(--color-near-black)]"
-                />
-
-                <DecorativeFrame>
-                  <div className="mb-[var(--space-1)] flex flex-wrap items-baseline justify-between gap-2">
-                    <h2 className="font-[family-name:var(--font-display)] text-xl text-[var(--color-ivory)]">
-                      {exp.role}
-                    </h2>
-                    <span className="text-sm text-[var(--color-antique-gold)]">
-                      {exp.startDate}
-                      {exp.endDate ? ` — ${exp.endDate}` : " — Present"}
-                    </span>
-                  </div>
-
-                  <p className="mb-[var(--space-2)] text-sm text-[var(--color-text-muted)]">
-                    {exp.organization}
-                    {exp.location ? ` · ${exp.location}` : ""}
-                  </p>
-
-                  <p className="leading-relaxed text-[var(--color-text-muted)]">
-                    {exp.description}
-                  </p>
-
-                  {exp.highlights && exp.highlights.length > 0 && (
-                    <ul className="mt-[var(--space-2)] list-none space-y-1 pl-0">
-                      {exp.highlights.map((highlight) => (
-                        <li
-                          key={highlight}
-                          className="flex items-start gap-2 text-sm text-[var(--color-text-muted)]"
-                        >
-                          <span
-                            aria-hidden="true"
-                            className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[var(--color-antique-gold)]"
-                          />
-                          {highlight}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </DecorativeFrame>
-              </li>
-            ))}
-          </ol>
-
-          {/* Note about placeholder */}
-          <p className="mt-[var(--space-4)] text-center text-sm text-[var(--color-text-muted)] italic">
-            Experience details are being finalized and will be updated with verified information.
+      <div className={styles.inner}>
+        <header className={styles.head}>
+          <p className={styles.kicker}>Marc&rsquo;s World</p>
+          <h1 className={styles.title}>
+            <span>What I&rsquo;ve</span>
+            <span>worked on</span>
+          </h1>
+          <p className={styles.lede}>
+            I&rsquo;m a computer science student, so this is a record of engineering work rather than
+            an employment history: the projects I&rsquo;ve built, the hackathon I shipped under
+            pressure, and the rooms I&rsquo;ve learned in. Everything here is something that exists.
           </p>
-        </div>
-      </PageContainer>
+        </header>
+
+        <MirrorDivider text="THE RECORD" />
+
+        <ol className={styles.list}>
+          {involvement.map((entry) => (
+            <li key={entry.id} className={styles.item}>
+              <div className={styles.marker} aria-hidden="true">
+                <span className={styles.dot} />
+              </div>
+
+              <article className={styles.card}>
+                <div className={styles.cardHead}>
+                  <span className={styles.kind} data-kind={entry.kind}>{KIND_LABELS[entry.kind]}</span>
+                  {entry.status === "in-development" && (
+                    <span className={styles.flag}>In development</span>
+                  )}
+                  {entry.period && <span className={styles.period}>{entry.period}</span>}
+                </div>
+
+                <h2 className={styles.cardTitle}>{entry.title}</h2>
+                <p className={styles.context}>{entry.context}</p>
+                <p className={styles.summary}>{entry.summary}</p>
+
+                {entry.highlights && entry.highlights.length > 0 && (
+                  <ul className={styles.highlights}>
+                    {entry.highlights.map((highlight) => (
+                      <li key={highlight}>{highlight}</li>
+                    ))}
+                  </ul>
+                )}
+
+                {entry.technologies && entry.technologies.length > 0 && (
+                  <ul className={styles.tech}>
+                    {entry.technologies.map((tech) => <li key={tech}>{tech}</li>)}
+                  </ul>
+                )}
+
+                {entry.projectSlug && (
+                  <Link className={styles.cardLink} href="/projects">
+                    Open it in the showcase
+                    <span aria-hidden="true">↗</span>
+                  </Link>
+                )}
+              </article>
+            </li>
+          ))}
+        </ol>
+
+        <aside className={styles.closing}>
+          <p>
+            Looking for something specific, or wondering how one of these was put together? The
+            projects showcase goes deeper, and I&rsquo;m happy to talk through any of it.
+          </p>
+          <div className={styles.closingActions}>
+            <Link className={styles.primaryAction} href="/projects">
+              <span>Browse the projects</span>
+              <span aria-hidden="true">↗</span>
+            </Link>
+            <Link className={styles.secondaryAction} href="/about">
+              More about me <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        </aside>
+      </div>
     </main>
   );
 }

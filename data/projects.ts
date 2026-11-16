@@ -88,7 +88,7 @@ const projectRecords: readonly Project[] = [
     romanNumeral: "0", // The Fool is traditionally numbered 0, not a Roman numeral.
     motif: "threshold",
     shortDescription: "An AI-assisted mobile app for practicing public speaking and communication, with speech transcription and feedback.",
-    detailedDescription: "SpeakLab AI pairs a React Native and Expo mobile app with a Node.js, Express, and TypeScript backend. Firebase Authentication and Firestore support user accounts and session data. Sessions can be created and retrieved with user-ownership checks; Whisper transcription feeds speech metrics and filler-word analysis.",
+    detailedDescription: "SpeakLab AI pairs a React Native and Expo mobile app with a Node.js, Express, and TypeScript backend. Firebase Authentication and Firestore back user accounts and session data, with ownership checks on every session read. Whisper transcription feeds speech metrics and filler-word analysis.",
     technologies: ["React Native", "Expo", "Node.js", "Express", "TypeScript", "Firebase Authentication", "Cloud Firestore", "Whisper"],
     category: "AI communication",
     status: "to-confirm",
@@ -101,7 +101,7 @@ const projectRecords: readonly Project[] = [
     romanNumeral: "XXI",
     motif: "orbit",
     shortDescription: "An in-development four-wheel delivery rover designed in Autodesk Fusion, with a removable cargo tray and camera mast.",
-    detailedDescription: "The rover is a mechanical design project for a four-wheel delivery platform. A Raspberry Pi 4, ESP32, LiDAR, and webcam integration are planned; physical assembly and autonomous navigation are not confirmed as complete.",
+    detailedDescription: "A mechanical design project for a four-wheel delivery platform, modelled in Autodesk Fusion with a removable cargo tray and camera mast. The design is the part that exists today: Raspberry Pi 4, ESP32, LiDAR and webcam integration are planned, and the rover has not been assembled or driven.",
     technologies: ["Autodesk Fusion", "Raspberry Pi 4 (planned)", "ESP32 (planned)", "LiDAR (planned)", "Webcam (planned)"],
     category: "Robotics and mechanical design",
     status: "in-development",
@@ -127,7 +127,10 @@ const projectRecords: readonly Project[] = [
     romanNumeral: "XI",
     motif: "balance",
     shortDescription: "A hackathon project for classifying road-hazard descriptions with weighted phrase rules.",
-    detailedDescription: "The classifier scores phrase matches to assign hazard categories and asks for clarification when reports are ambiguous or outside the road-hazard domain. The repository includes report models for coordinates, Google Place IDs, and incident IDs, alongside a map-based interface. Geohash-based deduplication was mentioned in the project brief but was not verified in the inspected repository.",
+    // Internal note (not shown publicly): geohash-based deduplication was mentioned in the project
+    // brief but was NOT verified in the inspected repository, so it is deliberately absent from the
+    // description below. Confirm with the owner before claiming it.
+    detailedDescription: "The classifier scores phrase matches to assign hazard categories and asks for clarification when reports are ambiguous or outside the road-hazard domain. The repository includes report models for coordinates, Google Place IDs, and incident IDs, alongside a map-based interface.",
     technologies: ["Next.js", "React", "TypeScript", "MapLibre GL", "PostgreSQL"],
     category: "Civic technology and geospatial applications",
     status: "to-confirm",
@@ -158,7 +161,9 @@ const projectRecords: readonly Project[] = [
     romanNumeral: "XVII",
     motif: "star",
     shortDescription: "A gamified productivity web app centered on tasks, guilds, leaderboards, and Pomodoro sessions.",
-    detailedDescription: "ZBXP is built with a React and JavaScript frontend. Its described feature areas include authentication, guilds, leaderboards, tasks, and Pomodoro functionality; the completion status of individual features and the backend technologies have not been confirmed.",
+    // Internal note (not shown publicly): per-feature completion status and the backend stack are
+    // unconfirmed. The description below therefore describes scope, not finished functionality.
+    detailedDescription: "A gamified productivity web app with a React and JavaScript frontend, built around tasks, guilds, leaderboards and Pomodoro sessions.",
     technologies: ["React", "JavaScript"],
     category: "Productivity software",
     status: "to-confirm",

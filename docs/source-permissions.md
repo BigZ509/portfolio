@@ -93,11 +93,30 @@ generated for this project.
 
 ## 5. Status
 
-| Source | Basis | Record complete? |
-|---|---|---|
-| `jjk-domain-expansion` | Owner-held authorization (asserted 2026-11-16) | No — §1 specifics outstanding |
-| `Cursed-Energy` | Owner-held authorization (asserted 2026-11-16) | No — §2 specifics outstanding |
-| `Anime-Portfolio` | README MIT grant + owner-held authorization | Partly — canonical notice outstanding |
+| Source | Basis | In use? | Record complete? |
+|---|---|---|---|
+| `jjk-domain-expansion` | Owner-held authorization (asserted 2026-11-16) | Not yet — Phases 2–4 | No — §1 specifics outstanding |
+| `Cursed-Energy` | Owner-held authorization (asserted 2026-11-16) | Not yet — Phases 2–4 | No — §2 specifics outstanding |
+| `Anime-Portfolio` | README MIT grant + owner-held authorization | **Yes, since Phase 5** | Partly — canonical notice outstanding |
 
-The outstanding items above do not block Phase 1, which touches no third-party code. They should be
-completed before the adapted code from sources 1 and 2 is published.
+The outstanding items for sources 1 and 2 do not block Phases 1 or 5, neither of which uses their
+code. They should be completed before any adapted code from those two sources is published.
+
+## 6. Phase 5 usage record (`Anime-Portfolio`)
+
+As of Phase 5 this repository ships code adapted from `Anime-Portfolio`, relying on the README MIT
+grant quoted in §3. The adapted files are listed in `docs/source-audit.md` under "MARC'S WORLD —
+adapted source register", each carrying the attribution header required by the plan's §2.1:
+
+- `components/manga-panel.module.css`, `components/manga-panel.tsx`
+- `components/mirror-divider.module.css`, `components/mirror-divider.tsx`
+- `components/about-motion.tsx`
+
+No upstream media, fonts, CDN scripts or global stylesheets were copied. The upstream demo was run
+locally for the appearance comparison recorded in `docs/fidelity-notes.md`; those captures were kept
+outside this repository because the demo renders third-party anime artwork.
+
+**Still outstanding for this source:** the canonical MIT copyright line. The upstream repository has
+no `LICENSE` file and no copyright notice, so our headers name `GarunJad` as the holder and cite the
+README grant plus the pinned SHA as the licence's source. Ask the author to add a `LICENSE` file, or
+supply the copyright line, so the notice can be reproduced exactly as MIT requires.

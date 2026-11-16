@@ -25,3 +25,33 @@ The actual route transition is `components/ui/page-transition/page-transition.ts
 ## Performance and accessibility findings
 
 The carousel runs its own RAF and full-DPR renderer (`components/projects/project-slider.tsx:341-346`, `components/projects/project-slider.tsx:2185-2191`), which risks high GPU load on phones. It has explicit disposal (`components/projects/project-slider.tsx:2210-2268`), but the audited files show no context-loss handler. Texture loading defers content and has an asset safety timer (`components/projects/project-slider.tsx:363-445`); video textures switch only after playback (`components/projects/project-slider.tsx:485-536`). Silent autoplay uses `muted` and `playsInline` on landing (`app/page.tsx:294-305`). Safari gets HEVC alpha and a simpler landing mask (`components/ui/alpha-video.tsx:14-52`, `components/landing/ink-mask-svg.tsx:27-48`). Lite removes many videos/intro effects but retains the WebGL carousel (`app/projects/page.tsx:116-126`, `components/projects/project-slider.tsx:325-346`). A targeted search of landing/projects/ui found no `prefers-reduced-motion` implementation; reduced motion must be designed explicitly. Canvas raycasting and global key handling (`components/projects/project-slider.tsx:138-166`, `components/projects/project-slider.tsx:861-1079`) require semantic card controls, focus states and screen-reader labels in AFTERIMAGE. Verify behavior in Safari/iOS, low-memory Android, keyboard-only, and motion-reduced settings before launch; source inspection alone cannot confirm runtime performance.
+
+---
+
+# MARC'S WORLD — adapted source register
+
+Added in Phase 5. This section tracks files in this repository that adapt third-party source, as
+required by `docs/marcs-world-jjk-integration-plan.md` §2.1. Authorization basis for each upstream
+project is recorded in `docs/source-permissions.md`; appearance comparisons are in
+`docs/fidelity-notes.md`.
+
+## GarunJad/Anime-Portfolio @ `a2700feea9e022a1f95b94d971e9956173265553`
+
+Basis: MIT stated in the upstream README (no `LICENSE` file is present in the repository), together
+with the owner-held authorization recorded in `docs/source-permissions.md` §3.
+
+| This repository | Upstream origin | What was taken |
+|---|---|---|
+| `components/manga-panel.module.css` | `style.css` L1136–1312 | `.manga-grid`, `.manga-panel` and its hover scale, `.panel-img` (120% height, −10% top, 1.05 hover scale), `.panel-overlay` gradient pair, `.panel-content`, `.panel-label`, `.panel-number`, `.panel-title`, `.panel-desc`, `.panel-tech`, `.panel-link` |
+| `components/manga-panel.tsx` | `index.html` L330–386 | The `.manga-panel > (.panel-img, .panel-overlay, .panel-content …)` element structure and stacking order |
+| `components/mirror-divider.module.css` | `style.css` L703–731 | `.mirror-divider`, `.mirror-text-top`, `.mirror-text-bot` — the `scaleY(-1)` reflection and its `mask-image` fade |
+| `components/mirror-divider.tsx` | `index.html` L161–165 | The two-span divider structure |
+| `components/about-motion.tsx` | `script.js` L140–153, L195–215, L274–311 | `initHeroAnimations()`, `initMirrorDividers()`, `initMangaPanels()` — all timings, eases, staggers, the panel direction table, the `top 85%` / `toggleActions` trigger and the scrubbed `y: -25` image parallax |
+
+Not taken: every `images/goku-*.jpg` (third-party anime artwork), the Lucide CDN script, the GSAP
+CDN script tags, upstream's global stylesheet and CSS variables, and the remaining ~20 `init*`
+functions (`initPreloader`, `initCursor`, `initParticles`, `initCounters`, `initSkillBars`,
+`initSideDots`, `initParallax`, `initDividerAnimation`, …).
+
+Dependency added: `gsap@3.15.1` (exact pin), which ships ScrollTrigger and its TypeScript types in
+the free standard package. Imported as an ES module; no CDN script tags were introduced.
