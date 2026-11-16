@@ -1,0 +1,17 @@
+# Runtime dependency map
+
+Paths are relative to `reference/daniel-portfolio`; arrows denote imports or rendered child components, not proposed code reuse. Exact entry imports are at the cited lines. Dynamic imports and public asset lookups are marked.
+
+| Entry | Traced runtime chain | Data / browser dependency |
+|---|---|---|
+| `app/layout.tsx:1-9,82-85` | `Navbar` → Radix NavigationMenu, mode/transition hooks; `PerformanceModeProvider` → `PageTransition` → transition context, mask, constants, `svg-utils` | localStorage; Next router/pathname; `StreamWarmup`, `CasinoPrefetch`, Analytics also mount globally |
+| `app/page.tsx:3-13,255-317` | `ModeSelector` → option card/helper/decorations; `InkMaskSvg` → SVG animation utilities; `NameDisplay` → wedding-day font; `TreeOverlays` → `AlphaVideo`; `SocialLinks` → `data/social-links`; `useMobile`, `useBodyOverflow` | Landing plates, alpha videos, stills; GSAP; video/RAF; transition `signalReady`/`onIntroStart` (`app/page.tsx:127-241`) |
+| `app/projects/page.tsx:3-24,26-35` | normal: `ProjectsCarousel` → dynamic `ProjectSlider`, `ProjectInfoPanel`, `IntroVideo`, `BackgroundVideos`, `TransitionFlash`, `LoadingContent`; query `?v3` → dynamic `components/projects/manga/projects-manga` | `data/projects` → slider and panel; `lib/layout-config`, `lib/animation-utils`; mode/transition context |
+| `components/projects/project-slider.tsx:3-16` | Three.js renderer → `lib/carousel-helpers` geometry/shader → textures; `lib/carousel-animation` → `data/projects.animationConstants`; `lib/animation-utils` | canvas events, RAF, ResizeObserver, TextureLoader, VideoTexture; project URLs and scene options (`data/projects.ts:18-120`) |
+| `app/about/page.tsx:3-13` | `BackgroundLayers`, `MobileBackground`, `TechStack` → `TechBadge`; `SocialLinksImages` → `data/social-links`; font and SVG utilities | About images/videos, stills, `data/tech-stack`; mode/transition hooks |
+| `app/experience/page.tsx:3-8` | `components/experience/index` → `BackgroundVideo`, `ExperienceHeader`, `ExperienceList`, `SocialLinks`; list → billboard card | `data/experience`; GSAP; experience videos/images and logos |
+| `app/resume/page.tsx:3-19` | `preload-casino` → dynamic casino scene; `stream-config` → dynamic `stream-session`; intro video; Lite/video branch | AWS/stream and complex casino 3D graph; separate optional system, not needed for initial AFTERIMAGE portfolio |
+
+Transition sequence: `Navbar` or captured internal anchor → `navigateWithTransition` / `startNavigation` (`components/ui/page-transition/page-transition.tsx:200-262,379-439`) → cover SVG → 930ms delayed `router.push` → pathname effect sets loading (`components/ui/page-transition/page-transition.tsx:295-307`) → route calls `signalReady` (landing `app/page.tsx:127-212`, projects `app/projects/page.tsx:105-126`) → minimum 250ms → reveal SVG and intro callback → hidden after 3700ms (`components/ui/page-transition/page-transition.tsx:102-127`; constants `components/ui/page-transition/constants.ts:1-5`). Resume prewarming is a special transition dependency (`components/ui/page-transition/page-transition.tsx:12-24`). Lite bypasses cover/reveal (`components/ui/page-transition/page-transition.tsx:207-229`).
+
+Boundary: route imports alone do not include the `?v3` experiment or all casino internals in the default projects route; dynamic imports keep those graphs separate. This map follows inspected imports and rendering branches, but does not claim a built bundle graph.

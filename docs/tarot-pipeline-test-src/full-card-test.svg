@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900">
+  <!-- Original pipeline test illustration (AFTERIMAGE Phase 5A). Not project artwork. -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a1f4a"/><stop offset="0.6" stop-color="#5b3a6e"/><stop offset="1" stop-color="#c47a5a"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="900" fill="url(#sky)"/>
+  <circle cx="300" cy="380" r="120" fill="#f2c46d"/>
+  <path d="M0 560 Q150 470 300 540 T600 520 V900 H0Z" fill="#3b2c5c"/>
+  <path d="M0 640 Q200 560 380 640 T600 620 V900 H0Z" fill="#251b3d"/>
+  <path d="M0 730 Q180 680 330 730 T600 720 V900 H0Z" fill="#140f24"/>
+  <!-- Built-in border and text: must NOT be duplicated by the renderer. -->
+  <rect x="10" y="10" width="580" height="880" fill="none" stroke="#7fd4c1" stroke-width="8"/>
+  <rect x="30" y="30" width="540" height="840" fill="none" stroke="#7fd4c1" stroke-width="2"/>
+  <text x="300" y="92" text-anchor="middle" font-family="Georgia, serif" font-size="40" fill="#7fd4c1" letter-spacing="6">PIPELINE TEST</text>
+  <text x="300" y="830" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#e8f4f1">FULL-CARD · 600×900</text>
+  <!-- Proportion check: this circle must stay round; corner squares must stay fully visible. -->
+  <circle cx="300" cy="380" r="150" fill="none" stroke="#7fd4c1" stroke-width="3" stroke-dasharray="10 8"/>
+  <rect x="0" y="0" width="22" height="22" fill="#ff5d73"/><rect x="578" y="0" width="22" height="22" fill="#ff5d73"/>
+  <rect x="0" y="878" width="22" height="22" fill="#ff5d73"/><rect x="578" y="878" width="22" height="22" fill="#ff5d73"/>
+</svg>

@@ -1,0 +1,212 @@
+.gallery {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 28%;
+  display: grid;
+  width: 68%;
+  justify-items: center;
+  gap: clamp(0.55rem, 2vh, 1rem);
+  transform: translateY(-50%);
+}
+
+.stack {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: clamp(0.45rem, 1.4vw, 1rem);
+  border: 1px solid rgb(201 174 120 / 74%);
+  background: linear-gradient(145deg, rgb(36 41 50 / 96%), rgb(11 14 20 / 98%));
+  box-shadow:
+    0 0 0 4px rgb(9 11 16 / 92%),
+    0 0 0 5px rgb(201 174 120 / 37%),
+    0 20px 70px rgb(0 0 0 / 58%),
+    inset 0 0 28px rgb(201 174 120 / 5%);
+}
+
+.stack::before,
+.stack::after {
+  position: absolute;
+  z-index: 2;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-color: #d3b879;
+  content: "";
+  pointer-events: none;
+}
+
+.stack::before {
+  top: 0.25rem;
+  left: 0.25rem;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.stack::after {
+  right: 0.25rem;
+  bottom: 0.25rem;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.backFrame {
+  position: absolute;
+  inset: -0.55rem 0.55rem 0.55rem -0.55rem;
+  border: 1px solid rgb(201 174 120 / 35%);
+  background: rgb(9 11 16 / 32%);
+  transform: rotate(-1.1deg);
+}
+
+.stack[data-has-screenshots="true"] .backFrame {
+  animation: frame-float 13s ease-in-out infinite alternate;
+}
+
+.frame {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: clamp(0.3rem, 0.8vw, 0.6rem);
+  border: 1px solid rgb(201 174 120 / 38%);
+  background: #0a0c12;
+}
+
+.imageWindow {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #10141c;
+}
+
+.screenshot {
+  object-fit: contain;
+}
+
+.placeholder {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  height: 100%;
+  place-content: center;
+  justify-items: center;
+  gap: 0.65rem;
+  border: 1px solid rgb(201 174 120 / 32%);
+  background:
+    radial-gradient(ellipse at 50% 42%, rgb(137 128 166 / 14%), transparent 57%),
+    linear-gradient(140deg, #171b24, #0b0e14);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.placeholder p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+}
+
+.placeholderMark {
+  color: var(--color-antique-gold);
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  opacity: 0.7;
+}
+
+.controls {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  color: var(--color-ivory);
+  text-shadow: 0 1px 5px #090b10;
+}
+
+.controls p,
+.singleCaption {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.control {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgb(201 174 120 / 72%);
+  border-radius: 50%;
+  background: rgb(9 11 16 / 88%);
+  color: var(--color-antique-gold);
+  cursor: pointer;
+}
+
+.control:hover {
+  background: #25232a;
+}
+
+.control svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.singleCaption {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes frame-float {
+  from { transform: rotate(-1.1deg) translate3d(0, -2px, 0); }
+  to { transform: rotate(-0.4deg) translate3d(0, 2px, 0); }
+}
+
+@media (max-width: 700px) {
+  .gallery {
+    top: 48%;
+    left: 25%;
+    width: 72%;
+    gap: 0.4rem;
+  }
+
+  .stack {
+    padding: 0.4rem;
+    box-shadow:
+      0 0 0 3px rgb(9 11 16 / 92%),
+      0 0 0 4px rgb(201 174 120 / 37%),
+      0 12px 40px rgb(0 0 0 / 56%);
+  }
+
+  .stack::before,
+  .stack::after {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
+  .controls {
+    gap: 0.55rem;
+  }
+
+  .control {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .controls p,
+  .singleCaption {
+    font-size: 0.72rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stack[data-has-screenshots="true"] .backFrame {
+    animation: none;
+  }
+}

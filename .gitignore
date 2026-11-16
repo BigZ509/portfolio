@@ -1,0 +1,10 @@
+reference/
+node_modules/
+.next/
+*.tsbuildinfo
+.env*
+!.env.example
+.DS_Store
+
+# Agent phase reports
+docs/phase-*-report.md
