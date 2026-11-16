@@ -20,7 +20,8 @@ function CardSymbol({ motif }: { motif: CardMotif }) {
 
 const SIZES = "(max-width: 640px) 90vw, (max-width: 1280px) 45vw, 30vw";
 
-export function TarotCard({ project }: { project: Project }) {
+/** `compact`: type and spacing scale with the card's own width (for small emblem placements). */
+export function TarotCard({ project, compact = false }: { project: Project; compact?: boolean }) {
   // A missing or broken illustration falls back to the original geometric card.
   const [artworkFailed, setArtworkFailed] = useState(false);
   const artwork = artworkFailed ? undefined : project.cardArtwork;
@@ -29,7 +30,7 @@ export function TarotCard({ project }: { project: Project }) {
   if (artwork?.layout === "full-card") {
     // The illustration carries its own border, numeral and name; only screen-reader text is added.
     return (
-      <article className={`${styles.card} ${styles.fullArt}`} aria-label={label} data-artwork="full-card">
+      <article className={`${styles.card} ${styles.fullArt}`} aria-label={label} data-artwork="full-card" data-compact={compact || undefined}>
         <Image
           src={artwork.src}
           alt={artwork.alt}
@@ -50,7 +51,7 @@ export function TarotCard({ project }: { project: Project }) {
   }
 
   return (
-    <article className={styles.card} aria-label={label} data-artwork={artwork ? "panel" : "geometric"}>
+    <article className={styles.card} aria-label={label} data-artwork={artwork ? "panel" : "geometric"} data-compact={compact || undefined}>
       <div className={styles.inner}>
         <div className={styles.number} aria-label={`Card number ${project.romanNumeral}`}>
           {project.romanNumeral}

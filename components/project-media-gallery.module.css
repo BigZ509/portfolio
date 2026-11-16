@@ -1,0 +1,361 @@
+/* Lives inside the showcase stage, which is a size container: cq units are relative to the stage. */
+.gallery {
+  position: absolute;
+  z-index: 3;
+  inset: 5cqh 4cqw 4cqh 25cqw;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  justify-items: center;
+  align-items: center;
+  gap: 1.6cqh;
+}
+
+/* Mouse parallax (variables set on the stage) moves the whole media composition slightly. */
+.scene {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  transform: translate3d(var(--parallax-media-x, 0px), var(--parallax-media-y, 0px), 0);
+  transition: transform 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.figure {
+  --frame-h: min(66cqh, calc(46cqw / var(--media-ratio)));
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 0.9cqh;
+  margin: 0;
+}
+
+.float {
+  animation: media-float 9s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Gilt frame sized to the media's true aspect ratio (never cropped or stretched). */
+.frame {
+  position: relative;
+  box-sizing: content-box;
+  width: calc(var(--frame-h) * var(--media-ratio));
+  height: var(--frame-h);
+  padding: 0.55rem;
+  border: 1px solid #c9ae78;
+  background: #07090d;
+  box-shadow:
+    0 0 0 5px #0b0e14,
+    0 0 0 6px rgb(201 174 120 / 45%),
+    0 0 46px rgb(201 174 120 / 16%),
+    0 30px 80px rgb(0 0 0 / 65%);
+}
+
+.frame::before,
+.frame::after {
+  position: absolute;
+  z-index: 2;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1px solid #e0c78e;
+  content: "";
+  pointer-events: none;
+}
+
+.frame::before {
+  top: -0.65rem;
+  left: -0.65rem;
+  border-right: 0;
+  border-bottom: 0;
+  box-shadow: inset 4px 4px 0 -3px rgb(201 174 120 / 55%);
+}
+
+.frame::after {
+  right: -0.65rem;
+  bottom: -0.65rem;
+  border-top: 0;
+  border-left: 0;
+  box-shadow: inset -4px -4px 0 -3px rgb(201 174 120 / 55%);
+}
+
+.media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #0d1017;
+}
+
+/* Depth layer: the next item, smaller and dimmer, floating behind and to the right. */
+.backFrame {
+  --back-h: min(52cqh, calc(34cqw / var(--media-ratio)));
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--back-h) * var(--media-ratio));
+  height: var(--back-h);
+  padding: 0.4rem;
+  border: 1px solid rgb(201 174 120 / 40%);
+  background: #07090d;
+  opacity: 0.42;
+  filter: saturate(0.45) brightness(0.7);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 60%);
+  animation: back-float 12s ease-in-out infinite alternate;
+  transform: translate3d(-8%, -56%, 0) rotate(4deg);
+  will-change: transform;
+}
+
+.backGlyph {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: var(--color-antique-gold);
+  font-size: 2rem;
+}
+
+.caption {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  color: var(--color-antique-gold);
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+  letter-spacing: 0.06em;
+  text-shadow: 0 1px 8px #05070b;
+}
+
+.captionText::before,
+.captionText::after {
+  margin: 0 0.55rem;
+  color: rgb(201 174 120 / 60%);
+  content: "◆";
+  font-size: 0.55em;
+  vertical-align: 0.25em;
+}
+
+.counter {
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.arrow {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgb(201 174 120 / 70%);
+  border-radius: 50%;
+  background: rgb(9 11 16 / 85%);
+  color: var(--color-antique-gold);
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.arrow:hover {
+  background: rgb(201 174 120 / 14%);
+}
+
+.arrow svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.thumbs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.thumb {
+  position: relative;
+  display: grid;
+  width: 2.75rem;
+  height: 3.5rem;
+  place-items: center;
+  padding: 2px;
+  border: 1px solid rgb(201 174 120 / 35%);
+  background: #07090d;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 160ms ease, border-color 160ms ease;
+}
+
+.thumb:hover,
+.thumb[aria-current="true"] {
+  border-color: var(--color-antique-gold);
+  opacity: 1;
+}
+
+.thumb[aria-current="true"] {
+  box-shadow: 0 0 14px rgb(201 174 120 / 35%);
+}
+
+.thumbImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.thumbBadge {
+  position: absolute;
+  inset: auto 0.2rem 0.2rem auto;
+  color: var(--color-antique-gold);
+  font-size: 0.7rem;
+}
+
+/* Video: the player and its frame stay completely still while playing. */
+.videoWrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.playButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 4.25rem;
+  height: 4.25rem;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--color-antique-gold);
+  border-radius: 50%;
+  background: rgb(9 11 16 / 78%);
+  color: var(--color-antique-gold);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+.playButton svg {
+  width: 1.8rem;
+  height: 1.8rem;
+  margin-left: 0.2rem;
+  fill: currentColor;
+}
+
+.gallery[data-playing="true"] .scene,
+.gallery[data-playing="true"] .float {
+  transform: none;
+  animation: none;
+}
+
+.mediaMessage,
+.empty {
+  display: grid;
+  height: 100%;
+  place-content: center;
+  justify-items: center;
+  gap: 0.6rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  text-align: center;
+}
+
+.empty {
+  width: min(52cqw, 70cqh);
+  height: auto;
+  aspect-ratio: 16 / 10;
+  border: 1px solid rgb(201 174 120 / 40%);
+  background: rgb(9 11 16 / 72%);
+  box-shadow: 0 0 0 5px rgb(9 11 16 / 70%), 0 0 0 6px rgb(201 174 120 / 22%);
+}
+
+.empty p,
+.mediaMessage p {
+  margin: 0;
+}
+
+.emptyMark {
+  color: var(--color-antique-gold);
+  font-size: 1.8rem;
+  opacity: 0.7;
+}
+
+@keyframes media-float {
+  from { transform: translate3d(0, -0.45cqh, 0) rotate(-0.25deg); }
+  to { transform: translate3d(0, 0.45cqh, 0) rotate(0.25deg); }
+}
+
+@keyframes back-float {
+  from { transform: translate3d(-8%, -57%, 0) rotate(4.4deg); }
+  to { transform: translate3d(-6%, -54%, 0) rotate(3.4deg); }
+}
+
+@media (max-width: 700px) {
+  .gallery {
+    inset: 2.5cqh 4cqw 4cqh;
+    gap: 0.8cqh;
+  }
+
+  .figure {
+    --frame-h: min(52cqh, calc(70cqw / var(--media-ratio)));
+  }
+
+  .frame {
+    padding: 0.35rem;
+  }
+
+  .frame::before,
+  .frame::after {
+    width: 1rem;
+    height: 1rem;
+    top: auto;
+  }
+
+  .frame::before {
+    top: -0.45rem;
+    left: -0.45rem;
+  }
+
+  .frame::after {
+    right: -0.45rem;
+    bottom: -0.45rem;
+  }
+
+  .backFrame {
+    --back-h: min(44cqh, calc(46cqw / var(--media-ratio)));
+  }
+
+  .caption {
+    font-size: 0.85rem;
+  }
+
+  .thumb {
+    width: 2.25rem;
+    height: 2.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene,
+  .float,
+  .backFrame {
+    animation: none;
+    transition: none;
+  }
+
+  .float,
+  .scene {
+    transform: none;
+  }
+}

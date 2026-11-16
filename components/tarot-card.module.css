@@ -90,3 +90,39 @@
   color: var(--color-text-muted);
   font-size: 0.8rem;
 }
+
+/* Compact variant: sizes follow the card's width, so small placements keep the full-size proportions. */
+.card[data-compact] {
+  container-type: inline-size;
+  padding: 2.4cqi;
+}
+
+.card[data-compact] .inner {
+  padding: 6cqi;
+}
+
+.card[data-compact] .number {
+  font-size: 7cqi;
+}
+
+.card[data-compact] .artwork {
+  margin-block: 5cqi;
+}
+
+.card[data-compact] .symbol {
+  width: 62%;
+}
+
+.card[data-compact] .identity {
+  font-size: 11.5cqi;
+}
+
+.card[data-compact] .title {
+  margin-top: 2.5cqi;
+  font-size: 6.4cqi;
+}
+
+.card[data-compact] .status {
+  margin-top: 2cqi;
+  font-size: 5cqi;
+}

@@ -35,6 +35,31 @@ export interface CardArtwork extends ProjectImage {
   layout: CardArtworkLayout;
 }
 
+/** Project screenshot. Intrinsic size keeps the gallery frame at the image's true aspect ratio. */
+export interface ProjectScreenshot extends ProjectImage {
+  width: number;
+  height: number;
+  /** Short label for thumbnails and the gallery caption. */
+  caption: string;
+}
+
+/**
+ * Project video (MP4). Only list real, supplied files: the gallery shows a play control
+ * solely for entries here. Videos never autoplay and play with native controls.
+ */
+export interface ProjectVideo {
+  src: `${string}.mp4`;
+  /** Accessible name for the player, e.g. "Road Report walkthrough". */
+  title: string;
+  caption: string;
+  width: number;
+  height: number;
+  /** Optional still shown before playback and in the thumbnail. */
+  poster?: ProjectImage;
+  /** Optional WebVTT captions file. */
+  captionsSrc?: `${string}.vtt`;
+}
+
 export interface Project {
   id: number;
   slug: string;
@@ -49,7 +74,8 @@ export interface Project {
   status: ProjectStatus;
   githubUrl?: string;
   demoUrl?: string;
-  screenshots?: readonly ProjectImage[];
+  screenshots?: readonly ProjectScreenshot[];
+  videos?: readonly ProjectVideo[];
   cardArtwork?: CardArtwork;
 }
 
@@ -105,6 +131,24 @@ const projectRecords: readonly Project[] = [
     technologies: ["Next.js", "React", "TypeScript", "MapLibre GL", "PostgreSQL"],
     category: "Civic technology and geospatial applications",
     status: "to-confirm",
+    // Supplied by the portfolio owner (road-report-portfolio-assets.zip). Screenshots illustrate the
+    // interface only; they do not verify any feature beyond what the description states.
+    screenshots: [
+      {
+        src: "/images/projects/road-report/road-report-route-comparison.webp",
+        alt: "Road Report map showing alternate driving routes around Miami, hazard indicators, and a route labeled Safest.",
+        width: 862,
+        height: 1454,
+        caption: "Route comparison",
+      },
+      {
+        src: "/images/projects/road-report/road-report-hazard-details.webp",
+        alt: "Road Report map with an incident details popup showing an active collision and report counts.",
+        width: 840,
+        height: 1404,
+        caption: "Incident details",
+      },
+    ],
   },
   {
     id: 5,

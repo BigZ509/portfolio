@@ -5,7 +5,7 @@ import * as THREE from "three";
 import type { Project } from "@/data/projects";
 import { clamp, isEditableTarget, isLikelyTrackpad, normalizeWheelDelta, visibleHeightRatio } from "./carousel-input";
 import { ProjectDetails } from "./project-details";
-import { ProjectScreenshotGallery } from "./project-screenshot-gallery";
+import { ProjectMediaGallery } from "./project-media-gallery";
 import { ProjectShowcaseEnvironment } from "./project-showcase-environment";
 import { createSelectionGlowTexture } from "./selection-glow-texture";
 import { loadTarotArtwork } from "./tarot-artwork-loader";
@@ -286,6 +286,7 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
     // Selection state (indices into `projects`). See SelectionState.
     let selectedIndex: number | null = null;
     let pendingIndex: number | null = null;
+    let openAfterCommit = false;
     let glowLevel = 0;
 
     // Expansion state. `expandIndex` outlives `expanded` until the collapse flight finishes.
@@ -501,10 +502,16 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
       }
       publishSelection();
       setAnnouncement(selectedMessage(projects[selectedIndex]));
+      // One activation: once the chosen card has finished centering, open its showcase.
+      if (openAfterCommit) {
+        openAfterCommit = false;
+        setExpandedId(projects[selectedIndex].id);
+      }
     }
 
     /** Releases any selection without moving the carousel. Returns whether one existed. */
     const clearSelection = () => {
+      openAfterCommit = false; // Navigating away during centering cancels the pending open.
       if (!hasSelection()) return false;
       if (pendingIndex !== null) stepTarget = null; // Stop a centering move where it is.
       selectedIndex = null;
@@ -523,7 +530,7 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
       const project = projects[index];
       if (!project || !cards[index] || expanded) return;
       if (selectedIndex === index && stepTarget === null) {
-        // Second activation of the selected, centered card expands it (no extra movement).
+        // Already selected and centered: open immediately, without extra movement.
         setExpandedId(project.id);
         return;
       }
@@ -531,6 +538,7 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
       velocity = 0;
       selectedIndex = null; // A previous selection releases now; its halo fades while the new card centers.
       pendingIndex = index;
+      openAfterCommit = true;
       const target = centeredPhaseFor(index);
       if (reducedMotion || Math.abs(target - phase) <= config.centeredTolerance) {
         phase = target;
@@ -973,24 +981,29 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
 
   const closeExpanded = () => setExpandedId(null);
 
+  // Desktop mouse parallax: deeper layers move less. Media moves gently and stays readable.
+  const PARALLAX_DEPTHS = [
+    ["sky", 5],
+    ["far", 9],
+    ["middle", 15],
+    ["near", 22],
+    ["front", 30],
+    ["media", 10],
+  ] as const;
+
   const onStagePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const x = (event.clientX - bounds.left) / bounds.width - 0.5;
     const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-    const variables = [
-      ["far", 7],
-      ["middle", 14],
-      ["front", 20],
-    ] as const;
-    for (const [layer, depth] of variables) {
-      event.currentTarget.style.setProperty(`--parallax-${layer}-x`, `${-x * depth}px`);
-      event.currentTarget.style.setProperty(`--parallax-${layer}-y`, `${-y * depth}px`);
+    for (const [layer, depth] of PARALLAX_DEPTHS) {
+      event.currentTarget.style.setProperty(`--parallax-${layer}-x`, `${(-x * depth).toFixed(2)}px`);
+      event.currentTarget.style.setProperty(`--parallax-${layer}-y`, `${(-y * depth * 0.6).toFixed(2)}px`);
     }
   };
 
   const onStagePointerLeave = (event: ReactPointerEvent<HTMLDivElement>) => {
-    for (const layer of ["far", "middle", "front"]) {
+    for (const [layer] of PARALLAX_DEPTHS) {
       event.currentTarget.style.setProperty(`--parallax-${layer}-x`, "0px");
       event.currentTarget.style.setProperty(`--parallax-${layer}-y`, "0px");
     }
@@ -1025,16 +1038,18 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
     const project = projects[index];
     if (!project || expandedId !== null) return;
     if (selection.selectedId === project.id) {
-      // Second activation of the selected project expands it (both WebGL and fallback).
       setExpandedId(project.id);
       return;
     }
     if (ready && controlsRef.current) {
+      // WebGL: the card centers first, then the effect opens the showcase automatically.
       controlsRef.current.select(index);
       return;
     }
+    // Fallback: no centering animation, so select and open in one step.
     setSelection({ selectedId: project.id, pendingId: null });
     setAnnouncement(selectedMessage(project));
+    setExpandedId(project.id);
   };
 
   const deselectProject = () => {
@@ -1071,8 +1086,8 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
       </div>
       <p id={instructionsId} className="sr-only">
         {ready
-          ? "Select a project to center it, then activate it again to open its details. Use the previous and next buttons, or the left and right arrow keys, to rotate the cards. Press Escape to deselect."
-          : "Select a project card to highlight it, then activate it again to open its details. Press Escape to deselect."}
+          ? "Select a project to center its card and open its showcase. Use the previous and next buttons, or the left and right arrow keys, to rotate the cards. In the showcase, press Escape to close; press Escape again to deselect."
+          : "Select a project card to open its showcase. Press Escape to close it; press Escape again to deselect."}
       </p>
       <p className="sr-only" aria-live="polite" aria-atomic="true">
         {announcement}
@@ -1182,10 +1197,12 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
               onPointerLeave={onStagePointerLeave}
             >
               <ProjectShowcaseEnvironment />
-              <div ref={stageTargetRef} className={styles.stageCard}>
-                {!ready && <TarotCard project={expandedProject} />}
+              {/* The selected card as an emblem beside the work. With WebGL, the 3D card flies toward
+                  this spot beneath the scene as it fades in; the DOM card then materializes in place. */}
+              <div ref={stageTargetRef} className={styles.stageCard} data-webgl={ready ? "true" : undefined}>
+                <TarotCard project={expandedProject} compact />
               </div>
-              <ProjectScreenshotGallery key={expandedProject.id} project={expandedProject} />
+              <ProjectMediaGallery key={expandedProject.id} project={expandedProject} />
             </div>
             <ProjectDetails
               project={expandedProject}

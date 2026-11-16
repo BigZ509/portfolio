@@ -4,191 +4,261 @@
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse at 56% 43%, rgb(78 83 96 / 35%), transparent 58%),
-    linear-gradient(180deg, #171b24 0%, #232833 58%, #10131a 100%);
+  contain: strict;
   isolation: isolate;
+  background:
+    radial-gradient(ellipse 70% 55% at 60% 30%, rgb(52 64 92 / 45%), transparent 70%),
+    linear-gradient(180deg, #0a0f1d 0%, #121a2b 45%, #1c2232 72%, #0b0e15 100%);
 }
 
-.parallaxLayer,
-.driftLayer,
-.parallaxLayer svg {
+/* ---- Depth layers: mouse parallax (CSS variables from the stage) ---- */
+.layer {
+  position: absolute;
+  inset: -2%;
+  transition: transform 640ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+
+.sky { transform: translate3d(var(--parallax-sky-x, 0px), var(--parallax-sky-y, 0px), 0); }
+.far { transform: translate3d(var(--parallax-far-x, 0px), var(--parallax-far-y, 0px), 0); }
+.middle { transform: translate3d(var(--parallax-middle-x, 0px), var(--parallax-middle-y, 0px), 0); }
+.near,
+.sigilLayer { transform: translate3d(var(--parallax-near-x, 0px), var(--parallax-near-y, 0px), 0); }
+.front { inset: 0; transform: translate3d(var(--parallax-front-x, 0px), var(--parallax-front-y, 0px), 0); }
+
+/* ---- Seamless drift: three identical 16:9 tiles, moved by exactly one tile ---- */
+.loop {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  width: max-content;
+  height: 100%;
+  animation: drift linear infinite;
+  will-change: transform;
+}
+
+.tile {
+  flex: none;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+/* Slower when farther: clear parallax between depth layers. */
+.farLoop { animation-duration: 260s; }
+.midLoop { animation-duration: 170s; }
+.nearLoop { animation-duration: 110s; }
+
+@keyframes drift {
+  to { transform: translate3d(-33.3333%, 0, 0); }
+}
+
+/* ---- Sky ---- */
+.moon,
+.moonHalo {
+  position: absolute;
+  top: 17%;
+  left: 19%;
+  border-radius: 50%;
+}
+
+.moon {
+  width: 4.2rem;
+  height: 4.2rem;
+  background: radial-gradient(circle at 38% 36%, #f1ecdc, #c9c1a8 70%, #a69f8a);
+  opacity: 0.8;
+}
+
+.moonHalo {
+  width: 16rem;
+  height: 16rem;
+  margin: -5.9rem 0 0 -5.9rem;
+  background: radial-gradient(circle, rgb(220 214 190 / 22%), transparent 65%);
+}
+
+.stars {
+  position: absolute;
+  inset: 0 0 45%;
+  background-image:
+    radial-gradient(1px 1px at 12% 22%, #e8e3d3, transparent),
+    radial-gradient(1px 1px at 28% 9%, #e8e3d3, transparent),
+    radial-gradient(1.5px 1.5px at 44% 26%, #f3e6c2, transparent),
+    radial-gradient(1px 1px at 58% 12%, #e8e3d3, transparent),
+    radial-gradient(1px 1px at 66% 34%, #e8e3d3, transparent),
+    radial-gradient(1.5px 1.5px at 88% 30%, #f3e6c2, transparent),
+    radial-gradient(1px 1px at 93% 8%, #e8e3d3, transparent),
+    radial-gradient(1px 1px at 36% 40%, #e8e3d3, transparent);
+  opacity: 0.7;
+  animation: twinkle 7s ease-in-out infinite alternate;
+}
+
+/* ---- City ---- */
+.farStone { fill: #232c40; stroke: #3a4560; stroke-width: 2; }
+.clockFace { fill: none; stroke: #8f7c55; stroke-width: 2; opacity: 0.55; }
+.farLights { fill: #d4b97f; opacity: 0.45; animation: flicker 9s ease-in-out infinite alternate; }
+
+.midStone { fill: #151c29; stroke: #46506a; stroke-width: 2; }
+.midTrim { fill: none; stroke: #a48c5c; stroke-width: 2.5; opacity: 0.6; }
+.midLights { fill: #edc579; opacity: 0.7; animation: flicker 6.5s ease-in-out infinite alternate-reverse; }
+
+.nearStone { fill: #080a10; stroke: #262c39; stroke-width: 2; }
+.rail { fill: none; stroke: #343b4a; stroke-width: 2.5; }
+.lampPost { fill: #1a1e26; }
+.lampFlame { fill: #f2c66f; animation: lamp 3.2s ease-in-out infinite alternate; }
+.lampGlow { fill: rgb(242 198 111 / 11%); animation: lamp 3.2s ease-in-out infinite alternate; }
+
+/* ---- Sigil ---- */
+.sigilLayer { inset: 0; }
+
+.sigil {
+  position: absolute;
+  top: 47%;
+  left: 62.5%;
+  width: min(92cqh, 74cqw);
+  height: min(92cqh, 74cqw);
+  overflow: visible;
+  animation: turn 300s linear infinite;
+  translate: -50% -50%;
+}
+
+.sigilLine,
+.sigilFaint { fill: none; stroke: #c9ae78; stroke-width: 1.2; }
+.sigilLine { opacity: 0.22; }
+.sigilFaint { opacity: 0.12; }
+
+.sigilGlyph {
+  fill: #c9ae78;
+  font-family: Georgia, serif;
+  font-size: 22px;
+  opacity: 0.28;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+@keyframes turn {
+  to { rotate: 360deg; }
+}
+
+/* ---- Fog: wide strips of repeating soft blobs, drifting seamlessly ---- */
+.fog {
+  position: absolute;
+  left: 0;
+  width: 300%;
+  pointer-events: none;
+  background-repeat: repeat-x;
+  background-size: 33.3333% 100%;
+  filter: blur(22px);
+  animation: drift linear infinite;
+  will-change: transform;
+}
+
+.fogBack {
+  top: 44%;
+  height: 26%;
+  background-image:
+    radial-gradient(ellipse 30% 45% at 18% 55%, rgb(150 160 178 / 30%), transparent 70%),
+    radial-gradient(ellipse 34% 40% at 62% 45%, rgb(130 140 160 / 26%), transparent 72%),
+    radial-gradient(ellipse 22% 35% at 90% 60%, rgb(160 166 180 / 22%), transparent 70%);
+  animation-duration: 140s;
+}
+
+.fogMid {
+  top: 60%;
+  height: 26%;
+  background-image:
+    radial-gradient(ellipse 40% 45% at 30% 50%, rgb(170 176 190 / 26%), transparent 72%),
+    radial-gradient(ellipse 30% 40% at 78% 55%, rgb(150 156 172 / 24%), transparent 70%);
+  animation-duration: 90s;
+  animation-direction: reverse;
+}
+
+.fogFront {
+  bottom: -4%;
+  height: 24%;
+  background-image:
+    radial-gradient(ellipse 45% 50% at 25% 60%, rgb(185 190 200 / 24%), transparent 72%),
+    radial-gradient(ellipse 35% 45% at 72% 50%, rgb(165 170 184 / 22%), transparent 72%);
+  animation-duration: 60s;
+}
+
+/* ---- Foreground frame ---- */
+.frame {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
 
-.parallaxLayer {
-  transition: transform 420ms ease-out;
-  will-change: transform;
-}
+.frameStone { fill: #0b0e15; fill-opacity: 0.92; stroke: none; }
+.frameGold { fill: none; stroke: #b39a63; stroke-width: 1.5; opacity: 0.7; }
+.frameFaint { fill: none; stroke: #b39a63; stroke-width: 1; opacity: 0.3; }
 
-.farLayer {
-  transform: translate3d(var(--parallax-far-x, 0px), var(--parallax-far-y, 0px), 0);
-}
-
-.middleLayer {
-  transform: translate3d(var(--parallax-middle-x, 0px), var(--parallax-middle-y, 0px), 0);
-}
-
-.foregroundLayer {
-  transform: translate3d(var(--parallax-front-x, 0px), var(--parallax-front-y, 0px), 0);
-}
-
-.driftLayer {
-  inset: -1%;
-  width: 102%;
-  height: 102%;
-}
-
-.farDrift {
-  animation: skyline-drift 52s ease-in-out infinite alternate;
-}
-
-.middleDrift {
-  animation: architecture-drift 39s ease-in-out infinite alternate;
-}
-
-.foregroundDrift {
-  animation: frame-drift 64s ease-in-out infinite alternate;
-}
-
-.farStone {
-  fill: #313844;
-  opacity: 0.62;
-}
-
-.farWindow {
-  fill: none;
-  stroke: #777d87;
-  stroke-width: 3;
-  opacity: 0.25;
-}
-
-.middleStone {
-  fill: #202630;
-  stroke: #545a66;
-  stroke-width: 2;
-  opacity: 0.84;
-}
-
-.archOutline {
-  fill: none;
-  stroke: #827658;
-  stroke-width: 3;
-  opacity: 0.48;
-}
-
-.archDetail {
-  fill: none;
-  stroke: #a38c5b;
-  stroke-width: 2;
-  opacity: 0.4;
-}
-
-.frameStone {
-  fill: #11151d;
-  fill-opacity: 0.72;
-  stroke: #343a45;
-  stroke-width: 4;
-}
-
-.frameGold,
-.frameOrnament {
-  fill: none;
-  stroke: #ad9461;
-  stroke-width: 2;
-  opacity: 0.46;
-}
-
-.frameOrnament {
-  stroke-width: 3;
-  opacity: 0.6;
-}
-
-.fog {
+.keystone {
   position: absolute;
-  left: -18%;
-  width: 136%;
-  height: 38%;
-  border-radius: 50%;
-  filter: blur(38px);
-  opacity: 0.22;
-  mix-blend-mode: screen;
-  will-change: transform;
+  top: 1.2%;
+  left: 50%;
+  width: clamp(2.6rem, 5cqw, 3.6rem);
+  translate: -50% 0;
 }
 
-.fogHigh {
-  top: 28%;
-  background: linear-gradient(90deg, transparent, rgb(182 188 197 / 34%) 24%, rgb(137 146 159 / 22%) 52%, transparent 86%);
-  animation: fog-drift 61s ease-in-out infinite alternate;
-}
-
-.fogLow {
-  bottom: 4%;
-  height: 29%;
-  opacity: 0.18;
-  background: linear-gradient(90deg, transparent 3%, rgb(143 152 168 / 30%) 35%, rgb(205 195 171 / 15%) 65%, transparent 98%);
-  animation: fog-drift-back 47s ease-in-out infinite alternate;
-}
+.keystoneRing { fill: #0b0e15; stroke: #c9ae78; stroke-width: 1.5; }
+.keystoneMark { fill: #c9ae78; opacity: 0.85; }
 
 .vignette {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgb(6 8 12 / 42%), transparent 17% 83%, rgb(6 8 12 / 48%)),
-    linear-gradient(180deg, rgb(6 8 12 / 24%), transparent 28% 75%, rgb(6 8 12 / 68%));
+    radial-gradient(ellipse 75% 70% at 58% 48%, transparent 55%, rgb(5 7 11 / 55%) 100%),
+    linear-gradient(180deg, transparent 70%, rgb(5 7 11 / 45%));
 }
 
-@keyframes skyline-drift {
-  from { transform: translate3d(-0.45%, 0, 0); }
-  to { transform: translate3d(0.45%, -0.3%, 0); }
+@keyframes twinkle {
+  from { opacity: 0.45; }
+  to { opacity: 0.8; }
 }
 
-@keyframes architecture-drift {
-  from { transform: translate3d(0.35%, 0.15%, 0); }
-  to { transform: translate3d(-0.35%, -0.2%, 0); }
+@keyframes flicker {
+  0% { opacity: 0.25; }
+  40% { opacity: 0.5; }
+  60% { opacity: 0.38; }
+  100% { opacity: 0.55; }
 }
 
-@keyframes frame-drift {
-  from { transform: translate3d(0, -0.15%, 0); }
-  to { transform: translate3d(0, 0.15%, 0); }
+@keyframes lamp {
+  from { opacity: 0.75; }
+  to { opacity: 1; }
 }
 
-@keyframes fog-drift {
-  from { transform: translate3d(-5%, 2%, 0) scaleX(0.96); }
-  to { transform: translate3d(5%, -2%, 0) scaleX(1.04); }
-}
-
-@keyframes fog-drift-back {
-  from { transform: translate3d(4%, -1%, 0) scaleX(1.03); }
-  to { transform: translate3d(-4%, 1%, 0) scaleX(0.97); }
-}
-
+/* ---- Mobile performance: fewer, lighter layers; no mouse parallax transitions ---- */
 @media (max-width: 700px) {
-  .parallaxLayer {
-    transition: none;
-  }
-
-  .farStone,
-  .middleStone {
-    opacity: 0.74;
-  }
-
-  .fog {
-    filter: blur(30px);
-    opacity: 0.16;
-  }
+  .layer { transition: none; }
+  .fogMid { display: none; }
+  .fog { filter: blur(14px); }
+  .stars { animation: none; }
+  .sigil { left: 50%; width: 96cqh; height: 96cqh; }
+  .moon,
+  .moonHalo { top: 20%; left: 9%; }
+  .moon { width: 3rem; height: 3rem; }
+  .farLoop { animation-duration: 320s; }
+  .midLoop { animation-duration: 220s; }
+  .nearLoop { animation-duration: 150s; }
 }
 
+/* ---- Reduced motion: a still, composed scene ---- */
 @media (prefers-reduced-motion: reduce) {
-  .parallaxLayer,
-  .driftLayer,
-  .fog {
+  .layer,
+  .loop,
+  .fog,
+  .sigil,
+  .stars,
+  .farLights,
+  .midLights,
+  .lampFlame,
+  .lampGlow {
     animation: none;
-    transform: none;
     transition: none;
-    will-change: auto;
   }
+
+  .layer { transform: none; }
 }
