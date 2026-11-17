@@ -61,6 +61,7 @@
 }
 .towerAura {
   mix-blend-mode:screen;
+  opacity:.52;
   animation:auraPulse 10s ease-in-out infinite alternate
 }
 .auraRing {
@@ -216,7 +217,7 @@
   fill:#c2a06a;
   stroke:#f6d495;
   stroke-width:2;
-  filter:drop-shadow(0 0 26px #d9a765)
+  filter:drop-shadow(0 0 12px #d9a765)
 }
 .clockTick {
   stroke:#5a4538;
@@ -262,7 +263,7 @@
   opacity:.9
 }
 .litClock {
-  opacity:1
+  opacity:.78
 }
 .flickerA {
   animation:flicker 8s steps(4,end) infinite
@@ -394,15 +395,15 @@
   min-height:max(730px,100svh);
   margin:auto;
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(260px,32%);
+  grid-template-columns:minmax(0,1fr) minmax(300px,34%);
   align-items:center;
   gap:clamp(2rem,4vw,5rem);
-  padding:8rem 0 6rem
+  padding:7.5rem 0 5rem
 }
 .copy {
   position:relative;
   z-index:2;
-  max-width:850px
+  max-width:740px
 }
 /* A gilt-to-energy rule carries the eye down the column. */
 .copy::before {
@@ -415,19 +416,18 @@
   background:linear-gradient(180deg,transparent,#e0c48e 16%,#b49bff 70%,transparent);
   opacity:.8
 }
-/* Energy bloom sitting behind the wordmark. */
+/* Quiet architecture directly behind the reading column. */
 .copy::after {
   content:"";
   position:absolute;
   z-index:-1;
-  left:-14%;
-  top:-10%;
-  width:122%;
-  height:78%;
+  left:-12%;
+  top:-13%;
+  width:118%;
+  height:112%;
   pointer-events:none;
-  background:radial-gradient(ellipse 54% 48% at 30% 44%,rgb(160 140 245 / 42%),transparent 70%),radial-gradient(ellipse 36% 32% at 66% 28%,rgb(122 219 234 / 22%),transparent 72%);
-  filter:blur(10px);
-  animation:titleAura 12s ease-in-out infinite alternate
+  background:radial-gradient(ellipse 66% 62% at 33% 47%,rgb(10 13 30 / 52%),transparent 84%),radial-gradient(ellipse 42% 38% at 35% 30%,rgb(137 112 208 / 16%),transparent 76%);
+  filter:blur(15px)
 }
 .eyebrow {
   display:flex;
@@ -448,12 +448,12 @@
 .title {
   font-family:var(--font-display);
   font-weight:400;
-  line-height:.81;
+  line-height:.85;
   letter-spacing:-.065em;
   font-size:clamp(5.5rem,10vw,10.8rem);
   margin:0;
   color:#fdf7ea;
-  text-shadow:0 3px 0 #5c4a74,0 10px 26px rgb(8 10 22 / 62%),0 0 70px rgb(180 155 255 / 38%),0 0 150px rgb(122 219 234 / 20%)
+  text-shadow:0 3px 0 #5c4a74,0 10px 26px rgb(8 10 22 / 62%),0 0 55px rgb(180 155 255 / 22%)
 }
 .title span {
   display:block;
@@ -461,9 +461,9 @@
   transform:translateY(48%) scale(.96)
 }
 .title span:last-child {
-  margin-left:clamp(1.2rem,4vw,4rem);
+  margin-left:clamp(.9rem,2.7vw,2.4rem);
   color:#f2d6a0;
-  text-shadow:0 3px 0 #5c4a74,0 10px 26px rgb(8 10 22 / 62%),0 0 80px rgb(196 177 255 / 46%)
+  text-shadow:0 3px 0 #5c4a74,0 10px 26px rgb(8 10 22 / 62%),0 0 62px rgb(196 177 255 / 24%)
 }
 .homeContent[data-phase="reveal"] .title span,.homeContent[data-phase="ready"] .title span {
   clip-path:inset(0 0 0 0);
@@ -481,7 +481,7 @@
 }
 .lede {
   max-width:630px;
-  margin:2.1rem 0 1.9rem;
+  margin:1.8rem 0 1.6rem;
   color:#fbf5ea;
   font:clamp(1.25rem,2vw,1.8rem)/1.35 var(--font-display);
   letter-spacing:.01em
@@ -489,7 +489,7 @@
 .actions {
   display:flex;
   align-items:center;
-  gap:1.7rem;
+  gap:1rem;
   flex-wrap:wrap
 }
 .actions a {
@@ -502,13 +502,14 @@
 .primaryAction {
   display:inline-flex;
   justify-content:space-between;
-  gap:3rem;
+  gap:2rem;
   align-items:center;
+  min-height:3.25rem;
   border:1px solid #f3d49b;
   background:linear-gradient(135deg,#e8c488,#c9a876);
   color:#15121f;
-  padding:1rem 1.1rem;
-  box-shadow:0 8px 30px rgb(6 8 18 / 55%),0 0 42px rgb(226 192 128 / 32%),0 0 70px rgb(150 130 230 / 22%);
+  padding:.9rem 1.15rem;
+  box-shadow:0 8px 30px rgb(6 8 18 / 48%),0 0 30px rgb(226 192 128 / 18%);
   transition:background .25s,transform .25s
 }
 .primaryAction:hover {
@@ -516,9 +517,12 @@
   transform:translateY(-3px)
 }
 .secondaryAction {
+  display:inline-flex;
+  align-items:center;
+  min-height:3.25rem;
   color:#f6ecd9;
   border-bottom:1px solid #cdb189;
-  padding:.5rem 0
+  padding:0 .2rem
 }
 .secondaryAction:hover {
   color:#f3cf94
@@ -549,69 +553,32 @@
 }
 .portrait {
   width:100%;
-  max-width:390px;
+  max-width:375px;
   justify-self:center;
   position:relative;
-  margin:1.5rem 0 0 clamp(-4.5rem,-3vw,-1rem);
-  filter:drop-shadow(0 25px 50px rgb(5 7 16 / 62%)) drop-shadow(0 0 44px rgb(146 128 224 / 34%))
-}
-.portrait::before,.portrait::after {
-  content:"";
-  position:absolute;
-  z-index:-1;
-  border:1px solid #cfae7c;
-  inset:-12px 12px 12px -12px;
-  transform:rotate(-4deg);
-  opacity:.72
-}
-.portrait::after {
-  inset:8px -11px -10px 8px;
-  transform:rotate(3deg);
-  border-color:#9b8bc4
-}
-.portraitCrown {
-  border-top:1px solid #d6b887;
-  text-align:center;
-  color:#eed3a0;
-  letter-spacing:.18em;
-  font-size:.72rem;
-  padding:.45rem 0
-}
-.portraitCrown span {
-  font-size:.6rem;
-  margin:0 1rem
+  margin:0;
+  filter:drop-shadow(0 24px 42px rgb(5 7 16 / 58%))
 }
 .portraitFrame {
   position:relative;
-  padding:10px;
+  padding:6px;
   background:#191832;
   border:1px solid #e2bb7c;
-  box-shadow:inset 0 0 0 3px #1e2038,inset 0 0 0 4px #c4a473,0 20px 50px rgb(6 8 18 / 58%),0 0 46px rgb(150 130 230 / 26%);
+  box-shadow:0 20px 50px rgb(6 8 18 / 55%);
   overflow:hidden
-}
-.portraitFrame::after {
-  content:"";
-  position:absolute;
-  inset:10px;
-  pointer-events:none;
-  box-shadow:inset 0 0 26px rgb(8 10 22 / 48%),inset 0 0 70px rgb(205 170 110 / 22%);
-  background:linear-gradient(145deg,rgb(240 220 170 / 10%),transparent 40%,rgb(120 108 196 / 16%) 100%)
 }
 .portraitImage {
   display:block;
   width:100%;
   height:auto;
-  max-height:53svh;
-  object-fit:contain;
   filter:saturate(.98) contrast(1.05) brightness(1.08)
 }
 .portrait figcaption {
-  display:flex;
-  justify-content:space-between;
   padding:.7rem .2rem;
-  color:#d8c49c;
-  font-size:.64rem;
-  letter-spacing:.13em;
+  color:#f3ddb5;
+  font-size:.76rem;
+  letter-spacing:.09em;
+  line-height:1.35;
   text-transform:uppercase;
   border-bottom:1px solid #a98f67
 }
@@ -823,10 +790,6 @@
   from { transform:translateY(1.4%); opacity:.6 }
   to { transform:translateY(-2.2%); opacity:1 }
 }
-@keyframes titleAura {
-  from { opacity:.5; transform:scale(.97) }
-  to { opacity:.9; transform:scale(1.03) }
-}
 
 /* Intro architecture rises behind the expanding ink window. Pointer parallax starts after it settles. */
 :global(main:has([data-phase="opening"])) .layer[data-depth="7"] {
@@ -901,9 +864,6 @@
   }
   .title {
     font-size:clamp(4.2rem,10vw,7rem)
-  }
-  .portraitImage {
-    max-height:47svh
   }
   .edition {
     top:6rem
@@ -989,15 +949,8 @@
     margin:0;
     z-index:-1
   }
-  .portraitImage {
-    max-height:24svh
-  }
-  .portraitCrown,.portrait figcaption {
-    font-size:.5rem
-  }
-  .portraitCrown span {
-    font-size:.45rem;
-    margin:0 .4rem
+  .portrait figcaption {
+    font-size:.64rem
   }
   .portraitFrame {
     padding:5px
@@ -1046,9 +999,6 @@
 @media(max-height:730px) and (min-width:701px) {
   .hero {
     min-height:730px
-  }
-  .portraitImage {
-    max-height:50vh
   }
   .title {
     font-size:clamp(5rem,9vw,9rem)

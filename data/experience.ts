@@ -17,42 +17,26 @@ export const experienceEntries: readonly ExperienceEntry[] = [
     id: "road-report-hackathon",
     kind: "hackathon",
     title: "Building under a hackathon deadline",
-    setting: "Road Report · civic technology",
+    setting: "Road Report · Hackathon",
     participation:
-      "I participated in a hackathon through Road Report, a road-hazard reporting project. The work had to turn a brief description into a useful category without treating every sentence as a certain match.",
+      "At a hackathon, I worked on Road Report's hazard classifier. Short descriptions left room for more than one interpretation, so the challenge was knowing when to ask for more information instead of pretending a category was certain.",
     focus: [
-      "Weighted phrase rules score possible hazard categories.",
-      "Ambiguous and unrelated reports prompt a clarification instead of a forced answer.",
-      "The map interface gives reports a location and incident context.",
+      "Weighted phrase matching kept the classification path explainable under a short deadline.",
+      "A clarification path gave uncertain and unrelated reports a more useful next step.",
+      "The experience reinforced the value of building a narrow, testable first version.",
     ],
     projectSlug: "road-report",
   },
   {
-    id: "ctoc-system-design",
+    id: "system-design-workshop",
     kind: "workshop",
-    title: "Learning in the room",
-    setting: "System design workshop · CTOC Labs",
+    title: "Attending a System Design Workshop",
+    setting: "Learning with others",
     participation:
-      "I attended a system design workshop at CTOC Labs. The session put architecture diagrams in front of the room for discussion, a different setting from working through a design alone.",
+      "I attended to learn from others, discuss technical ideas, and see different ways to approach system design. Shared diagrams made it easier to follow how a design takes shape through conversation.",
     focus: [
-      "The examples were visible on shared screens, with diagrams the room could refer to together.",
+      "Seeing other approaches gave me questions to bring back to my own work.",
     ],
   },
 ];
 
-/** Internal, unverified historical placeholder. Never render this as employment. */
-export const draftEmploymentRecords = [
-  {
-    id: 1,
-    role: "Software Engineer",
-    organization: "To be confirmed",
-    startDate: "2024",
-    description:
-      "Full-stack development and engineering projects across web, mobile, and embedded systems.",
-    highlights: [
-      "Built and maintained React and Next.js web applications",
-      "Developed mobile applications with React Native and Expo",
-      "Integrated AI and computer-vision pipelines",
-    ],
-  },
-] as const;

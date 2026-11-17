@@ -30,7 +30,7 @@ export function TarotCard({ project, compact = false }: { project: Project; comp
   if (artwork?.layout === "full-card") {
     // The illustration carries its own border, numeral and name; only screen-reader text is added.
     return (
-      <article className={`${styles.card} ${styles.fullArt}`} aria-label={label} data-artwork="full-card" data-compact={compact || undefined}>
+      <article className={`${styles.card} ${styles.fullArt}`} style={{ aspectRatio: `${artwork.width} / ${artwork.height}` }} aria-label={label} data-artwork="full-card" data-compact={compact || undefined}>
         <Image
           src={artwork.src}
           alt={artwork.alt}

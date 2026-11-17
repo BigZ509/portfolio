@@ -54,11 +54,11 @@ export const photoPanels: readonly PhotoPanel[] = [
   {
     id: "workshop",
     src: "/images/home/workshop-ctoc.webp",
-    alt: "A system design workshop in the CTOC Labs room: students at tables watch two screens of system-design diagrams while a presenter points at one.",
+    alt: "Workshop attendees watch system design diagrams on two screens while a presenter speaks at the front of the room.",
     width: 1152,
     height: 1536,
-    label: "Rooms worth being in",
-    caption: "A system design workshop at CTOC Labs. Pizza included.",
+    label: "Learning together",
+    caption: "Attending a System Design Workshop",
     span: "large",
   },
   {

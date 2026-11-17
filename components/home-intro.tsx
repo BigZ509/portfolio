@@ -122,11 +122,10 @@ export function HomeIntro() {
           </div>
         </div>
         {portrait && <figure className={styles.portrait}>
-          <div className={styles.portraitCrown} aria-hidden="true">✧ <span>PORTRAIT / 01</span> ✧</div>
           <div className={styles.portraitFrame}>
             <Image src={portrait.src} alt={portrait.alt} width={portrait.width} height={portrait.height} priority sizes="(max-width: 700px) 53vw, 28vw" className={styles.portraitImage} />
           </div>
-          <figcaption><span>FIG. I</span><span>{portrait.caption}</span></figcaption>
+          <figcaption>{portrait.caption}</figcaption>
         </figure>}
       </section>
       <div className={styles.footerRule} aria-hidden="true"><span>EST. IN CURIOSITY</span><span className={styles.footStar}>✦</span><span>SCROLL TO EXPLORE</span></div>
@@ -135,12 +134,12 @@ export function HomeIntro() {
         <div className={styles.fieldNoteCopy}>
           <p className={styles.fieldLabel}>BEYOND THE EDITOR / 02</p>
           <h2 id="field-note-title">Beyond the editor.</h2>
-          <p>From computer-vision experiments to workshops and hackathon prototypes, I&rsquo;m drawn to the moment an idea stops being code on a screen and becomes something people can actually use.</p>
+          <p>Not everything I learn comes from writing code. Some of my best experiences come from stepping away from the screen, meeting people, asking questions, and seeing how others approach problems. Those moments often give me new perspectives and ideas to bring back to what I&apos;m building.</p>
           <Link href="/about">Read my story <span aria-hidden="true">↗</span></Link>
         </div>
         <figure className={styles.fieldImage}>
-          <Image src="/images/home/workshop-ctoc.webp" alt="A system design workshop in the CTOC Labs room: students at tables watch two screens of system-design diagrams while a presenter points at one." width={1152} height={1536} sizes="(max-width: 700px) 85vw, 30vw" />
-          <figcaption>A system design workshop at CTOC Labs</figcaption>
+          <Image src="/images/home/workshop-ctoc.webp" alt="Attendees at a system design workshop watch architecture diagrams on two screens." width={1152} height={1536} sizes="(max-width: 700px) 85vw, 30vw" />
+          <figcaption>Attending a System Design Workshop</figcaption>
         </figure>
       </section>
       <div className={styles.departureFog} aria-hidden="true" />

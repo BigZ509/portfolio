@@ -56,12 +56,12 @@ export default function ExperiencePage() {
                   <figure className={styles.workshopPhoto}>
                     <Image
                       src="/images/home/workshop-ctoc.webp"
-                      alt="Students at a CTOC Labs system design workshop watch architecture diagrams on two screens."
+                      alt="Workshop attendees watch architecture diagrams on two screens."
                       width={1152}
                       height={1536}
                       sizes="(max-width: 720px) 85vw, 320px"
                     />
-                    <figcaption>System design workshop at CTOC Labs</figcaption>
+                    <figcaption>Attending a System Design Workshop</figcaption>
                   </figure>
                 )}
               </article>

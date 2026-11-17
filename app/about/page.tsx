@@ -100,7 +100,7 @@ export default function AboutPage() {
           <section className={styles.section} aria-labelledby="life-heading">
             <header className={styles.chapterHead}>
               <p className={styles.chapterTag}>Outside the Screen</p>
-              <h2 id="life-heading">There is a person doing all this</h2>
+              <h2 id="life-heading">Away from the Keyboard</h2>
               <p>
                 Coursework and commits are only part of it. Here&rsquo;s the rest — campus, the coast,
                 and the rooms worth showing up for.

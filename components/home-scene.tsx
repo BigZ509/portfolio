@@ -199,7 +199,7 @@ function buildSkyline(options: SkylineOptions): Skyline {
 /* ---- Layers ---- */
 
 const MOON: readonly [number, number] = [1128, 236];
-const TOWER_X = 1040;
+const TOWER_X = 1160;
 
 const FAR = buildSkyline({
   seed: 20261115,

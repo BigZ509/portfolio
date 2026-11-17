@@ -197,7 +197,7 @@
   height: 100%;
 }
 
-/* Left half of the showcase: the animated city (ProjectShowcaseEnvironment) fills it. */
+/* Left half of the showcase: the sword-field environment fills it. */
 .stage {
   position: relative;
   overflow: hidden;
@@ -211,12 +211,15 @@
   position: absolute;
   z-index: 2;
   top: 52%;
-  left: 8.5%;
-  width: min(16cqw, 25cqh);
-  aspect-ratio: 2 / 3;
+  left: 4.5cqw;
+  width: min(20cqw, 32cqh);
   translate: 0 -50%;
-  filter: drop-shadow(0 18px 40px rgb(0 0 0 / 60%)) drop-shadow(0 0 22px rgb(201 174 120 / 18%));
+  filter: drop-shadow(0 18px 36px rgb(0 0 0 / 58%));
   animation: emblem-float 11s ease-in-out 1s infinite alternate;
+}
+
+.stageCard > article {
+  width: 100%;
 }
 
 /* WebGL: the 3D card flies to this spot beneath the fading-in scene, then the emblem materializes. */

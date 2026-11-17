@@ -63,9 +63,11 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
 
       <section className={styles.section} aria-labelledby={`${titleId}-about`}>
         <h3 id={`${titleId}-about`} className={styles.sectionTitle}>About</h3>
-        <p className={description ? styles.body : styles.pending}>
-          {description ?? "Full project details are being prepared."}
-        </p>
+        {description
+          ? description.split(/\n\s*\n/).map((paragraph) => (
+              <p key={paragraph} className={styles.body}>{paragraph}</p>
+            ))
+          : <p className={styles.pending}>Full project details are being prepared.</p>}
         {category && <p className={styles.meta}>Category: {category}</p>}
       </section>
 

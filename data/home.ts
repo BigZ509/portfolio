@@ -32,6 +32,6 @@ export const home: HomeContent = {
     alt: "Marc in a black graduation cap and gown outside an arena.",
     width: 1152,
     height: 1536,
-    caption: "The person behind the work",
+    caption: "Graduation day",
   },
 };

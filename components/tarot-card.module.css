@@ -59,6 +59,14 @@
   object-fit: contain;
 }
 
+/* The compact emblem must not restore the geometric card's padding and dark backing. */
+.card.fullArt[data-compact] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .symbol {
   width: min(65%, 11rem);
   color: var(--color-antique-gold);
