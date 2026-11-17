@@ -1,22 +1,24 @@
 # Tarot artwork manifest
 
-Last updated: 2026-11-15 (Phase 5A).
+Last updated: 2026-11-17 (Phase 7).
 
-**Status: no final tarot artwork is integrated.** No artwork files confirmed as authorized for use exist in this project. All five cards render the original geometric design. Nothing was downloaded, extracted from websites or screenshots, or taken from `reference/daniel-portfolio/`.
+**Status: five selected illustrations are integrated.** The owner explicitly confirmed permission to use these exact LOTM images in the Phase 7 brief. This is an owner assertion, not an independently verified public licence. The image files were downloaded from the URLs below and converted from PNG to WebP at quality 94 with no crop or resize. Each source and output is 751×1051 pixels. The source artwork already contains its border, numeral, and title, so all entries use `full-card` and the geometric frame is omitted.
 
 ## Cards
 
-| # | Card | Project (slug) | Expected artwork path | Source | License / authorization | Image present? |
+| # | Card | Project (slug) | Artwork path | Exact source URL | Authorization | Image present? |
 | --- | --- | --- | --- | --- | --- | --- |
-| 0 | The Fool | SpeakLab AI (`speaklab-ai`) | `public/images/tarot/speaklab-ai.webp` | Not yet provided | Not established | **No** |
-| XXI | The World | Autonomous Delivery Rover (`autonomous-delivery-rover`) | `public/images/tarot/autonomous-delivery-rover.webp` | Not yet provided | Not established | **No** |
-| I | The Magician | Guiding Hands (`guiding-hands`) | `public/images/tarot/guiding-hands.webp` | Not yet provided | Not established | **No** |
-| XI | Justice | Road Report (`road-report`) | `public/images/tarot/road-report.webp` | Not yet provided | Not established | **No** |
-| XVII | The Star | ZBXP (`zbxp`) | `public/images/tarot/zbxp.webp` | Not yet provided | Not established | **No** |
+| 0 | The Fool | SpeakLab AI (`speaklab-ai`) | `public/images/tarot/speaklab-ai.webp` | [Original PNG](https://cdn.shopify.com/s/files/1/0725/9314/6148/files/CB__0_The_Fool.png?v=1743734326) | Owner confirmed | **Yes** |
+| XXI | The World | Autonomous Delivery Rover (`autonomous-delivery-rover`) | `public/images/tarot/autonomous-delivery-rover.webp` | [Original PNG](https://cdn.shopify.com/s/files/1/0725/9314/6148/files/CB__21_The_World.png?v=1743734326) | Owner confirmed | **Yes** |
+| I | The Magician | Guiding Hands (`guiding-hands`) | `public/images/tarot/guiding-hands.webp` | [Original PNG](https://cdn.shopify.com/s/files/1/0725/9314/6148/files/CB__1_The_Magician_c1779573-5272-4687-837b-678fc766a4af.png?v=1746151098) | Owner confirmed | **Yes** |
+| XI | Justice | Road Report (`road-report`) | `public/images/tarot/road-report.webp` | [Original PNG](https://cdn.shopify.com/s/files/1/0725/9314/6148/files/CB__11_Justice_2.png?v=1743734326) | Owner confirmed | **Yes** |
+| XVII | The Star | ZBXP (`zbxp`) | `public/images/tarot/zbxp.webp` | [Original PNG](https://cdn.shopify.com/s/files/1/0725/9314/6148/files/CB__17_The_Star.png?v=1743734326) | Owner confirmed | **Yes** |
+
+Source page: [Cards of Blasphemy](https://lordofmysteries.store/pages/cards-of-blasphemy). Output dimensions and file integrity were checked with Sharp after conversion. No source images were taken from Daniel's reference repository.
 
 ## Pipeline test files (not project artwork)
 
-These are original test images made for this project in Phase 5A to validate the pipeline. Each is visibly labelled "PIPELINE TEST" and includes proportion markers. They are used only when the site is built with `NEXT_PUBLIC_TAROT_ARTWORK_TEST=1`. A normal build references none of them.
+These are original test images made for this project in Phase 5A to validate the pipeline. Each is visibly labelled "PIPELINE TEST" and includes proportion markers. They are used only when the site is built with `NEXT_PUBLIC_TAROT_ARTWORK_TEST=1`. A normal build uses the five illustrations above.
 
 | File | Size | Layout tested | Source |
 | --- | --- | --- | --- |
@@ -24,7 +26,7 @@ These are original test images made for this project in Phase 5A to validate the
 | `public/images/tarot/pipeline-test/panel-test.webp` | 800×500 | `panel` (wide image fitted inside the frame) | Original; SVG source in `docs/tarot-pipeline-test-src/panel-test.svg` |
 | `public/images/tarot/pipeline-test/missing-on-purpose.webp` | — | Missing-file fallback | Deliberately absent |
 
-## Adding a final illustration
+## Adding or changing an illustration
 
 1. **Confirm rights.** Confirm you are authorized to use the image, and fill in its *Source* and *License / authorization* cells above.
 2. **Prepare the file.** Export it to the expected path. Recommended:

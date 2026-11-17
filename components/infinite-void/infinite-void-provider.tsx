@@ -17,14 +17,20 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { VoidRenderer } from "./void-renderer";
 import styles from "./infinite-void.module.css";
 
-type Registry = { register: () => () => void };
+type Registry = { register: () => () => void; suspend: () => () => void };
 
-const InfiniteVoidContext = createContext<Registry>({ register: () => () => {} });
+const InfiniteVoidContext = createContext<Registry>({ register: () => () => {}, suspend: () => () => {} });
 
 /** Ask for the Infinite Void behind the current page for as long as the caller is mounted. */
 export function useInfiniteVoid() {
   const { register } = useContext(InfiniteVoidContext);
   useEffect(() => register(), [register]);
+}
+
+/** Pause the shared page backdrop while a foreground WebGL realm owns the screen. */
+export function useSuspendInfiniteVoid() {
+  const { suspend } = useContext(InfiniteVoidContext);
+  useEffect(() => suspend(), [suspend]);
 }
 
 // One shared import, so repeated or StrictMode-doubled effect runs never fetch the module twice.
@@ -58,13 +64,18 @@ export function InfiniteVoidProvider({ children }: { children: ReactNode }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<VoidRenderer | null>(null);
   const [requests, setRequests] = useState(0);
+  const [suspensions, setSuspensions] = useState(0);
 
   const register = useCallback(() => {
     setRequests((count) => count + 1);
     return () => setRequests((count) => count - 1);
   }, []);
-  const registry = useMemo(() => ({ register }), [register]);
-  const active = requests > 0;
+  const suspend = useCallback(() => {
+    setSuspensions((count) => count + 1);
+    return () => setSuspensions((count) => count - 1);
+  }, []);
+  const registry = useMemo(() => ({ register, suspend }), [register, suspend]);
+  const active = requests > 0 && suspensions === 0;
 
   useEffect(() => {
     const layer = layerRef.current;

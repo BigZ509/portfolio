@@ -1,5 +1,5 @@
 /*
- * About page: the five chapters of MARC'S WORLD.
+ * About page: Marc's introduction, photos, skills and contact.
  *
  * Original styling for this project, carrying the homepage's violet-and-gold twilight into an
  * editorial layout. The manga panel and mirror divider rules live in their own adapted modules
@@ -43,7 +43,7 @@
   padding: clamp(6rem, 10vw, 8.5rem) 0 clamp(4rem, 8vw, 7rem);
 }
 
-/* ---- Chapter 01 ---- */
+/* ---- Origins ---- */
 
 .hero {
   display: grid;
@@ -243,152 +243,11 @@
   margin-top: clamp(1rem, 2vw, 2rem);
 }
 
-/* ---- Chapter 02: what I build ---- */
+/* ---- The process: skills ---- */
 
-.buildGrid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: clamp(14px, 1.8vw, 26px);
-  align-items: start;
-}
-
-.buildCard {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: .7rem;
-  padding: clamp(1.3rem, 2.2vw, 2rem);
-  border: 1px solid rgb(201 174 120 / 22%);
-  border-radius: var(--radius-sm);
-  background: linear-gradient(165deg, rgb(32 36 70 / 88%), rgb(22 26 52 / 92%));
-  box-shadow: 0 18px 44px rgb(6 8 18 / 40%);
-  overflow: hidden;
-  transition: transform .4s, border-color .4s, box-shadow .4s;
-}
-
-.buildCard:hover {
-  transform: scale(.985);
-  border-color: rgb(226 187 124 / 60%);
-  box-shadow: 0 18px 44px rgb(6 8 18 / 50%), 0 0 40px rgb(146 128 224 / 22%);
-}
-
-/* Asymmetric placement: a wide opener, two mid cards, then an offset pair. */
-.buildCard:nth-child(1) { grid-column: span 7; }
-.buildCard:nth-child(2) { grid-column: span 5; margin-top: clamp(20px, 3vw, 48px); }
-.buildCard:nth-child(3) { grid-column: span 5; }
-.buildCard:nth-child(4) { grid-column: span 7; }
-.buildCard:nth-child(5) { grid-column: 4 / span 6; }
-
-.buildNumeral {
-  position: absolute;
-  top: -.4rem;
-  right: .6rem;
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 5vw, 5rem);
-  line-height: 1;
-  color: rgb(255 255 255 / 5%);
-  pointer-events: none;
-  transition: color .4s, top .4s;
-}
-
-.buildCard:hover .buildNumeral {
-  top: -.8rem;
-  color: rgb(180 155 255 / 14%);
-}
-
-.discipline {
-  font-size: .66rem;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  color: #e2c492;
-}
-
-.buildTitle {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.3rem, 2.1vw, 1.75rem);
-  line-height: 1.12;
-  color: #fbf3e2;
-}
-
-.buildDesc {
-  margin: 0;
-  max-width: 58ch;
-  line-height: 1.65;
-  color: #d6dae6;
-}
-
-.buildMedia {
-  margin: .4rem 0 0;
-  border: 1px solid rgb(201 174 120 / 26%);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  max-height: 260px;
-}
-
-.buildMedia img {
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  object-position: center top;
-}
-
-.tech {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: .2rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.tech li {
-  padding: 4px 9px;
-  border: 1px solid rgb(180 155 255 / 34%);
-  border-radius: 2px;
-  background: rgb(124 104 220 / 12%);
-  font-size: .68rem;
-  letter-spacing: .05em;
-  color: #cdbcff;
-}
-
-.flag {
-  align-self: flex-start;
-  padding: 3px 9px;
-  border: 1px solid rgb(122 219 234 / 45%);
-  border-radius: 999px;
-  background: rgb(80 170 190 / 14%);
-  font-size: .62rem;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: #a8ebf6;
-}
-
-.cardLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: .3rem;
-  padding-bottom: 2px;
-  border-bottom: 1px solid #cdae79;
-  color: #eed5a2;
-  font-size: .72rem;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  text-decoration: none;
-  align-self: flex-start;
-}
-
-.cardLink:hover {
-  color: #fbf3e2;
-  border-color: #fbf3e2;
-}
-
-/* ---- Chapter 04: tools ---- */
 /* The skills presentation lives in components/skills/chakra-skills.module.css. */
 
-/* ---- Chapter 05: connect ---- */
+/* ---- What's next: connect ---- */
 
 .connect {
   display: grid;
@@ -457,10 +316,6 @@
     max-width: 330px;
   }
 
-  .buildCard:nth-child(n) {
-    grid-column: span 6;
-    margin-top: 0;
-  }
 }
 
 @media (max-width: 700px) {
@@ -472,22 +327,14 @@
     max-width: 260px;
   }
 
-  .buildCard:nth-child(n) {
-    grid-column: 1 / -1;
-  }
 
   .connect {
     grid-template-columns: 1fr;
   }
 
-  .buildMedia {
-    max-height: 200px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .buildCard,
-  .buildCard:hover,
   .connectLink:hover,
   .primaryAction:hover {
     transition: none;

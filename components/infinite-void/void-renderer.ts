@@ -45,6 +45,8 @@ export type VoidQuality = "high" | "low";
 
 export interface VoidRendererOptions {
   quality: VoidQuality;
+  /** Optional section-specific camera composition; the Projects framing remains the default. */
+  framing?: typeof FRAMING;
   /** Initial value; change it later with setReducedMotion(). */
   reducedMotion: boolean;
   /** Called if the GL context is lost, so the host can show its fallback. */
@@ -274,7 +276,8 @@ export class VoidRenderer {
     this.zone.group.updateMatrixWorld();
     this.projected.set(0, 55, -310).applyMatrix4(this.zone.group.matrixWorld).project(cam);
     // …and the offset that moves it to the target.
-    const target = width >= height ? FRAMING.landscape : FRAMING.portrait;
+    const framing = this.options.framing ?? FRAMING;
+    const target = width >= height ? framing.landscape : framing.portrait;
     const offsetX = ((this.projected.x - target.x) / 2) * width;
     const offsetY = ((target.y - this.projected.y) / 2) * height;
     cam.setViewOffset(width, height, offsetX, offsetY, width, height);

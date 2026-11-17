@@ -27,6 +27,12 @@ owners conveys rights over the underlying franchise (see §4).
   each header records the specific portions used and the changes made. The earlier plan's
   proposed `src/engine/particles.ts`, `renderer.ts`, and `types.ts` portions are not the
   source of this implementation.
+- **Phase 7 modal realm:** the same pinned `src/engine/world3d/zones.ts`
+  `buildAuthenticMutualLove()` builder and `src/engine/world3d/shared.ts` field/particle helpers
+  were adapted into `components/mutual-love/build-mutual-love.ts` and
+  `components/mutual-love/mutual-love-renderer.ts`. The latter holds the source's opening camera
+  composition as a project-detail backdrop. This remains covered only by the owner's asserted
+  authorization; the upstream repository has no public licence grant.
 - **Intended use:** adaptation into a personal portfolio website, published publicly, with
   attribution headers per plan §2.1.
 - **Outstanding — to be supplied by the owner:**
@@ -90,10 +96,10 @@ above can convey any right in it, and none is claimed. This project ships **only
 — particle math, perspective projection, canvas compositing — under Marc's own naming, palette, and
 artwork.
 
-Accordingly, the product contains no JJK character names, no domain or technique names, no Japanese
-technique titles, and no JJK media files. Internal code comments may cite an originating technique
-name for attribution and traceability only. All `public/` media is Marc's own photography or artwork
-generated for this project.
+Accordingly, the product contains no JJK character names, no visible domain or technique names, no
+Japanese technique titles, and no JJK media files. Internal code comments may cite an originating
+technique name for attribution and traceability only. Phase 7 adds third-party LOTM tarot card
+illustrations with owner-asserted permission; see §8 and the artwork manifest.
 
 ---
 
@@ -101,7 +107,7 @@ generated for this project.
 
 | Source | Basis | In use? | Record complete? |
 |---|---|---|---|
-| `jjk-domain-expansion` | Owner-held authorization (asserted 2026-11-16) | **Yes, Infinite Void background** | No — §1 specifics outstanding |
+| `jjk-domain-expansion` | Owner-held authorization (asserted 2026-11-16 and reiterated in Phase 7) | **Yes, Infinite Void background and Phase 7 project modal realm** | No — §1 specifics outstanding |
 | `Cursed-Energy` | Owner-held authorization (asserted 2026-11-16) | Not yet — Phases 2–4 | No — §2 specifics outstanding |
 | `Anime-Portfolio` | README MIT grant + owner-held authorization | **Yes, since Phase 5** | Partly — canonical notice outstanding |
 | `rishabhaiml/Portfolio` | README MIT grant ("for your own portfolio") | **Yes, since Phase 6** | Partly — canonical notice outstanding (§7) |
@@ -165,3 +171,14 @@ that is therefore **not** used here:
 
 The kanji 雷 火 土 水 are ordinary Japanese characters for the classical elements and are retained.
 The sigil's inner glyphs are the classical alchemical element symbols, which are public domain.
+
+---
+
+## 8. Selected LOTM tarot card illustrations — added Phase 7
+
+The owner explicitly asserted permission to use the five exact card images specified in the Phase 7
+brief. This is not an independently verified public licence, and the grantor, terms and evidence of
+the permission are not in this repository. The source page and exact file URLs are recorded in
+[`docs/tarot-artwork-manifest.md`](tarot-artwork-manifest.md). The images were converted without
+cropping or resizing and are used in the card carousel, expanded project view and static fallback.
+This assertion does not imply general rights to other LOTM artwork or franchise material.

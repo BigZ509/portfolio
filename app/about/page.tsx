@@ -6,7 +6,7 @@ import { AboutMotion } from "@/components/about-motion";
 import { MangaGrid, MangaPanel } from "@/components/manga-panel";
 import { MirrorDivider } from "@/components/mirror-divider";
 import { ChakraSkills } from "@/components/skills/chakra-skills";
-import { aboutIntro, buildPanels, connect, photoPanels } from "@/data/about";
+import { aboutIntro, connect, photoPanels } from "@/data/about";
 import { publicSocialLinks } from "@/data/social-links";
 import styles from "@/components/about.module.css";
 
@@ -49,7 +49,7 @@ export default function AboutPage() {
 
       <AboutMotion>
         <div className={styles.inner}>
-          {/* ---- Chapter 01 ---- */}
+          {/* ---- Origins ---- */}
           <section className={styles.hero} aria-labelledby="about-title">
             <div className={styles.heroCopy}>
               <p className={styles.chapterTag} data-hero="chapter">{aboutIntro.chapter}</p>
@@ -94,59 +94,12 @@ export default function AboutPage() {
             </figure>
           </section>
 
-          {/* ---- Chapter 02 ---- */}
-          <MirrorDivider text="WHAT I BUILD" />
-
-          <section className={styles.section} aria-labelledby="build-heading">
-            <header className={styles.chapterHead}>
-              <p className={styles.chapterTag}>Chapter 02</p>
-              <h2 id="build-heading">Five things I wanted to find out</h2>
-              <p>
-                Each of these started as a question I couldn&rsquo;t answer from the outside. Some are
-                further along than others, and the ones that aren&rsquo;t say so.
-              </p>
-            </header>
-
-            <div className={styles.buildGrid}>
-              {buildPanels.map((panel, index) => (
-                <article key={panel.id} className={styles.buildCard} data-panel="">
-                  <span className={styles.buildNumeral} aria-hidden="true">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  {panel.inDevelopment && <span className={styles.flag}>In development</span>}
-                  <span className={styles.discipline}>{panel.discipline}</span>
-                  <h3 className={styles.buildTitle}>{panel.title}</h3>
-                  <p className={styles.buildDesc}>{panel.description}</p>
-                  {panel.image && (
-                    <div className={styles.buildMedia}>
-                      <Image
-                        src={panel.image.src}
-                        alt={panel.image.alt}
-                        width={panel.image.width}
-                        height={panel.image.height}
-                        sizes="(max-width: 700px) 90vw, 46vw"
-                        data-panel-img=""
-                      />
-                    </div>
-                  )}
-                  <ul className={styles.tech}>
-                    {panel.technologies.map((tech) => <li key={tech}>{tech}</li>)}
-                  </ul>
-                  <Link className={styles.cardLink} href="/projects">
-                    See it in the showcase
-                    <span aria-hidden="true">↗</span>
-                  </Link>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          {/* ---- Chapter 03 ---- */}
+          {/* ---- Outside the Screen ---- */}
           <MirrorDivider text="BEYOND THE SCREEN" />
 
           <section className={styles.section} aria-labelledby="life-heading">
             <header className={styles.chapterHead}>
-              <p className={styles.chapterTag}>Chapter 03</p>
+              <p className={styles.chapterTag}>Outside the Screen</p>
               <h2 id="life-heading">There is a person doing all this</h2>
               <p>
                 Coursework and commits are only part of it. Here&rsquo;s the rest — campus, the coast,
@@ -168,12 +121,12 @@ export default function AboutPage() {
             </MangaGrid>
           </section>
 
-          {/* ---- Chapter 04 ---- */}
+          {/* ---- The Process ---- */}
           <MirrorDivider text="TOOLS OF THE TRADE" />
 
           <section className={styles.section} aria-labelledby="tools-heading">
             <header className={styles.chapterHead}>
-              <p className={styles.chapterTag}>Chapter 04</p>
+              <p className={styles.chapterTag}>The Process</p>
               <h2 id="tools-heading">What I reach for</h2>
               <p>
                 Four kinds of work, and the tools each one has needed so far. Open a card to see what&rsquo;s
@@ -184,7 +137,7 @@ export default function AboutPage() {
             <ChakraSkills />
           </section>
 
-          {/* ---- Chapter 05 ---- */}
+          {/* ---- What's Next ---- */}
           <MirrorDivider text="SAY HELLO" />
 
           <section className={styles.section} aria-labelledby="connect-heading">

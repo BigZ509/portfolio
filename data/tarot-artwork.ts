@@ -3,21 +3,48 @@ import type { CardArtwork, Project } from "./projects";
 /**
  * Final, authorized tarot illustrations, keyed by project slug.
  *
- * EMPTY ON PURPOSE: no artwork files confirmed as authorized for use exist in this project yet.
- * When one is added, place it at `public/images/tarot/<slug>.webp`, record its source and
- * license in docs/tarot-artwork-manifest.md, and register it here, for example:
- *
- *   "speaklab-ai": {
- *     src: "/images/tarot/speaklab-ai.webp",
- *     alt: "Describe what the illustration shows, not just the card name",
- *     width: 1200,
- *     height: 1800,
- *     layout: "full-card",
- *   },
+ * The owner confirmed authorization for the exact five illustrations recorded in
+ * docs/tarot-artwork-manifest.md. Their original borders, numerals, and titles are included.
  *
  * Cards without an entry (or whose file fails to load) use the original geometric design.
  */
-const authorizedArtwork: Partial<Record<string, CardArtwork>> = {};
+const authorizedArtwork: Partial<Record<string, CardArtwork>> = {
+  "speaklab-ai": {
+    src: "/images/tarot/speaklab-ai.webp",
+    alt: "The Fool: a dark-haired figure tips a top hat before a warm golden city, inside the illustrated tarot frame.",
+    width: 751,
+    height: 1051,
+    layout: "full-card",
+  },
+  "autonomous-delivery-rover": {
+    src: "/images/tarot/autonomous-delivery-rover.webp",
+    alt: "The World: a reclining blond figure surrounded by colorful mushrooms within an ornate green tarot frame.",
+    width: 751,
+    height: 1051,
+    layout: "full-card",
+  },
+  "guiding-hands": {
+    src: "/images/tarot/guiding-hands.webp",
+    alt: "The Magician: a figure in a broad hat reaches forward amid birds and sweeping ribbons in a rose-colored frame.",
+    width: 751,
+    height: 1051,
+    layout: "full-card",
+  },
+  "road-report": {
+    src: "/images/tarot/road-report.webp",
+    alt: "Justice: a woman holds a staff beside a dog beneath a blue sky, within a green illustrated tarot frame.",
+    width: 751,
+    height: 1051,
+    layout: "full-card",
+  },
+  zbxp: {
+    src: "/images/tarot/zbxp.webp",
+    alt: "The Star: a dark-haired figure writes at a typewriter while pages and golden stars float through a blue frame.",
+    width: 751,
+    height: 1051,
+    layout: "full-card",
+  },
+};
 
 /**
  * Pipeline validation only. Build with NEXT_PUBLIC_TAROT_ARTWORK_TEST=1 to attach original test

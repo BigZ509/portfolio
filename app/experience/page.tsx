@@ -1,19 +1,13 @@
+import Image from "next/image";
 import Link from "next/link";
-import { AtmosphericBackground } from "@/components/atmospheric-background";
 import type { Metadata } from "next";
-import { MirrorDivider } from "@/components/mirror-divider";
-import { involvement, type InvolvementKind } from "@/data/experience";
+import { AtmosphericBackground } from "@/components/atmospheric-background";
+import { experienceEntries } from "@/data/experience";
 import styles from "@/components/experience.module.css";
 
 export const metadata: Metadata = {
   title: "Experience — MARC'S WORLD",
-  description: "Engineering work, hackathon projects and workshops — what Marc has actually built.",
-};
-
-const KIND_LABELS: Record<InvolvementKind, string> = {
-  project: "Project",
-  hackathon: "Hackathon",
-  workshop: "Workshop",
+  description: "Marc's documented hackathon and workshop participation.",
 };
 
 export default function ExperiencePage() {
@@ -24,59 +18,51 @@ export default function ExperiencePage() {
 
       <div className={styles.inner}>
         <header className={styles.head}>
-          <p className={styles.kicker}>Marc&rsquo;s World</p>
-          <h1 className={styles.title}>
-            <span>What I&rsquo;ve</span>
-            <span>worked on</span>
-          </h1>
+          <p className={styles.kicker}>Marc&rsquo;s World / Field notes</p>
+          <h1 className={styles.title}>Where the work happened<span aria-hidden="true">.</span></h1>
           <p className={styles.lede}>
-            I&rsquo;m a computer science student, so this is a record of engineering work rather than
-            an employment history: the projects I&rsquo;ve built, the hackathon I shipped under
-            pressure, and the rooms I&rsquo;ve learned in. Everything here is something that exists.
+            Projects show the things I made. These are the rooms and circumstances that shaped the
+            work: a hackathon deadline and a system design workshop. I&rsquo;m still building this record.
           </p>
         </header>
 
-        <MirrorDivider text="THE RECORD" />
+        <div className={styles.journeyHead} aria-hidden="true">
+          <span>Selected participation</span>
+          <span>01 — 02</span>
+        </div>
 
-        <ol className={styles.list}>
-          {involvement.map((entry) => (
-            <li key={entry.id} className={styles.item}>
-              <div className={styles.marker} aria-hidden="true">
-                <span className={styles.dot} />
-              </div>
-
-              <article className={styles.card}>
-                <div className={styles.cardHead}>
-                  <span className={styles.kind} data-kind={entry.kind}>{KIND_LABELS[entry.kind]}</span>
-                  {entry.status === "in-development" && (
-                    <span className={styles.flag}>In development</span>
-                  )}
-                  {entry.period && <span className={styles.period}>{entry.period}</span>}
+        <ol className={styles.journey}>
+          {experienceEntries.map((entry, index) => (
+            <li key={entry.id} className={styles.milestone}>
+              <span className={styles.number} aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <article className={styles.story}>
+                <div className={styles.storyMeta}>
+                  <span>{entry.kind}</span>
+                  <span>{entry.setting}</span>
                 </div>
-
-                <h2 className={styles.cardTitle}>{entry.title}</h2>
-                <p className={styles.context}>{entry.context}</p>
-                <p className={styles.summary}>{entry.summary}</p>
-
-                {entry.highlights && entry.highlights.length > 0 && (
-                  <ul className={styles.highlights}>
-                    {entry.highlights.map((highlight) => (
-                      <li key={highlight}>{highlight}</li>
-                    ))}
-                  </ul>
-                )}
-
-                {entry.technologies && entry.technologies.length > 0 && (
-                  <ul className={styles.tech}>
-                    {entry.technologies.map((tech) => <li key={tech}>{tech}</li>)}
-                  </ul>
-                )}
-
+                <h2>{entry.title}</h2>
+                <p className={styles.participation}>{entry.participation}</p>
+                <ul className={styles.focus}>
+                  {entry.focus.map((point) => <li key={point}>{point}</li>)}
+                </ul>
                 {entry.projectSlug && (
-                  <Link className={styles.cardLink} href="/projects">
-                    Open it in the showcase
-                    <span aria-hidden="true">↗</span>
+                  <Link href="/projects" className={styles.storyLink}>
+                    Explore Road Report <span aria-hidden="true">↗</span>
                   </Link>
+                )}
+                {entry.kind === "workshop" && (
+                  <figure className={styles.workshopPhoto}>
+                    <Image
+                      src="/images/home/workshop-ctoc.webp"
+                      alt="Students at a CTOC Labs system design workshop watch architecture diagrams on two screens."
+                      width={1152}
+                      height={1536}
+                      sizes="(max-width: 720px) 85vw, 320px"
+                    />
+                    <figcaption>System design workshop at CTOC Labs</figcaption>
+                  </figure>
                 )}
               </article>
             </li>
@@ -84,19 +70,8 @@ export default function ExperiencePage() {
         </ol>
 
         <aside className={styles.closing}>
-          <p>
-            Looking for something specific, or wondering how one of these was put together? The
-            projects showcase goes deeper, and I&rsquo;m happy to talk through any of it.
-          </p>
-          <div className={styles.closingActions}>
-            <Link className={styles.primaryAction} href="/projects">
-              <span>Browse the projects</span>
-              <span aria-hidden="true">↗</span>
-            </Link>
-            <Link className={styles.secondaryAction} href="/about">
-              More about me <span aria-hidden="true">→</span>
-            </Link>
-          </div>
+          <p>For the build decisions and the work itself, open the project showcase.</p>
+          <Link href="/projects">See the projects <span aria-hidden="true">↗</span></Link>
         </aside>
       </div>
     </main>

@@ -1,0 +1,47 @@
+.cosmos {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
+  overflow: hidden;
+  pointer-events: none;
+  background: #080511;
+}
+
+.canvas,
+.fallback,
+.veil {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.canvas {
+  display: block;
+  opacity: 0;
+  transition: opacity 750ms ease;
+}
+
+.cosmos[data-home-cosmos="webgl"] .canvas {
+  opacity: 1;
+}
+
+.fallback {
+  background:
+    radial-gradient(ellipse 36% 55% at 26% 42%, rgb(126 86 199 / 34%), transparent 75%),
+    radial-gradient(ellipse 28% 43% at 68% 25%, rgb(151 132 230 / 16%), transparent 78%),
+    linear-gradient(180deg, #080511 0%, #1c1040 60%, #080511 100%);
+}
+
+.veil {
+  background:
+    linear-gradient(90deg, rgb(7 5 20 / 77%) 0%, rgb(9 5 22 / 47%) 48%, rgb(8 5 20 / 18%) 100%),
+    linear-gradient(180deg, #080511 0%, transparent 17% 78%, #080511 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas { transition: none; }
+}

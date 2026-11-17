@@ -643,6 +643,7 @@
 .fieldNote {
   position:relative;
   z-index:2;
+  isolation:isolate;
   min-height:630px;
   display:grid;
   grid-template-columns:1fr minmax(240px,330px);
@@ -652,13 +653,6 @@
   margin:0 auto;
   padding:6rem 0 9rem;
   border-top:1px solid #9f825633
-}
-.fieldNote::before {
-  content:"";
-  position:absolute;
-  inset:0 -10vw;
-  z-index:-1;
-  background:radial-gradient(ellipse at 30% 45%,rgb(74 64 124 / 46%),transparent 65%),radial-gradient(ellipse at 72% 60%,rgb(96 180 196 / 12%),transparent 68%)
 }
 .fieldLabel {
   color:#e2c492;

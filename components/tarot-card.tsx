@@ -37,6 +37,7 @@ export function TarotCard({ project, compact = false }: { project: Project; comp
           width={artwork.width}
           height={artwork.height}
           unoptimized
+          loading="eager"
           sizes={SIZES}
           className={styles.fullArtImage}
           onError={() => setArtworkFailed(true)}
@@ -63,6 +64,7 @@ export function TarotCard({ project, compact = false }: { project: Project; comp
               alt={artwork.alt}
               fill
               unoptimized
+              loading="eager"
               sizes={SIZES}
               className={styles.artworkImage}
               onError={() => setArtworkFailed(true)}

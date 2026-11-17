@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { home } from "@/data/home";
+import { HomeCosmos } from "./home-cosmos";
 import styles from "./home.module.css";
 
 type Phase = "opening" | "reveal" | "ready";
@@ -130,6 +131,7 @@ export function HomeIntro() {
       </section>
       <div className={styles.footerRule} aria-hidden="true"><span>EST. IN CURIOSITY</span><span className={styles.footStar}>✦</span><span>SCROLL TO EXPLORE</span></div>
       <section className={styles.fieldNote} aria-labelledby="field-note-title">
+        <HomeCosmos />
         <div className={styles.fieldNoteCopy}>
           <p className={styles.fieldLabel}>BEYOND THE EDITOR / 02</p>
           <h2 id="field-note-title">Beyond the editor.</h2>
