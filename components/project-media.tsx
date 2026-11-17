@@ -1,0 +1,93 @@
+"use client";
+
+import { createContext, useContext, useState, type ReactNode } from "react";
+import { isYouTubeId, type Project, type ProjectMp4Video, type ProjectScreenshot, type ProjectYouTubeVideo } from "@/data/projects";
+
+export type MediaItem =
+  | ({ kind: "image" } & ProjectScreenshot)
+  | ProjectMp4Video
+  | (ProjectYouTubeVideo & { width: number; height: number });
+
+/** YouTube frames are always 16:9; the poster (when supplied) must match. */
+const YOUTUBE_SIZE = { width: 1280, height: 720 };
+
+/**
+ * Gallery order: videos first (a demo explains a project fastest), then screenshots. A YouTube
+ * entry with a malformed ID is skipped rather than rendered as a broken embed.
+ */
+export function projectMedia(project: Project): MediaItem[] {
+  const videos = (project.videos ?? []).flatMap((video): MediaItem[] => {
+    if (video.kind === "mp4") return [video];
+    return isYouTubeId(video.youtubeId) ? [{ ...video, ...YOUTUBE_SIZE }] : [];
+  });
+  const screenshots = (project.screenshots ?? []).map((item) => ({ kind: "image" as const, ...item }));
+  return [...videos, ...screenshots];
+}
+
+export const mediaKey = (item: MediaItem) => (item.kind === "youtube" ? `youtube:${item.youtubeId}` : item.src);
+
+export type ProjectMediaController = {
+  media: MediaItem[];
+  activeIndex: number;
+  /** True once the visitor has asked the active YouTube item to play (its embed is mounted). */
+  started: boolean;
+  /** Index of the first video, for the dossier's Watch Demo action; null when there is none. */
+  demoIndex: number | null;
+  /** Shows an item. Switching away from a playing embed unmounts it. */
+  select: (index: number) => void;
+  /** Starts the active YouTube item. */
+  play: () => void;
+  /** Shows the first video and starts it (an explicit visitor request). */
+  watchDemo: () => void;
+};
+
+function useMediaState(project: Project): ProjectMediaController {
+  const media = projectMedia(project);
+  // Keyed by project, so a different project always starts on its first item with nothing playing.
+  const [state, setState] = useState({ projectId: project.id, index: 0, started: false });
+  const current = state.projectId === project.id ? state : { projectId: project.id, index: 0, started: false };
+  const count = media.length;
+  const activeIndex = count > 0 ? Math.min(current.index, count - 1) : 0;
+  const demo = media.findIndex((item) => item.kind !== "image");
+  const demoIndex = demo === -1 ? null : demo;
+
+  const select = (index: number) => {
+    if (count === 0) return;
+    setState({ projectId: project.id, index: ((index % count) + count) % count, started: false });
+  };
+
+  return {
+    media,
+    activeIndex,
+    started: current.started && media[activeIndex]?.kind === "youtube",
+    demoIndex,
+    select,
+    play: () => setState({ projectId: project.id, index: activeIndex, started: true }),
+    watchDemo: () => {
+      if (demoIndex !== null) setState({ projectId: project.id, index: demoIndex, started: true });
+    },
+  };
+}
+
+const ProjectMediaContext = createContext<ProjectMediaController | null>(null);
+
+/**
+ * Shares one media state between the gallery (left) and the dossier (right). Mount it only while
+ * a project is open: unmounting on close discards the state, which also unmounts any embed.
+ */
+export function ProjectMediaProvider({ project, children }: { project: Project; children: ReactNode }) {
+  const controller = useMediaState(project);
+  return <ProjectMediaContext.Provider value={controller}>{children}</ProjectMediaContext.Provider>;
+}
+
+/** The shared controller inside a provider; otherwise a private one for this component. */
+export function useProjectMedia(project: Project): ProjectMediaController {
+  const shared = useContext(ProjectMediaContext);
+  const local = useMediaState(project);
+  return shared ?? local;
+}
+
+/** The shared controller, or null outside a provider (the dossier then shows no Watch Demo). */
+export function useOptionalProjectMedia(): ProjectMediaController | null {
+  return useContext(ProjectMediaContext);
+}

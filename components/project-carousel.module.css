@@ -193,7 +193,7 @@
 
 .dialogLayout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(22rem, 36vw, 31rem);
+  grid-template-columns: minmax(0, 1fr) clamp(23rem, 37vw, 33rem);
   height: 100%;
 }
 

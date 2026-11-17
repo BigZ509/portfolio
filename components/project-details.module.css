@@ -1,54 +1,101 @@
+/*
+ * The project dossier: an engineering record kept in a dark-fantasy archive. Deep indigo paper,
+ * a held violet glow, antique-gold hairlines, and the card's own symbol as a seal. Structure comes
+ * from type and rules, not boxes around every paragraph.
+ */
 .panel {
+  --dossier-gold: #c9ae78;
+  --dossier-gold-soft: rgb(201 174 120 / 22%);
+  --dossier-ink: #d3d7e6;
+  position: relative;
   height: 100%;
-  padding: clamp(1.7rem, 3vw, 2.5rem) clamp(1.5rem, 2.6vw, 2.5rem) var(--space-5);
+  padding: clamp(1.6rem, 2.8vw, 2.4rem) clamp(1.6rem, 3vw, 2.75rem) clamp(2rem, 3vw, 2.75rem);
+  overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  border-left: 3px double rgb(201 174 120 / 50%);
+  border-left: 1px solid rgb(201 174 120 / 48%);
+  /* The inner hairline is a fixed background layer, so it stays put while the record scrolls. */
   background:
-    radial-gradient(ellipse 130% 38% at 50% 0%, rgb(201 174 120 / 8%), transparent 62%),
-    linear-gradient(180deg, #111726 0%, #0c0f17 55%, #090b10 100%);
-  box-shadow: -28px 0 70px rgb(0 0 0 / 50%), inset 1px 0 0 rgb(201 174 120 / 14%);
+    linear-gradient(90deg, transparent 7px, rgb(201 174 120 / 16%) 7px, rgb(201 174 120 / 16%) 8px, transparent 8px),
+    radial-gradient(ellipse 85% 34% at 100% 0%, rgb(126 98 222 / 20%), transparent 72%),
+    radial-gradient(ellipse 70% 28% at 0% 100%, rgb(86 66 170 / 16%), transparent 72%),
+    linear-gradient(180deg, #151a3c 0%, #0f1331 46%, #0a0c21 100%);
+  box-shadow: -28px 0 70px rgb(0 0 0 / 50%);
+  color: var(--color-ivory);
   animation: panel-in 460ms cubic-bezier(0.2, 0.7, 0.2, 1) 220ms both;
 }
 
-.header {
+.panel:focus-visible {
+  outline-offset: -4px;
+}
+
+/* The card's symbol, large and faint behind the title. */
+.watermark {
+  position: absolute;
+  top: 3.25rem;
+  right: 0.75rem;
+  width: 11rem;
+  height: 11rem;
+  color: var(--dossier-gold);
+  opacity: 0.07;
+  pointer-events: none;
+}
+
+.masthead {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
+  gap: 1rem;
 }
 
-.eyebrow {
+.arcana {
   display: flex;
+  align-items: center;
   gap: 0.6rem;
   margin: 0;
-  color: var(--color-antique-gold);
+  color: var(--dossier-gold);
   font-family: var(--font-display);
-  font-size: 1.05rem;
-  letter-spacing: 0.04em;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+}
+
+.arcanaGlyph {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: none;
+  opacity: 0.85;
 }
 
 .numeral {
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
+}
+
+.arcanaRule {
+  width: 1.4rem;
+  height: 1px;
+  background: rgb(201 174 120 / 55%);
 }
 
 .close {
   display: inline-flex;
+  flex: none;
   align-items: center;
   gap: 0.4rem;
   min-height: 2.75rem;
-  padding: 0 1rem;
-  border: 1px solid var(--color-antique-gold);
+  padding: 0 0.95rem;
+  border: 1px solid rgb(201 174 120 / 60%);
   border-radius: 2px;
-  background: rgb(9 11 16 / 60%);
-  color: var(--color-antique-gold);
+  background: rgb(10 12 33 / 55%);
+  color: var(--dossier-gold);
   font: inherit;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   cursor: pointer;
-  transition: background-color 160ms ease;
+  transition: background-color 160ms ease, border-color 160ms ease;
 }
 
 .close:hover {
+  border-color: var(--dossier-gold);
   background: rgb(201 174 120 / 12%);
 }
 
@@ -61,147 +108,276 @@
   stroke-linecap: round;
 }
 
+.titleBlock {
+  position: relative;
+  margin-top: clamp(1.6rem, 3vh, 2.4rem);
+}
+
+.discipline {
+  margin: 0;
+  color: #b9acec;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
 .title {
-  margin: 1.25rem 0 0;
+  margin: 0.55rem 0 0;
+  color: #fbf6ea;
   font-family: var(--font-display);
-  font-size: clamp(2.15rem, 3.4vw, 2.9rem);
+  font-size: clamp(2.35rem, 3.5vw, 3.1rem);
   font-weight: 400;
-  line-height: 1.05;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
+  text-wrap: balance;
 }
 
 .status {
   display: inline-block;
-  margin: var(--space-2) 0 0;
-  padding: 0.2rem 0.75rem;
-  border: var(--border-subtle);
+  margin: 0.85rem 0 0;
+  padding: 0.18rem 0.65rem;
+  border: 1px solid rgb(185 172 236 / 55%);
   border-radius: 2px;
-  color: var(--color-text-muted);
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
-}
-
-.status[data-status="in-development"] {
-  border-color: rgb(137 128 166 / 60%);
-  color: var(--color-ivory);
+  color: #e4defa;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .status[data-status="complete"] {
-  border-color: var(--color-antique-gold);
-  color: var(--color-antique-gold);
+  border-color: var(--dossier-gold);
+  color: var(--dossier-gold);
 }
 
-.summary,
-.pending,
-.body,
-.meta {
+.lede {
+  max-width: 34ch;
   margin: 1rem 0 0;
-  line-height: 1.7;
-}
-
-.summary {
-  max-width: 43ch;
-  color: #f4efe5;
-  font-size: 1.08rem;
-  line-height: 1.55;
-}
-
-.body {
-  max-width: 60ch;
-  color: #cbd0db;
-  font-size: 1rem;
-}
-
-.body + .body {
-  margin-top: 1.15rem;
+  color: #f2ead8;
+  font-family: var(--font-display);
+  font-size: clamp(1.14rem, 1.45vw, 1.28rem);
+  line-height: 1.45;
+  text-wrap: pretty;
 }
 
 .pending {
+  margin: 1rem 0 0;
   color: var(--color-fog-gray);
   font-style: italic;
 }
 
-.meta {
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
-}
-
-.section {
-  margin-top: 2.2rem;
-}
-
-/* Section heading with a gilt flourish rule. */
-.sectionTitle {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 0;
-  color: var(--color-antique-gold);
-  font-family: var(--font-display);
-  font-size: 0.78rem;
-  font-weight: 400;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.sectionTitle::before {
-  color: rgb(201 174 120 / 70%);
-  content: "◆";
-  font-size: 0.5rem;
-  letter-spacing: 0;
-}
-
-.sectionTitle::after {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, rgb(201 174 120 / 45%), transparent);
-  content: "";
-}
-
-.tags,
-.links {
+/* Actions sit directly under the lede, where they are found without scrolling. */
+.actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1);
-  margin: var(--space-2) 0 0;
+  gap: 0.6rem;
+  margin: 1.5rem 0 0;
   padding: 0;
   list-style: none;
 }
 
-/* Engraved-plaque technology tags. */
-.tag {
-  padding: 0.3rem 0.7rem;
-  border: 1px solid rgb(201 174 120 / 32%);
-  border-radius: 2px;
-  background: linear-gradient(180deg, rgb(201 174 120 / 9%), rgb(201 174 120 / 3%));
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
-  color: #e6dcc4;
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
-}
-
-.link {
+.action {
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
   min-height: 2.75rem;
-  padding: 0 1.1rem;
-  border: 1px solid var(--color-antique-gold);
+  padding: 0 1rem;
+  border: 1px solid rgb(201 174 120 / 55%);
   border-radius: 2px;
-  color: var(--color-antique-gold);
+  background: rgb(10 12 33 / 45%);
+  color: #ead9b0;
+  font: inherit;
+  font-size: 0.88rem;
   letter-spacing: 0.03em;
   text-decoration: none;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
 }
 
-.link:hover {
+.action:hover {
+  border-color: var(--dossier-gold);
   background: rgb(201 174 120 / 12%);
+  color: #f6e7c2;
 }
 
-.title::after {
-  display: block;
-  width: 4.5rem;
+.action[data-primary="true"] {
+  border-color: #dcc28a;
+  background: linear-gradient(180deg, #dcc28a, #c4a66e);
+  color: #14122a;
+  font-weight: 600;
+}
+
+.action[data-primary="true"]:hover {
+  background: linear-gradient(180deg, #e6cf9b, #cdb07a);
+  color: #14122a;
+}
+
+.actionIcon {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.actionIcon[data-fill="true"] {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Gilt divider with a centre lozenge. */
+.rule {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: clamp(1.6rem, 3vh, 2.2rem) 0 0;
+  color: rgb(201 174 120 / 70%);
+  font-size: 0.5rem;
+}
+
+.rule::before,
+.rule::after {
+  flex: 1;
   height: 1px;
-  margin-top: 0.9rem;
-  background: linear-gradient(90deg, var(--color-antique-gold), transparent);
   content: "";
+}
+
+.rule::before {
+  background: linear-gradient(90deg, transparent, rgb(201 174 120 / 50%));
+}
+
+.rule::after {
+  background: linear-gradient(90deg, rgb(201 174 120 / 50%), transparent);
+}
+
+/* Numbered record entries: a numeral column with a faint thread, then heading and text. */
+.dossier {
+  margin-top: 0.4rem;
+}
+
+.entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: 0 0.9rem;
+  padding: 1.15rem 0 0.35rem;
+}
+
+.entry + .entry {
+  border-top: 1px solid rgb(201 174 120 / 12%);
+}
+
+.entryMark {
+  padding-top: 0.05rem;
+  color: var(--dossier-gold);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.entryMark::after {
+  display: block;
+  width: 1px;
+  height: 1.6rem;
+  margin: 0.45rem auto 0;
+  background: linear-gradient(180deg, rgb(201 174 120 / 45%), transparent);
+  content: "";
+}
+
+.entryTitle {
+  margin: 0;
+  color: var(--dossier-gold);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.entryText {
+  max-width: 58ch;
+  margin: 0.5rem 0 0;
+  color: var(--dossier-ink);
+  font-size: 0.98rem;
+  line-height: 1.68;
+  text-wrap: pretty;
+}
+
+/* Technologies: a quiet ledger, deliberately less prominent than the story. */
+.stack {
+  margin-top: 1.6rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--dossier-gold-soft);
+}
+
+.stackTitle {
+  margin: 0;
+  color: rgb(201 174 120 / 80%);
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.stackList {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0.85rem 0 0;
+}
+
+.stackRow {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.stackRow dt {
+  color: #a69bd1;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stackRow dd {
+  margin: 0;
+}
+
+.stackItems {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #e3e5ef;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.stackItems li + li::before {
+  margin: 0 0.5rem;
+  color: rgb(201 174 120 / 60%);
+  content: "·";
+}
+
+.colophon {
+  margin: 2rem 0 0;
+  color: rgb(201 174 120 / 45%);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.26em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.colophon span {
+  margin: 0 0.5rem;
+  font-size: 0.6rem;
 }
 
 @keyframes panel-in {
@@ -213,15 +389,47 @@
 
 @media (max-width: 700px) {
   .panel {
-    padding: var(--space-3) 1.25rem var(--space-4);
-    border-top: var(--border-subtle);
+    padding: 1.35rem 1.25rem 2rem;
+    border-top: 1px solid rgb(201 174 120 / 40%);
     border-left: 0;
     border-radius: var(--radius-md) var(--radius-md) 0 0;
+    background:
+      radial-gradient(ellipse 90% 30% at 100% 0%, rgb(126 98 222 / 20%), transparent 72%),
+      linear-gradient(180deg, #151a3c 0%, #0f1331 46%, #0a0c21 100%);
     animation-name: panel-up;
   }
 
-  .summary {
-    font-size: 1.05rem;
+  .watermark {
+    top: 2.5rem;
+    right: 0.5rem;
+    width: 8rem;
+    height: 8rem;
+  }
+
+  .titleBlock {
+    margin-top: 1.1rem;
+  }
+
+  .title {
+    font-size: 2.15rem;
+  }
+
+  .lede {
+    font-size: 1.1rem;
+  }
+
+  .actions {
+    margin-top: 1.2rem;
+  }
+
+  .entry {
+    grid-template-columns: 1.9rem minmax(0, 1fr);
+    gap: 0 0.7rem;
+  }
+
+  .stackRow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem;
   }
 }
 
@@ -236,8 +444,9 @@
   .panel {
     animation: none;
   }
-}
 
-.panel:focus-visible {
-  outline-offset: -4px;
+  .action,
+  .close {
+    transition: none;
+  }
 }

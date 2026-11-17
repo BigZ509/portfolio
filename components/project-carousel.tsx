@@ -5,6 +5,7 @@ import * as THREE from "three";
 import type { Project } from "@/data/projects";
 import { clamp, isEditableTarget, isLikelyTrackpad, normalizeWheelDelta, visibleHeightRatio } from "./carousel-input";
 import { ProjectDetails } from "./project-details";
+import { ProjectMediaProvider } from "./project-media";
 import { ProjectMediaGallery } from "./project-media-gallery";
 import { ProjectShowcaseEnvironment } from "./project-showcase-environment";
 import { createSelectionGlowTexture } from "./selection-glow-texture";
@@ -1013,7 +1014,7 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
   const onDialogKeyDown = (event: ReactKeyboardEvent<HTMLDialogElement>) => {
     if (event.key !== "Tab") return;
     const focusable = [...event.currentTarget.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+      'button:not([disabled]), a[href], iframe, [tabindex]:not([tabindex="-1"])',
     )];
     if (focusable.length === 0) return;
     const first = focusable[0];
@@ -1190,27 +1191,31 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
         onKeyDown={onDialogKeyDown}
       >
         {expandedProject && (
-          <div className={styles.dialogLayout}>
-            <div
-              className={styles.stage}
-              onPointerMove={onStagePointerMove}
-              onPointerLeave={onStagePointerLeave}
-            >
-              <ProjectShowcaseEnvironment />
-              {/* The selected card as an emblem beside the work. With WebGL, the 3D card flies toward
-                  this spot beneath the scene as it fades in; the DOM card then materializes in place. */}
-              <div ref={stageTargetRef} className={styles.stageCard} data-webgl={ready ? "true" : undefined}>
-                <TarotCard project={expandedProject} compact />
+          // One media state for the gallery and the dossier's Watch Demo; discarded on close, which
+          // also unmounts any playing embed.
+          <ProjectMediaProvider project={expandedProject}>
+            <div className={styles.dialogLayout}>
+              <div
+                className={styles.stage}
+                onPointerMove={onStagePointerMove}
+                onPointerLeave={onStagePointerLeave}
+              >
+                <ProjectShowcaseEnvironment />
+                {/* The selected card as an emblem beside the work. With WebGL, the 3D card flies toward
+                    this spot beneath the scene as it fades in; the DOM card then materializes in place. */}
+                <div ref={stageTargetRef} className={styles.stageCard} data-webgl={ready ? "true" : undefined}>
+                  <TarotCard project={expandedProject} compact />
+                </div>
+                <ProjectMediaGallery key={expandedProject.id} project={expandedProject} />
               </div>
-              <ProjectMediaGallery key={expandedProject.id} project={expandedProject} />
+              <ProjectDetails
+                project={expandedProject}
+                titleId={dialogTitleId}
+                summaryId={dialogSummaryId}
+                onClose={closeExpanded}
+              />
             </div>
-            <ProjectDetails
-              project={expandedProject}
-              titleId={dialogTitleId}
-              summaryId={dialogSummaryId}
-              onClose={closeExpanded}
-            />
-          </div>
+          </ProjectMediaProvider>
         )}
       </dialog>
     </section>
