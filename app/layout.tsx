@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { InfiniteVoidProvider } from "@/components/infinite-void/infinite-void-provider";
 import { Navbar } from "@/components/navbar";
 import "./globals.css";
 
@@ -11,8 +12,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        {children}
+        <InfiniteVoidProvider>
+          <Navbar />
+          {children}
+        </InfiniteVoidProvider>
       </body>
     </html>
   );

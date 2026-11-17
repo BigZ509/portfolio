@@ -19,9 +19,14 @@ owners conveys rights over the underlying franchise (see §4).
 - **Provenance:** stated by Marc to Claude Code in the working session of **2026-11-16**, in the
   review of this plan, as: *"I have stated that I have reuse authorization."* Recorded as asserted by
   the owner; not independently verified against upstream by Claude.
-- **Files covered by the intended use:** `src/engine/particles.ts`;
-  `src/engine/renderer.ts` — only `renderPortalDepthTunnel`, `drawImpactFrame`, and
-  `drawFractureOverlays`; `src/types.ts` — only the `Particle` and `SlashCut` shapes.
+- **Files now adapted for the Infinite Void background:**
+  `src/engine/world3d/shared.ts` (scene utilities),
+  `src/engine/world3d/zones.ts` (Infinite Void scene and helpers), and
+  `src/engine/world3d/index.ts` (the `World3D` renderer). The local adaptations are
+  `components/infinite-void/shared.ts`, `build-infinite-void.ts`, and `void-renderer.ts`;
+  each header records the specific portions used and the changes made. The earlier plan's
+  proposed `src/engine/particles.ts`, `renderer.ts`, and `types.ts` portions are not the
+  source of this implementation.
 - **Intended use:** adaptation into a personal portfolio website, published publicly, with
   attribution headers per plan §2.1.
 - **Outstanding — to be supplied by the owner:**
@@ -29,6 +34,7 @@ owners conveys rights over the underlying franchise (see §4).
   - [ ] Date the authorization was obtained
   - [ ] Medium and evidence (email, GitHub issue, direct message — and a link or copy)
   - [ ] Exact scope as granted, in the grantor's own words
+  - [ ] Confirm that the grant covers the three `world3d/` files now adapted
   - [ ] Whether public redistribution of the adapted code is covered
 
 ## 2. rajnil9/Cursed-Energy
@@ -95,7 +101,7 @@ generated for this project.
 
 | Source | Basis | In use? | Record complete? |
 |---|---|---|---|
-| `jjk-domain-expansion` | Owner-held authorization (asserted 2026-11-16) | Not yet — Phases 2–4 | No — §1 specifics outstanding |
+| `jjk-domain-expansion` | Owner-held authorization (asserted 2026-11-16) | **Yes, Infinite Void background** | No — §1 specifics outstanding |
 | `Cursed-Energy` | Owner-held authorization (asserted 2026-11-16) | Not yet — Phases 2–4 | No — §2 specifics outstanding |
 | `Anime-Portfolio` | README MIT grant + owner-held authorization | **Yes, since Phase 5** | Partly — canonical notice outstanding |
 | `rishabhaiml/Portfolio` | README MIT grant ("for your own portfolio") | **Yes, since Phase 6** | Partly — canonical notice outstanding (§7) |

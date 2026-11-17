@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { AtmosphericBackground } from "@/components/atmospheric-background";
 import type { Metadata } from "next";
 import { AboutMotion } from "@/components/about-motion";
 import { MangaGrid, MangaPanel } from "@/components/manga-panel";
@@ -43,6 +44,7 @@ function SocialIcon({ icon }: { icon: string }) {
 export default function AboutPage() {
   return (
     <main className={`${styles.page} min-h-screen`}>
+      <AtmosphericBackground />
       <div className={styles.ground} aria-hidden="true" />
 
       <AboutMotion>
@@ -86,8 +88,8 @@ export default function AboutPage() {
                 />
               </div>
               <figcaption className={styles.heroCaption}>
-                <span>Fig. I</span>
-                <span>{aboutIntro.photo.caption}</span>
+                <span data-hero="meta">Fig. I</span>
+                <span data-hero="meta">{aboutIntro.photo.caption}</span>
               </figcaption>
             </figure>
           </section>

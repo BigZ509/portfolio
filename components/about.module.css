@@ -22,7 +22,9 @@
     radial-gradient(ellipse 72% 46% at 16% 4%, rgb(146 126 230 / 42%), transparent 70%),
     radial-gradient(ellipse 56% 40% at 88% 22%, rgb(104 194 214 / 24%), transparent 72%),
     radial-gradient(ellipse 64% 42% at 52% 98%, rgb(176 146 108 / 20%), transparent 74%),
-    linear-gradient(176deg, #2a3163 0%, #232a53 44%, #1b2142 100%);
+    /* Translucent so the Infinite Void (fixed behind the page) reads through, subdued enough
+       that long-form text stays legible. Same colours as before at reduced opacity. */
+    linear-gradient(176deg, rgb(42 49 99 / 64%) 0%, rgb(35 42 83 / 66%) 44%, rgb(27 33 66 / 72%) 100%);
 }
 
 .ground::after {

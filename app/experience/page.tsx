@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AtmosphericBackground } from "@/components/atmospheric-background";
 import type { Metadata } from "next";
 import { MirrorDivider } from "@/components/mirror-divider";
 import { involvement, type InvolvementKind } from "@/data/experience";
@@ -18,6 +19,7 @@ const KIND_LABELS: Record<InvolvementKind, string> = {
 export default function ExperiencePage() {
   return (
     <main className={`${styles.page} min-h-screen`}>
+      <AtmosphericBackground />
       <div className={styles.ground} aria-hidden="true" />
 
       <div className={styles.inner}>

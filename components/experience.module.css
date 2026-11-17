@@ -17,7 +17,8 @@
   background:
     radial-gradient(ellipse 66% 42% at 84% 2%, rgb(146 126 230 / 38%), transparent 70%),
     radial-gradient(ellipse 52% 36% at 8% 28%, rgb(104 194 214 / 22%), transparent 72%),
-    linear-gradient(178deg, #29305f 0%, #222850 46%, #1a2040 100%);
+    /* Translucent so the Infinite Void (fixed behind the page) reads through. */
+    linear-gradient(178deg, rgb(41 48 95 / 64%) 0%, rgb(34 40 80 / 66%) 46%, rgb(26 32 64 / 72%) 100%);
 }
 
 .inner {
