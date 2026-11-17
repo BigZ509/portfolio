@@ -74,8 +74,10 @@ export interface ProjectMp4Video {
  */
 export interface ProjectYouTubeVideo {
   kind: "youtube";
-  /** The 11-character ID from the watch URL (`youtube.com/watch?v=<id>`). */
+  /** The 11-character ID from the watch or Shorts URL (`watch?v=<id>`, `/shorts/<id>`). */
   youtubeId: string;
+  /** Frame shape. Shorts are portrait ("9:16") and are never cropped into a landscape frame. */
+  aspect?: "16:9" | "9:16";
   /** Accessible name for the player and thumbnail, e.g. "Road Report demo". */
   title: string;
   caption: string;
@@ -88,6 +90,14 @@ export interface ProjectYouTubeVideo {
 
 export type ProjectVideo = ProjectMp4Video | ProjectYouTubeVideo;
 
+/** A photograph or screenshot in the gallery. */
+export interface ProjectImageMedia extends ProjectScreenshot {
+  kind: "image";
+}
+
+/** One gallery entry. The `media` array order is the gallery order. */
+export type ProjectMedia = ProjectImageMedia | ProjectVideo;
+
 const YOUTUBE_ID = /^[A-Za-z0-9_-]{11}$/;
 
 export function isYouTubeId(value: string): boolean {
@@ -96,8 +106,9 @@ export function isYouTubeId(value: string): boolean {
 
 /**
  * Registers a YouTube video. Throws on a malformed ID, so a typo fails the build instead of
- * rendering a broken embed. To add a project's video, this is the only change needed:
- *   videos: [youtubeVideo({ youtubeId: "…", title: "Guiding Hands demo", caption: "Demo" })]
+ * rendering a broken embed. Adding a project's video is a data-only change: put
+ *   youtubeVideo({ youtubeId: "…", title: "… demo", caption: "Demo video", aspect: "9:16" })
+ * into that project's `media` list where it should appear in the gallery.
  */
 export function youtubeVideo(video: Omit<ProjectYouTubeVideo, "kind">): ProjectYouTubeVideo {
   if (!isYouTubeId(video.youtubeId)) {
@@ -120,6 +131,11 @@ export interface ProjectStory {
     /** Heading override, e.g. "Design Approach" for a project without implementation yet. */
     label?: string;
     text: string;
+  };
+  /** Optional data path through the system, shown as a compact ordered sequence. */
+  flow?: {
+    label: string;
+    steps: readonly string[];
   };
 }
 
@@ -145,8 +161,8 @@ export interface Project {
   status: ProjectStatus;
   githubUrl?: string;
   demoUrl?: string;
-  screenshots?: readonly ProjectScreenshot[];
-  videos?: readonly ProjectVideo[];
+  /** Gallery items in display order: photographs, screenshots, MP4 and YouTube videos. */
+  media?: readonly ProjectMedia[];
   cardArtwork?: CardArtwork;
 }
 
@@ -169,7 +185,7 @@ const projectRecords: readonly Project[] = [
         "An Expo app that records a practice run and turns the returned transcript into feedback: pace in words per minute across the talk and the timestamp of every filler word. Sounds like “um” always count; words like “like” and “so” are checked against their neighbours before they're flagged.",
       decision: {
         text:
-          "Audio goes through a Node.js backend instead of the phone calling the transcription API directly. That keeps API keys off the device and gives one place to validate requests and control cost, at the price of an extra hop. The app also rejects a transcript with missing or out-of-order word timings before any analysis runs. An authenticated session API that returns each saved session only to its owner is in review.",
+          "Audio goes through a Node.js backend instead of the phone calling the transcription API directly. That keeps API keys off the device and gives one place to validate requests and control cost, at the price of an extra hop. The app also rejects a transcript with missing or out-of-order word timings before any analysis runs. Two pieces are still in progress: an authenticated session API that returns each saved session only to its owner (in review), and an offline Common Voice evaluation set for measuring transcription quality.",
       },
     },
     techStack: [
@@ -189,16 +205,17 @@ const projectRecords: readonly Project[] = [
     romanNumeral: "XXI",
     motif: "orbit",
     shortDescription: "A four-wheel delivery rover, designed in CAD first so the robotics will have a real chassis to live on.",
-    // No repository. Only the Fusion model exists; every electronic component is planned.
+    // No repository. Only the Fusion model exists (scope per the owner); every electronic component
+    // is planned, and nothing has been assembled, driven or run autonomously.
     story: {
       problem:
-        "Autonomy is the exciting part of a delivery robot, but it needs a body first. Before any navigation code matters, the platform has to carry cargo and hold a camera high enough to see ahead.",
+        "Autonomy is the exciting part of a delivery robot, but it needs a body first. Before any navigation code matters, the platform has to carry cargo, hold a camera high enough to see ahead, and leave real space for the electronics that will run it.",
       built:
-        "A mechanical model in Autodesk Fusion: a four-wheel chassis with a removable cargo tray and a camera mast. The CAD model is the finished part so far. The rover has not been assembled or driven.",
+        "A mechanical model in Autodesk Fusion: a four-wheel chassis with a removable cargo tray and a camera mast, laid out with mounting space for the boards and sensors to come. The CAD model is the finished part so far. The rover has not been assembled or driven.",
       decision: {
         label: "Design Approach",
         text:
-          "The tray and mast are fixed in the model now, so the electronics planned next (a Raspberry Pi 4, an ESP32, LiDAR and a webcam) will be fitted to settled geometry rather than a frame that is still changing.",
+          "Packaging comes before code. Placing the controllers, LiDAR and camera in CAD, and checking their clearances against the tray and wheels, means parts will be bought and mounted against settled geometry, while the removable tray keeps the cargo module separate from the chassis. Next is a Raspberry Pi 4, an ESP32, LiDAR and a webcam, with autonomy after that.",
       },
     },
     techStack: [
@@ -215,31 +232,94 @@ const projectRecords: readonly Project[] = [
     tarotIdentity: "The Magician",
     romanNumeral: "I",
     motif: "spark",
-    shortDescription: "Hand exercises turned into a game you steer with gestures in front of a webcam.",
-    // Team project (BigZ509/guiding-hands). Teammates wrote most of the gesture controller and the
-    // game; Marc's commits build the React player companion and its read-only tracking preview.
-    // No clinical claims: nothing here has been evaluated as therapy.
+    shortDescription: "Hand exercises turned into a game projected onto a tabletop, steered by gestures made in front of a camera.",
+    // Team project (BigZ509/guiding-hands; CONTEXT.md, README.md, gesture_control/controls.py).
+    // Teammates wrote most of the gesture controller and the game; Marc's commits build the React
+    // player companion and its read-only tracking preview. No clinical claims: the repository itself
+    // calls these "image-based gameplay features, not clinical measurements". The README states the
+    // prototype sends no robot commands, so the robot visible in one photo is not described as part
+    // of the system.
     story: {
       problem:
-        "Repetitive hand exercises are easy to lose interest in. Our team wanted the movements to steer a character in a game, with gestures simple enough to remember mid-play.",
+        "Repetitive hand exercises are easy to drift away from. Our team wanted the same movements to steer a game projected onto a table, with gestures simple enough to remember mid-play.",
       built:
-        "MediaPipe tracks hand landmarks, and a Python controller turns an open hand, a fist and two pinches into movement. Commands travel over UDP to a Node.js relay, which forwards them to the browser game over WebSockets. My part is the player companion: a React screen with four illustrated gesture reminders beside the live game.",
+        "The controller measures how far each finger bends and how close the thumb is to each fingertip, scaled to palm size so distance from the camera doesn't matter, then maps an open hand, a fist and two pinches to movement. A projector on a boom stand casts the game onto a 36 × 20 inch board. My part was the player companion: a React screen with four illustrated gesture reminders and an optional view of the tracking camera.",
       decision: {
         text:
-          "The companion is display-only. It never sends commands to the game, and its optional camera preview is read-only, proxied from the local tracking process. If the companion reconnects or closes, play carries on, which keeps the same boundary between vision and game that the rest of the system relies on.",
+          "Each stage has one job and fails safe. Tracking loss, an ambiguous gesture or slow inference sends a stop instead of a stale command, and the protocol expects the game to halt if packets stop arriving. Because the game only consumes movement packets, the companion can stay display-only: it never sends commands, so it can reconnect or close without interrupting play.",
+      },
+      flow: {
+        label: "Signal Path",
+        steps: [
+          "Camera frame",
+          "MediaPipe: 21 hand landmarks",
+          "Bend and pinch features",
+          "Gesture → velocity",
+          "UDP JSON packet",
+          "Node.js relay",
+          "WebSocket",
+          "Browser game on the projector",
+        ],
       },
     },
     techStack: [
       { label: "Vision", items: ["Python", "OpenCV", "MediaPipe"] },
       { label: "Realtime", items: ["UDP", "Node.js", "WebSockets"] },
       { label: "Interface", items: ["React"] },
-      { label: "Target hardware", items: ["Jetson Orin Nano"] },
+      { label: "Hardware", items: ["Jetson Orin Nano (target)", "Projector", "Webcam"] },
     ],
     category: "Computer vision · Team project",
     status: "to-confirm",
     githubUrl: "https://github.com/BigZ509/guiding-hands",
-    // The owner is recording a demo. When it is published, register it here (no component changes):
-    //   videos: [youtubeVideo({ youtubeId: "<11-character ID>", title: "Guiding Hands demo", caption: "Gameplay demo" })],
+    // Photos supplied by the owner (guiding-hands-phase9-agent-package.zip; originals kept there).
+    // The Short is the owner's own upload; the poster is a local copy of its portrait thumbnail.
+    // Order: the result first, then the demo, the people, and the engineering.
+    media: [
+      {
+        kind: "image",
+        src: "/images/projects/guiding-hands/guiding-hands-projected-game.webp",
+        alt: "Overhead view of the game projected onto a white tabletop board: a top-down dungeon map with rooms labelled The Sunken Keep, Crystal Hall and Treasury, a printed marker in one corner, and a small Makeblock robot resting on the board.",
+        width: 1200,
+        height: 1600,
+        caption: "Projected game board",
+      },
+      youtubeVideo({
+        youtubeId: "UwMCrwPF1LA",
+        title: "Guiding Hands demo",
+        caption: "Demo video",
+        aspect: "9:16",
+        poster: {
+          src: "/images/projects/guiding-hands/guiding-hands-demo-poster.jpg",
+          alt: "Guiding Hands demo video: a player gestures toward the camera while a maze game glows on the projected board.",
+          width: 720,
+          height: 1280,
+        },
+      }),
+      {
+        kind: "image",
+        src: "/images/projects/guiding-hands/guiding-hands-live-demo.webp",
+        alt: "Team members demonstrate Guiding Hands in a conference room beside a projector mounted on a tall boom stand above the table; one person wears an inflatable costume.",
+        width: 1152,
+        height: 1536,
+        caption: "Team demo",
+      },
+      {
+        kind: "image",
+        src: "/images/projects/guiding-hands/guiding-hands-setup-overhead.webp",
+        alt: "Overhead view during setup: a projector hangs from a boom stand above a blank white board on the table, with tools, a printed marker and unpacked equipment nearby.",
+        width: 1200,
+        height: 1600,
+        caption: "Projector setup",
+      },
+      {
+        kind: "image",
+        src: "/images/projects/guiding-hands/guiding-hands-jetson-hardware.webp",
+        alt: "Close-up of an NVIDIA Jetson developer kit on a desk, with USB, Ethernet and power cables connected.",
+        width: 1600,
+        height: 1066,
+        caption: "Jetson board",
+      },
+    ],
   },
   {
     id: 4,
@@ -271,9 +351,10 @@ const projectRecords: readonly Project[] = [
     status: "to-confirm",
     githubUrl: "https://github.com/Lockop1/Road-Report",
     demoUrl: "https://hazard-identifier.vercel.app",
-    // Supplied by the portfolio owner (YouTube, public, embedding allowed). The poster is a local
-    // copy of the video's own thumbnail.
-    videos: [
+    // Video supplied by the portfolio owner (YouTube, public, embedding allowed); the poster is a
+    // local copy of its own thumbnail. Screenshots come from road-report-portfolio-assets.zip and
+    // illustrate the interface only; they do not verify any feature beyond what the story states.
+    media: [
       youtubeVideo({
         youtubeId: "mj-jhV5Joho",
         title: "Road Report demo",
@@ -285,11 +366,8 @@ const projectRecords: readonly Project[] = [
           height: 720,
         },
       }),
-    ],
-    // Supplied by the portfolio owner (road-report-portfolio-assets.zip). Screenshots illustrate the
-    // interface only; they do not verify any feature beyond what the description states.
-    screenshots: [
       {
+        kind: "image",
         src: "/images/projects/road-report/road-report-route-comparison.webp",
         alt: "Road Report map showing alternate driving routes around Miami, hazard indicators, and a route labeled Safest.",
         width: 862,
@@ -297,6 +375,7 @@ const projectRecords: readonly Project[] = [
         caption: "Route comparison",
       },
       {
+        kind: "image",
         src: "/images/projects/road-report/road-report-hazard-details.webp",
         alt: "Road Report map with an incident details popup showing an active collision and report counts.",
         width: 840,

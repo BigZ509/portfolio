@@ -4,6 +4,8 @@
   z-index: 3;
   inset: 5cqh 4cqw 4cqh 25cqw;
   display: grid;
+  /* A fixed-width column, so the thumbnail strip scrolls instead of widening the gallery. */
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto;
   justify-items: center;
   align-items: center;
@@ -22,7 +24,7 @@
 }
 
 .figure {
-  --frame-h: min(66cqh, calc(46cqw / var(--media-ratio)));
+  --frame-h: min(66cqh, calc(62cqw / var(--media-ratio)));
   position: relative;
   z-index: 2;
   display: grid;
@@ -145,12 +147,14 @@
 
 .controls {
   display: flex;
+  max-width: 100%;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .arrow {
   display: grid;
+  flex: none;
   width: 2.75rem;
   height: 2.75rem;
   place-items: center;
@@ -177,12 +181,26 @@
   stroke-linejoin: round;
 }
 
+/* The arrows stay put; when a project has more thumbnails than the stage is wide, the strip scrolls. */
 .thumbs {
+  position: relative;
   display: flex;
+  min-width: 0;
   gap: 0.5rem;
   margin: 0;
-  padding: 0;
+  padding: 4px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
   list-style: none;
+}
+
+.thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.thumbs > li {
+  flex: none;
 }
 
 .thumb {
@@ -249,12 +267,24 @@
 
 /* Video frames get more of the stage than portrait screenshots: a 16:9 player needs width. */
 .figure[data-kind="youtube"],
-.figure[data-kind="mp4"] {
+.figure[data-kind="mp4"],
+.figure[data-kind="image"][data-orientation="landscape"] {
   --frame-h: min(60cqh, calc(62cqw / var(--media-ratio)));
+}
+
+/* Portrait video (YouTube Shorts): as tall as the stage allows, never forced into a landscape frame. */
+.figure[data-kind="youtube"][data-orientation="portrait"],
+.figure[data-kind="mp4"][data-orientation="portrait"] {
+  --frame-h: min(66cqh, calc(62cqw / var(--media-ratio)));
 }
 
 .backFrame[data-kind="youtube"] img {
   object-fit: cover;
+}
+
+.videoWrap:focus-visible {
+  outline: 2px solid var(--color-antique-gold);
+  outline-offset: 4px;
 }
 
 .poster,
@@ -499,8 +529,14 @@
 
   /* Phones: the player takes nearly the full width so YouTube's controls stay usable. */
   .figure[data-kind="youtube"],
-  .figure[data-kind="mp4"] {
+  .figure[data-kind="mp4"],
+  .figure[data-kind="image"][data-orientation="landscape"] {
     --frame-h: min(48cqh, calc(90cqw / var(--media-ratio)));
+  }
+
+  .figure[data-kind="youtube"][data-orientation="portrait"],
+  .figure[data-kind="mp4"][data-orientation="portrait"] {
+    --frame-h: min(64cqh, calc(80cqw / var(--media-ratio)));
   }
 
   .caption {

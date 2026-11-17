@@ -307,6 +307,41 @@
   text-wrap: pretty;
 }
 
+/* Data path through a system: one quiet line of steps joined by gilt arrows, not a diagram. */
+.flow {
+  margin: 0.95rem 0 0;
+  padding: 0.75rem 0 0.1rem 0.9rem;
+  border-left: 1px solid rgb(185 172 236 / 40%);
+}
+
+.flowLabel {
+  margin: 0;
+  color: #b9acec;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.flowSteps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: #e3e5ef;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.flowSteps li + li::before {
+  margin: 0 0.45rem;
+  color: rgb(201 174 120 / 75%);
+  content: "→";
+  content: "→" / "";
+}
+
 /* Technologies: a quiet ledger, deliberately less prominent than the story. */
 .stack {
   margin-top: 1.6rem;
@@ -363,6 +398,7 @@
   margin: 0 0.5rem;
   color: rgb(201 174 120 / 60%);
   content: "·";
+  content: "·" / "";
 }
 
 .colophon {

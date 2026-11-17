@@ -1,87 +1,142 @@
-# Phase 9: Project Dossier Redesign and Video Integration
+# Phase 9: Project Dossier Redesign and Complete Media Integration
 
-Baseline: `c748c4d`. Scope is limited to the expanded project showcase. The carousel, tarot artwork, JJK environments, homepage, About, Experience and existing screenshots are unchanged.
+Baseline: `c748c4d`. Phase 9 landed in two commits: the dossier panel and the Road Report video first, then the Guiding Hands Short, the four Guiding Hands photos and a responsive pass.
 
-## Road Report video
+Scope is limited to the expanded project showcase. The carousel, tarot artwork, JJK environments, homepage, About, Experience and existing screenshots are unchanged.
 
-- **Source:** `youtube.com/watch?v=mj-jhV5Joho` ("RoadReport ShellHacks2026 Demo"). oEmbed confirmed it is public and embeddable, and the `youtube-nocookie.com` embed responds.
-- **Gallery order:** the demo is first, followed by the two existing screenshots. Its thumbnail is labelled "▶ Watch Demo".
-- **Poster:** Road Report opens on the poster, `road-report-demo-poster.jpg`, a local copy of the video's own thumbnail. Opening a project makes no requests to YouTube.
-- **Playback:**
-  - The embed (`youtube-nocookie.com`, `rel=0`, `playsinline`) mounts only after the visitor presses Watch Demo, either on the poster or in the panel.
-  - The poster stays underneath until the iframe loads, so the frame never goes blank.
-  - Focus moves into the player when it mounts.
-- **Stopping:** switching media, changing project or closing the dialog unmounts the iframe, which stops playback.
-- **Fullscreen:** enabled through `allowFullScreen`.
-- **Framing:** video frames are sized 16:9 and are larger than portrait screenshots. On phones they use about 90% of the stage width.
-- **Fallback:** "Watch on YouTube ↗" is always shown in the caption row. If the player has not loaded after 15 s, a status line points to that link.
+## Media model
 
-## Adding the Guiding Hands video
+`Project.media` is one ordered list, and its order is the gallery order. Each entry is one of three types:
 
-No video is registered yet. When it is published, add this to the Guiding Hands record in `data/projects.ts`:
+- **`kind: "image"`:** a photo or screenshot, with its intrinsic size, alt text and caption.
+- **`kind: "mp4"`:** the existing native-player path, unchanged.
+- **`kind: "youtube"`:** created only through `youtubeVideo()`, which validates the 11-character ID (a bad ID fails the build). It has an optional `aspect` of `"16:9"` (the default) or `"9:16"` for Shorts, and an optional local `poster`.
 
-```ts
-videos: [youtubeVideo({ youtubeId: "<11-char id>", title: "Guiding Hands demo", caption: "Gameplay demo" })],
-```
+One state, `components/project-media.tsx`, is shared by the gallery and the dossier: the active index plus whether a YouTube player has been started. It is mounted only while a project is open, so closing the dialog or switching project discards it.
 
-The thumbnail, player and the panel's Watch Demo action all appear automatically. A local `poster` is optional; without one, YouTube's thumbnail is used. A malformed ID fails the build.
+## YouTube behaviour (Road Report and Guiding Hands)
 
-## Data model
+Both videos use the same player.
 
-- `ProjectVideo` is now a discriminated union: `kind: "mp4"` keeps the existing native-player path, and `kind: "youtube"` is created through the validating `youtubeVideo()` helper.
-- `detailedDescription` is replaced by `story`, with `problem`, `built` and an optional `decision` (whose heading can be overridden).
-- `technologies` is replaced by `techStack`, a list of labelled groups.
-- `components/project-media.tsx` holds a single media state that the gallery and the dossier share. It is mounted only while a project is open, so closing the dialog discards the state and unmounts any player. The gallery still works standalone with local state.
+**Sources.** Both videos are public and embeddable (checked through oEmbed).
+- Road Report: `mj-jhV5Joho`, 16:9.
+- Guiding Hands: `UwMCrwPF1LA`, a 9:16 Short uploaded by Marc's own channel.
 
-## The dossier panel
+**Before playback.** Opening a project shows a local poster: a copy of the video's own thumbnail, or the portrait Shorts thumbnail for Guiding Hands. There are no YouTube requests and no iframe.
+
+**Playback.**
+- Watch Demo, on the poster or in the panel, mounts the `youtube-nocookie.com` embed (`autoplay=1` after the click, `rel=0`, `playsinline`).
+- The poster stays underneath until the player loads, so the frame never goes blank.
+- Fullscreen is enabled through `allowFullScreen`.
+
+**Stopping.** Switching media, closing the dialog or changing project unmounts the iframe, which stops playback.
+
+**Focus.**
+- The gallery's Play button moves focus to the player's frame, a wrapper in this page rather than the cross-origin iframe, so Escape still closes the dialog. Tab enters YouTube's controls.
+- The panel's Watch Demo leaves focus on its own button.
+
+**Fallback.** "Watch on YouTube ↗" is always in the caption row. If the player hasn't loaded after 15 s, a status line points to it.
+
+**Framing.** Video frames are sized to their true aspect ratio. Portrait Shorts use the stage height and are never cropped into 16:9. Measured player sizes:
+
+| Video | 1440×900 | 768×1024 | 390×844 |
+| --- | --- | --- | --- |
+| Short | 334×594 | 248×441 | 164×292 |
+| Road Report | 16:9 | 16:9 | about 90% of the stage width |
+
+## Guiding Hands photos
+
+The four supplied photos are copied from `guiding-hands-phase9-agent-package.zip` into `public/images/projects/guiding-hands/` as the package's optimized WebPs. The original JPEGs stay in the ZIP, which is kept locally and not committed.
+
+Gallery order:
+1. Projected game board (the result)
+2. Demo video
+3. Team demo (the people)
+4. Projector setup (the installation)
+5. Jetson board (the embedded hardware)
+
+Alt text describes only what is visible. Two deliberate choices:
+- **Jetson model:** the photo's alt text doesn't name a model. The "Orin Nano (target)" label in the tech list comes from the repository's `CONTEXT.md`.
+- **Robot:** the Makeblock robot on the board is described neutrally, because the repository's README states that "No robot commands are sent by this prototype."
+
+**Image loading.** Local gallery images now go through Next's image optimizer, with `sizes` and lazily loaded thumbnails. Opening Guiding Hands loads, for example, a 10 KB thumbnail instead of the 144 KB original. Remote stills are used as-is.
+
+## Dossier panel
 
 - **Masthead:** the card's motif glyph, the numeral and the arcana name, plus Close.
-- **Title block:** the discipline label, the title, a status badge (only for real states such as "In development"), and a one-sentence lede.
-- **Actions** sit directly under the lede: Watch Demo, View Live Demo and Source on GitHub. Watch Demo is shown only when a video exists, and the first action is the primary one. If a project has no public links, the actions row is omitted.
+- **Title block:** a discipline label, the title, a status badge (only for real states), and a one-sentence lede.
+- **Actions** sit directly under the lede: Watch Demo, View Live Demo and Source on GitHub. Each appears only when real, and the first is the primary action.
 - **Record:** numbered I/II/III entries (The Problem, What I Built, Engineering Decisions) separated by gilt hairlines. The rover's third entry is headed "Design Approach".
-- **Built with:** a quiet labelled ledger of technologies rather than rows of badges.
-- **Styling:** indigo paper with a held violet glow, a fixed gold hairline and a faint motif watermark. The panel column widened slightly to `clamp(23rem, 37vw, 33rem)`.
+- **Signal Path:** a new optional `story.flow`, used for Guiding Hands. It shows the eight-stage path from camera frame to browser game as one quiet line of steps joined by arrows.
+- **Built with:** a grouped technology ledger rather than badges.
+- **Styling:** indigo paper, a held violet glow, a fixed gold hairline and a faint motif watermark.
 
-## Copy: sources and corrections
+**Responsive fixes found in testing.**
+- The thumbnail strip overflowed the stage on tablet and mobile. The gallery grid's `auto` column grew to fit its content, so it now uses `minmax(0, 1fr)`. The arrows stay put, the strip scrolls, and the active thumbnail is kept in view by scrolling the strip itself.
+- Image and video frames may use up to 62% of the stage width. That changes nothing on desktop, where frames are limited by height, but makes them larger on narrow stages.
 
-Every claim was checked against the repositories (cloned read-only) and their commit authorship.
+## Copy: sources
 
-- **Road Report:** Marc authored the classifier, report validation and tests. Teammates built the map and safest-route ranking. The decision entry cites the real rule weights (4 for specific phrases, 2 for generic ones) and the clarification cases.
-- **SpeakLab AI:**
-  - The decision comes from Marc's own architecture notes: requests go through a Node.js backend to keep keys off the device, validate requests and control cost.
-  - **Correction:** the earlier copy said Marc "added ownership checks on session reads". That session API is an open, unmerged PR by a teammate, so it is now described as "in review".
-  - Whisper appears in the owner's original brief but not in the repo, so it stays only in the tech list.
-- **Guiding Hands:** this is a team project. The controller and the game are teammates' work; Marc built the display-only React player companion and its read-only tracking preview. No clinical claims are made.
-- **ZBXP:**
-  - XP is awarded by Supabase RPCs (`complete_quest`, `log_workout`). Levels are one per 100 XP, with ranks E to S.
-  - The Pomodoro timer does not award XP, so it is not claimed to.
-  - Whether the leaderboard is per guild is unverified, so the copy says "the leaderboard".
-- **Delivery Rover:** the CAD model is the only current result. All electronics are listed as planned.
+Every claim was checked against the repositories and their commit authorship.
+
+**Guiding Hands** (team project):
+- **Feature extraction** is from `controls.py`: 21 landmarks, finger-bend angles, and thumb-to-fingertip pinch distances divided by palm size.
+- **Fail-safe behaviour** is from `CONTEXT.md` and the README: tracking loss, ambiguous gestures and slow inference all stop movement, and the receiver is expected to stop when packets stop.
+- **Transport:** JSON over UDP, then a Node.js relay and WebSockets.
+- **Physical setup:** a projector on a table mount and a 36 × 20 in board.
+- **Credits:** teammates wrote the controller and the game. Marc built the display-only React companion.
+- **Claims:** no clinical claims are made. The repository itself calls its features "not clinical measurements".
+
+**Road Report:** Marc wrote the classifier, its validation and its tests; teammates built the map and routing. The copy cites the real rule weights and clarification cases.
+
+**SpeakLab AI:**
+- The architecture decision comes from Marc's own audit notes.
+- The session API with owner-only access is still an open PR by a teammate, so it is described as "in review".
+- Common Voice evaluation is listed as in progress.
+
+**Delivery Rover:**
+- The completed CAD scope comes from the owner: chassis, tray, mast, mounting space and clearance planning.
+- All electronics are listed as planned, and autonomy comes after them.
+- The copy states plainly that the rover has not been assembled or driven.
+
+**ZBXP:**
+- XP is awarded by Supabase RPCs, with one level per 100 XP and ranks E to S.
+- The Pomodoro timer awards no XP, so the copy doesn't claim it does.
+- Whether the leaderboard is per guild is unverified, so the copy says "the leaderboard".
 
 ## Verification
 
 `npm run typecheck`, `npm run lint` and `npm run build` all pass.
 
-The production build was driven with Playwright and system Chrome in three configurations: 1440×900 with WebGL, 390×844 with WebGL, and 1440×900 with WebGL disabled (fallback grid). In every configuration:
+The production build was driven with Playwright and system Chrome in five configurations:
 
-- **Open and close:** all five projects open, and each closes with Escape and with Close.
-- **Panel:** structure and links are correct, with no horizontal overflow.
-- **Road Report on open:** it opens on the demo poster with zero YouTube requests and no iframe.
-- **Playback:**
-  - Watch Demo mounts the nocookie embed, focuses it, and the video plays (`currentTime` advances, not paused).
-  - Moving to a screenshot removes the iframe.
-  - The panel's Watch Demo returns to the video and plays it.
-  - Selecting the video thumbnail shows the poster only.
-  - Closing while it plays removes the iframe, and reopening does not autoplay.
-- **Keyboard:** from Close, Tab goes to Watch Demo, View Live Demo, Source on GitHub, then the gallery's Watch Demo, Watch on YouTube and the media controls. Escape closes.
-- **Scrolling:** the mouse wheel scrolls the panel without moving the page.
+- 1440×900, WebGL
+- 768×1024, WebGL
+- 390×844, WebGL
+- 1440×900, `prefers-reduced-motion: reduce`
+- 1440×900, WebGL disabled (fallback grid)
+
+**In every configuration:**
+
+- **Open and close:** all five projects open and close, with both Escape and Close.
+- **Focus:** on close, focus returns to that project's control. The focus trap held over 30 Tabs.
+- **Overflow:** no horizontal overflow, and the gallery arrows stay inside the stage.
+- **Guiding Hands on open:** it opens on the projected-game photo with zero YouTube requests.
+  - All five items render. Each photo is loaded, has alt text and keeps its orientation.
+  - The panel's Watch Demo mounts the nocookie embed, and the Short plays: `currentTime` advances, the video isn't paused, and the stream is 480×854, which is portrait.
+  - Moving to the next item removes the iframe, and closing while it plays removes it too.
+- **Changing project:** opening Road Report next starts fresh on its own poster, with no iframe and no requests. Its own video plays, and Escape closes the dialog after Play.
+- **Reopening:** Guiding Hands reopens on photo 1 with no iframe.
+- **Reduced motion:** the panel and media-float animations are `none`.
 - **Console:** no errors or warnings, apart from the known GPU notices from headless rendering.
 
-Screenshots are in `output/playwright/phase-9/` (`before-*`, `after-*`).
+Screenshots are in `output/playwright/phase-9/`: `before-*`, `after-desktop-*`, `after-tablet-*` and `after-mobile-*`.
 
 ## Limitations
 
-- **Embedding failures:** these can't be detected across origins without the YouTube IFrame API. The always-visible "Watch on YouTube" link and the 15 s notice are the fallback.
-- **Escape inside the player:** while keyboard focus is inside the YouTube player, Escape is handled by the player, not the dialog. Shift+Tab out, then press Escape.
-- **iOS Safari:** it may ignore `autoplay=1` after the click and show YouTube's own play button, which needs one more tap.
-- **Guiding Hands, SpeakLab, ZBXP:** these still have no screenshots.
+- **Embedding failures:** these can't be detected across origins without the YouTube IFrame API. The always-visible link and the 15 s notice are the fallback.
+- **Focus inside the player:** once keyboard or mouse focus is inside the YouTube player, Escape belongs to the player. Shift+Tab out, or use Close.
+- **iOS Safari:** it may require a second tap inside the player before playback starts.
+- **Mobile Shorts:** the player is compact on phones (164×292). YouTube's fullscreen control is available.
+- **Robot:** the robot in the projected-game photo is not part of the described system.
+- **Asset-package copies:** a second copy of the package ZIP sits in `data/`. It is identical to the copy at the repository root and was left untouched and uncommitted.

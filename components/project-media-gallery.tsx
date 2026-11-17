@@ -13,6 +13,14 @@ const youtubeWatchUrl = (id: string) => `https://www.youtube.com/watch?v=${id}`;
 const youtubePoster = (item: ProjectYouTubeVideo) =>
   item.poster?.src ?? `https://i.ytimg.com/vi/${item.youtubeId}/hqdefault.jpg`;
 
+/**
+ * Local files go through Next's image optimizer (resized, modern formats, per `sizes`), so opening
+ * a project never pulls every full-resolution photo. Remote stills (YouTube) are used as-is.
+ */
+const optimizable = (src: string) => src.startsWith("/") && !src.startsWith("//");
+
+const orientation = (item: MediaItem) => (item.height > item.width ? "portrait" : "landscape");
+
 /** Thumbnail / back-layer still for any item, or null when a video has no poster. */
 function stillFor(item: MediaItem): string | null {
   if (item.kind === "image") return item.src;
@@ -93,13 +101,10 @@ function PlayIcon() {
  * showcase) stops playback.
  */
 function YouTubeEmbed({ item }: { item: ProjectYouTubeVideo }) {
-  const frameRef = useRef<HTMLIFrameElement>(null);
   const [loaded, setLoaded] = useState(false);
   const [slow, setSlow] = useState(false);
 
   useEffect(() => {
-    // The Play control that had focus is gone; keep keyboard focus with the video.
-    frameRef.current?.focus({ preventScroll: true });
     const timer = window.setTimeout(() => setSlow(true), 15000);
     return () => window.clearTimeout(timer);
   }, []);
@@ -109,7 +114,6 @@ function YouTubeEmbed({ item }: { item: ProjectYouTubeVideo }) {
   return (
     <>
       <iframe
-        ref={frameRef}
         className={styles.embed}
         data-loaded={loaded ? "true" : undefined}
         src={`https://www.youtube-nocookie.com/embed/${item.youtubeId}?${params}`}
@@ -128,22 +132,33 @@ function YouTubeEmbed({ item }: { item: ProjectYouTubeVideo }) {
   );
 }
 
-function YouTubePlayer({ item, started, onPlay }: { item: ProjectYouTubeVideo; started: boolean; onPlay: () => void }) {
+type YouTubeItem = Extract<MediaItem, { kind: "youtube" }>;
+
+function YouTubePlayer({ item, started, onPlay }: { item: YouTubeItem; started: boolean; onPlay: () => void }) {
+  const poster = youtubePoster(item);
+  const wrapRef = useRef<HTMLDivElement>(null);
   return (
-    <div className={styles.videoWrap} data-kind="youtube">
+    // Focus target once Play is pressed (the button unmounts). It stays in this document rather
+    // than inside the cross-origin iframe, so Escape still closes the dialog; Tab enters the player.
+    <div ref={wrapRef} className={styles.videoWrap} data-kind="youtube" tabIndex={-1} aria-label={`${item.title} video`} role="group">
       {/* The poster stays underneath while the embed loads, so the frame is never blank. */}
       <Image
-        src={youtubePoster(item)}
+        src={poster}
         alt={started ? "" : (item.poster?.alt ?? `${item.title} thumbnail`)}
-        width={1280}
-        height={720}
-        unoptimized
+        width={item.width}
+        height={item.height}
+        unoptimized={!optimizable(poster)}
+        priority
+        sizes="(max-width: 700px) 90vw, 50vw"
         className={styles.poster}
       />
       {started ? (
         <YouTubeEmbed item={item} />
       ) : (
-        <button type="button" className={styles.watchButton} aria-label={`Watch Demo: play ${item.title}`} onClick={onPlay}>
+        <button type="button" className={styles.watchButton} aria-label={`Watch Demo: play ${item.title}`} onClick={() => {
+          onPlay();
+          wrapRef.current?.focus({ preventScroll: true });
+        }}>
           <span className={styles.watchIcon}><PlayIcon /></span>
           <span className={styles.watchText}>Watch Demo</span>
         </button>
@@ -156,6 +171,17 @@ export function ProjectMediaGallery({ project }: { project: Project }) {
   const { media, activeIndex, started, select, play } = useProjectMedia(project);
   const [playing, setPlaying] = useState(false);
   const [interacted, setInteracted] = useState(false);
+  const thumbsRef = useRef<HTMLUListElement>(null);
+
+  // Keep the active thumbnail visible when the strip scrolls. Only the strip's own scrollLeft moves;
+  // the dialog and page never scroll.
+  useEffect(() => {
+    const list = thumbsRef.current;
+    const current = list?.querySelector<HTMLElement>("[aria-current='true']")?.parentElement;
+    if (!list || !current || list.scrollWidth <= list.clientWidth) return;
+    const left = current.offsetLeft - (list.clientWidth - current.offsetWidth) / 2;
+    list.scrollTo({ left, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }, [activeIndex]);
   const active = media[activeIndex];
   const count = media.length;
   const next = count > 1 ? media[(activeIndex + 1) % count] : undefined;
@@ -193,13 +219,13 @@ export function ProjectMediaGallery({ project }: { project: Project }) {
           // Depth layer: the next item floats behind the active frame (decorative; use the controls to switch).
           <div className={styles.backFrame} style={ratioStyle(next)} data-kind={next.kind} aria-hidden="true">
             {nextStill ? (
-              <Image src={nextStill} alt="" width={next.width} height={next.height} unoptimized className={styles.media} />
+              <Image src={nextStill} alt="" width={next.width} height={next.height} unoptimized={!optimizable(nextStill)} sizes="(max-width: 700px) 50vw, 30vw" className={styles.media} />
             ) : (
               <span className={styles.backGlyph}>▶</span>
             )}
           </div>
         )}
-        <figure className={styles.figure} style={ratioStyle(active)} data-kind={active.kind}>
+        <figure className={styles.figure} style={ratioStyle(active)} data-kind={active.kind} data-orientation={orientation(active)}>
           <div className={styles.float}>
             <div className={styles.frame} data-kind={active.kind}>
               {active.kind === "image" ? (
@@ -209,9 +235,9 @@ export function ProjectMediaGallery({ project }: { project: Project }) {
                   alt={active.alt}
                   width={active.width}
                   height={active.height}
-                  unoptimized
+                  unoptimized={!optimizable(active.src)}
                   priority
-                  sizes="(max-width: 700px) 60vw, 40vw"
+                  sizes="(max-width: 700px) 90vw, 50vw"
                   className={styles.media}
                 />
               ) : active.kind === "youtube" ? (
@@ -240,7 +266,7 @@ export function ProjectMediaGallery({ project }: { project: Project }) {
           <button type="button" className={styles.arrow} aria-label="Previous media" onClick={() => go(activeIndex - 1)}>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg>
           </button>
-          <ul className={styles.thumbs}>
+          <ul ref={thumbsRef} className={styles.thumbs}>
             {media.map((item, index) => {
               const thumbSrc = stillFor(item);
               return (
@@ -254,7 +280,7 @@ export function ProjectMediaGallery({ project }: { project: Project }) {
                     onClick={() => go(index)}
                   >
                     {thumbSrc ? (
-                      <Image src={thumbSrc} alt="" width={item.width} height={item.height} unoptimized className={styles.thumbImage} />
+                      <Image src={thumbSrc} alt="" width={item.width} height={item.height} unoptimized={!optimizable(thumbSrc)} sizes="112px" className={styles.thumbImage} />
                     ) : null}
                     {item.kind === "youtube" ? (
                       <span className={styles.thumbLabel} aria-hidden="true">▶ Watch Demo</span>

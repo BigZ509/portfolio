@@ -1,27 +1,28 @@
 "use client";
 
 import { createContext, useContext, useState, type ReactNode } from "react";
-import { isYouTubeId, type Project, type ProjectMp4Video, type ProjectScreenshot, type ProjectYouTubeVideo } from "@/data/projects";
+import { isYouTubeId, type Project, type ProjectImageMedia, type ProjectMp4Video, type ProjectYouTubeVideo } from "@/data/projects";
 
 export type MediaItem =
-  | ({ kind: "image" } & ProjectScreenshot)
+  | ProjectImageMedia
   | ProjectMp4Video
   | (ProjectYouTubeVideo & { width: number; height: number });
 
-/** YouTube frames are always 16:9; the poster (when supplied) must match. */
-const YOUTUBE_SIZE = { width: 1280, height: 720 };
+/** Player frame for each YouTube aspect; the poster (when supplied) should match. */
+const YOUTUBE_SIZE = {
+  "16:9": { width: 1280, height: 720 },
+  "9:16": { width: 720, height: 1280 },
+} as const;
 
 /**
- * Gallery order: videos first (a demo explains a project fastest), then screenshots. A YouTube
- * entry with a malformed ID is skipped rather than rendered as a broken embed.
+ * Gallery items in the order the project lists them. A YouTube entry with a malformed ID is
+ * skipped rather than rendered as a broken embed.
  */
 export function projectMedia(project: Project): MediaItem[] {
-  const videos = (project.videos ?? []).flatMap((video): MediaItem[] => {
-    if (video.kind === "mp4") return [video];
-    return isYouTubeId(video.youtubeId) ? [{ ...video, ...YOUTUBE_SIZE }] : [];
+  return (project.media ?? []).flatMap((item): MediaItem[] => {
+    if (item.kind !== "youtube") return [item];
+    return isYouTubeId(item.youtubeId) ? [{ ...item, ...YOUTUBE_SIZE[item.aspect ?? "16:9"] }] : [];
   });
-  const screenshots = (project.screenshots ?? []).map((item) => ({ kind: "image" as const, ...item }));
-  return [...videos, ...screenshots];
 }
 
 export const mediaKey = (item: MediaItem) => (item.kind === "youtube" ? `youtube:${item.youtubeId}` : item.src);

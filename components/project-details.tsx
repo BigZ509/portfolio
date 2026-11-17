@@ -55,6 +55,7 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
     { key: "built", label: "What I Built", text: verified(story.built) },
     { key: "decision", label: story.decision?.label ?? "Engineering Decisions", text: verified(story.decision?.text) },
   ].filter((entry): entry is { key: string; label: string; text: string } => entry.text !== null);
+  const flowSteps = (story.flow?.steps ?? []).map(verified).filter((step): step is string => step !== null);
   const techGroups = project.techStack
     .map((group) => ({ label: group.label, items: group.items.map(verified).filter((item): item is string => item !== null) }))
     .filter((group) => group.items.length > 0);
@@ -137,6 +138,14 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
               <div>
                 <h3 id={`${titleId}-${entry.key}`} className={styles.entryTitle}>{entry.label}</h3>
                 <p className={styles.entryText}>{entry.text}</p>
+                {entry.key === "built" && flowSteps.length > 1 && story.flow && (
+                  <div className={styles.flow}>
+                    <p id={`${titleId}-flow`} className={styles.flowLabel}>{story.flow.label}</p>
+                    <ol className={styles.flowSteps} aria-labelledby={`${titleId}-flow`}>
+                      {flowSteps.map((step) => <li key={step}>{step}</li>)}
+                    </ol>
+                  </div>
+                )}
               </div>
             </section>
           ))}
