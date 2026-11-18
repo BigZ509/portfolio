@@ -52,6 +52,24 @@ function MotifGlyph({ motif, className }: { motif: CardMotif; className: string 
 
 type Chapter = { key: string; rail: string; title: string; text: string };
 
+/**
+ * The box that actually scrolls the dossier: the panel itself beside the media (desktop), or the whole
+ * showcase column when phones stack media and dossier into one scroll (the panel then has
+ * overflow-y: visible and its nearest scrolling ancestor takes over).
+ */
+function scrollRootOf(panel: HTMLElement): HTMLElement {
+  for (let node: HTMLElement | null = panel; node; node = node.parentElement) {
+    const { overflowY } = getComputedStyle(node);
+    if (overflowY === "auto" || overflowY === "scroll") return node;
+  }
+  return panel;
+}
+
+/** Where the panel starts inside its scroll root, in the root's scroll coordinates (0 for itself). */
+function panelOffset(panel: HTMLElement, root: HTMLElement): number {
+  return root === panel ? 0 : panel.getBoundingClientRect().top - root.getBoundingClientRect().top + root.scrollTop;
+}
+
 type ProjectDetailsProps = {
   project: Project;
   titleId: string;
@@ -100,66 +118,80 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
   const chapterId = (key: string) => `${titleId}-${key}`;
   const chapterKeys = chapters.map((chapter) => chapter.key).join("|");
 
-  // Reading progress: one passive listener on the panel itself (never the window), written straight
-  // to a CSS variable once per frame so scrolling causes no React renders.
+  // Reading progress, active chapter and first-sight reveal, all measured in whichever box scrolls the
+  // dossier. Rotating a tablet or resizing can swap between the stacked and side-by-side layouts, and
+  // with them the scroll root, so everything re-attaches when that changes. Progress is written
+  // straight to a CSS variable once per frame, so scrolling causes no React renders.
   useEffect(() => {
     const panel = panelRef.current;
     const bar = progressRef.current;
     if (!panel || !bar) return;
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const max = panel.scrollHeight - panel.clientHeight;
-      bar.style.setProperty("--progress", String(max > 0 ? Math.min(1, panel.scrollTop / max) : 1));
-    };
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    update();
-    panel.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      panel.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(frame);
-    };
-  }, [project.id]);
+    let root: HTMLElement | null = null;
+    let detach = () => {};
 
-  // Active chapter and first-sight reveal, both observed inside the panel's own scroll box.
-  useEffect(() => {
-    const panel = panelRef.current;
-    if (!panel) return;
-    const sections = Array.from(panel.querySelectorAll<HTMLElement>("[data-chapter]"));
-    const reveal = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter((entry) => entry.isIntersecting).map((entry) => (entry.target as HTMLElement).dataset.chapter ?? "");
-        if (visible.length) setSeen((prev) => (visible.every((key) => prev.has(key)) ? prev : new Set([...prev, ...visible])));
-      },
-      { root: panel, threshold: 0.12 },
-    );
-    // A chapter is "current" while it crosses a reading line about a third of the way down.
-    const current = new IntersectionObserver(
-      (entries) => {
+    const attach = () => {
+      const scroller = scrollRootOf(panel);
+      if (scroller === root) return;
+      detach();
+      root = scroller;
+      let frame = 0;
+      const update = () => {
+        frame = 0;
+        const start = panelOffset(panel, scroller);
+        const max = scroller.scrollHeight - scroller.clientHeight - start;
+        const progress = max > 0 ? Math.min(1, Math.max(0, (scroller.scrollTop - start) / max)) : 1;
+        bar.style.setProperty("--progress", String(progress));
+      };
+      const onScroll = () => {
+        if (!frame) frame = requestAnimationFrame(update);
+      };
+
+      const sections = Array.from(panel.querySelectorAll<HTMLElement>("[data-chapter]"));
+      const reveal = new IntersectionObserver(
+        (entries) => {
+          const visible = entries.filter((entry) => entry.isIntersecting).map((entry) => (entry.target as HTMLElement).dataset.chapter ?? "");
+          if (visible.length) setSeen((prev) => (visible.every((key) => prev.has(key)) ? prev : new Set([...prev, ...visible])));
+        },
+        { root: scroller, threshold: 0.12 },
+      );
+      // A chapter is "current" while it crosses a reading line about a third of the way down.
+      const current = new IntersectionObserver(
+        (entries) => {
+          if (performance.now() < railLockUntil.current) return;
+          for (const entry of entries) {
+            if (entry.isIntersecting) setActive(Number((entry.target as HTMLElement).dataset.index ?? 0));
+          }
+        },
+        { root: scroller, rootMargin: "-32% 0px -60% 0px" },
+      );
+      sections.forEach((section) => {
+        reveal.observe(section);
+        current.observe(section);
+      });
+      // At the very bottom the last chapter may never reach the reading line.
+      const onEnd = () => {
         if (performance.now() < railLockUntil.current) return;
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(Number((entry.target as HTMLElement).dataset.index ?? 0));
-        }
-      },
-      { root: panel, rootMargin: "-32% 0px -60% 0px" },
-    );
-    sections.forEach((section) => {
-      reveal.observe(section);
-      current.observe(section);
-    });
-    // At the very bottom the last chapter may never reach the reading line.
-    const onEnd = () => {
-      if (performance.now() < railLockUntil.current) return;
-      if (panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 4) setActive(sections.length - 1);
-      else if (panel.scrollTop < 4) setActive(0);
+        if (scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 4) setActive(sections.length - 1);
+        else if (scroller.scrollTop < panelOffset(panel, scroller) + 4) setActive(0);
+      };
+
+      update();
+      scroller.addEventListener("scroll", onScroll, { passive: true });
+      scroller.addEventListener("scroll", onEnd, { passive: true });
+      detach = () => {
+        scroller.removeEventListener("scroll", onScroll);
+        scroller.removeEventListener("scroll", onEnd);
+        cancelAnimationFrame(frame);
+        reveal.disconnect();
+        current.disconnect();
+      };
     };
-    panel.addEventListener("scroll", onEnd, { passive: true });
+
+    attach();
+    window.addEventListener("resize", attach);
     return () => {
-      reveal.disconnect();
-      current.disconnect();
-      panel.removeEventListener("scroll", onEnd);
+      window.removeEventListener("resize", attach);
+      detach();
     };
   }, [project.id, chapterKeys]);
 
@@ -167,12 +199,13 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
     const panel = panelRef.current;
     const target = panel?.querySelector<HTMLElement>(`[data-index="${index}"]`);
     if (!panel || !target) return;
+    const root = scrollRootOf(panel);
     const offset = (railRef.current?.offsetHeight ?? 0) + 14;
-    const top = target.getBoundingClientRect().top - panel.getBoundingClientRect().top + panel.scrollTop - offset;
+    const top = target.getBoundingClientRect().top - root.getBoundingClientRect().top + root.scrollTop - offset;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     // The click's timeStamp shares performance.now()'s clock.
     railLockUntil.current = at + 900;
-    panel.scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
+    root.scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
     setActive(index);
     // Move focus with the view so keyboard and screen-reader users land in the chapter.
     target.focus({ preventScroll: true });

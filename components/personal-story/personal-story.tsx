@@ -9,7 +9,7 @@
  */
 
 import Image from "next/image";
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { personalStory } from "@/data/personal-story";
@@ -40,12 +40,13 @@ function addReveal(
   direction: keyof typeof CLOSED_CLIPS,
   position: number,
   duration = 1.1,
+  ease = "expo.inOut",
 ) {
   const image = wrapper.querySelector("img, video");
   timeline.fromTo(
     wrapper,
     { clipPath: CLOSED_CLIPS[direction] },
-    { clipPath: OPEN_CLIP, duration, ease: "expo.inOut" },
+    { clipPath: OPEN_CLIP, duration, ease },
     position,
   );
   if (image) {
@@ -58,9 +59,17 @@ function addReveal(
   }
 }
 
+/** The visitor's own choice from the play/pause control; null until they use it. */
+type PlaybackIntent = "play" | "pause" | null;
+
 export function PersonalStory() {
   const rootRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const intentRef = useRef<PlaybackIntent>(null);
+  // Mirrors the element's own play/pause events, so the control always tells the truth.
+  const [playing, setPlaying] = useState(false);
+  // Autoplay was refused (iOS Low Power Mode, data saver, a site setting): show a clear Play.
+  const [blocked, setBlocked] = useState(false);
 
   // A layout effect, as in GSAP's useGSAP(): its cleanup runs before React detaches the
   // DOM, so the pin is reverted (stage moved out of its .pin-spacer) while still connected.
@@ -77,12 +86,21 @@ export function PersonalStory() {
     let desktopActive = false;
     let mobileVisible = false;
 
+    // Scroll decides only *whether* the chapter is on screen; it never touches currentTime. A visitor
+    // who paused keeps it paused, and one who pressed Play (e.g. with reduced motion) gets playback
+    // whenever the chapter is in view.
     const syncPlayback = () => {
       const active = desktopQuery.matches ? desktopActive : mobileVisible;
-      if (active && !reducedQuery.matches && document.visibilityState === "visible") {
-        video.play().catch(() => {
-          // The native controls remain available if the browser rejects autoplay.
-        });
+      const intent = intentRef.current;
+      const wanted = intent === "play" || (intent === null && !reducedQuery.matches);
+      if (active && wanted && document.visibilityState === "visible") {
+        video.play().then(
+          () => setBlocked(false),
+          (error: unknown) => {
+            // AbortError only means a pause() overtook this play(); anything else is a refusal.
+            if (!(error instanceof DOMException && error.name === "AbortError")) setBlocked(true);
+          },
+        );
       } else {
         video.pause();
       }
@@ -107,12 +125,19 @@ export function PersonalStory() {
       ([entry]) => {
         if (!entry.isIntersecting) return;
         video.preload = "auto";
+        // Start the story's photos now too. Safari's lazy-load margin is small, so on phones a frame
+        // could begin its aperture reveal before its photo existed and then pop in mid-animation.
+        root.querySelectorAll<HTMLImageElement>("img[loading='lazy']").forEach((image) => {
+          image.loading = "eager";
+        });
         approach.disconnect();
       },
       { rootMargin: "100% 0px" },
     );
     approach.observe(root);
 
+    // Returning through the back/forward cache restores a paused element; resume if still in view.
+    window.addEventListener("pageshow", syncPlayback);
     document.addEventListener("visibilitychange", syncPlayback);
     desktopQuery.addEventListener("change", syncPlayback);
     reducedQuery.addEventListener("change", syncPlayback);
@@ -212,11 +237,15 @@ export function PersonalStory() {
           portrait: "up",
           action: "right",
         };
+        // Touch scrolling is fast and uneven, so the aperture starts as soon as a frame's edge enters
+        // (not 12% in) and eases out instead of expo.inOut, whose long still start followed by a snap
+        // read as abrupt on a phone. Reversing re-closes it only once the frame is fully below the fold,
+        // so a quick flick back up never leaves a photo half-clipped on screen.
         gsap.utils.toArray<HTMLElement>("[data-story-media]", root).forEach((frame) => {
           const reveal = gsap.timeline({
-            scrollTrigger: { trigger: frame, start: "top 88%", toggleActions: "play none none reverse" },
+            scrollTrigger: { trigger: frame, start: "top bottom-=4%", toggleActions: "play none none reverse" },
           });
-          addReveal(reveal, frame, directions[frame.dataset.storyMedia ?? ""] ?? "up", 0, 1);
+          addReveal(reveal, frame, directions[frame.dataset.storyMedia ?? ""] ?? "up", 0, 0.95, "power3.out");
         });
       });
     }, root);
@@ -224,6 +253,7 @@ export function PersonalStory() {
     return () => {
       observer.disconnect();
       approach.disconnect();
+      window.removeEventListener("pageshow", syncPlayback);
       document.removeEventListener("visibilitychange", syncPlayback);
       desktopQuery.removeEventListener("change", syncPlayback);
       reducedQuery.removeEventListener("change", syncPlayback);
@@ -250,8 +280,13 @@ export function PersonalStory() {
             <h3>Fun?</h3>
             <div className={styles.funMedia}>
               <div className={`${styles.mediaFrame} ${styles.videoFrame}`} data-story-media="video" data-story-speed="1.18">
+                {/* No native controls: on iPhone they drew a large pause button, ±10 s skips and a
+                    scrubber across the scene. The boomerang is silent and decorative; the small
+                    toggle below is its accessible control, and becomes a clear Play button if
+                    the browser refuses autoplay. */}
                 <video
                   ref={videoRef}
+                  className={styles.storyVideo}
                   aria-label={personalStory.video.label}
                   width={personalStory.video.width}
                   height={personalStory.video.height}
@@ -259,12 +294,42 @@ export function PersonalStory() {
                   muted
                   loop
                   playsInline
+                  disablePictureInPicture
+                  disableRemotePlayback
                   preload="metadata"
-                  controls
+                  onPlay={() => {
+                    setPlaying(true);
+                    setBlocked(false);
+                  }}
+                  onPause={() => setPlaying(false)}
                 >
                   <source src={personalStory.video.src} type="video/mp4" />
                   Your browser does not support video playback.
                 </video>
+                <button
+                  type="button"
+                  className={styles.videoToggle}
+                  data-state={playing ? "playing" : blocked ? "blocked" : "paused"}
+                  aria-label={playing ? "Pause the Jamaica video" : "Play the Jamaica video"}
+                  onClick={() => {
+                    const video = videoRef.current;
+                    if (!video) return;
+                    if (video.paused) {
+                      intentRef.current = "play";
+                      // Called directly from the tap, so it counts as a user gesture even where
+                      // autoplay is refused.
+                      video.play().catch(() => setBlocked(true));
+                    } else {
+                      intentRef.current = "pause";
+                      video.pause();
+                    }
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    {playing ? <path d="M8 5.5h2.6v13H8zM13.4 5.5H16v13h-2.6z" /> : <path d="M8 5.5v13l10.5-6.5Z" />}
+                  </svg>
+                  {blocked && !playing && <span className={styles.videoToggleText}>Play</span>}
+                </button>
               </div>
               <div className={`${styles.mediaFrame} ${styles.nightFrame}`} data-story-media="night" data-story-speed="0.78">
                 <Image

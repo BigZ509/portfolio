@@ -863,6 +863,52 @@
   }
 }
 
+/*
+ * Stacked showcase (phones, portrait tablets): the dossier is part of the showcase's single scrolling
+ * column instead of a scroll box of its own. overflow-x: clip (not hidden) keeps it from becoming a
+ * scroll container, so the progress thread and chapter rail stick to the top of the screen.
+ */
+@media (max-width: 700px), (max-width: 900px) and (orientation: portrait) {
+  .panel {
+    height: auto;
+    overflow: visible;
+    overflow-x: clip;
+    padding-bottom: calc(2.5rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* Where the showcase's floating Close is shown, the dossier's own Close is hidden, and the sticky
+   rail and masthead leave the top-right corner to it. */
+@media (max-width: 700px), (max-width: 900px) and (orientation: portrait), (max-height: 500px) and (min-width: 701px) {
+  .close {
+    display: none;
+  }
+
+  .masthead {
+    padding-right: 3.25rem;
+  }
+
+  .rail {
+    padding-right: calc(var(--pad-x) + 3.4rem);
+  }
+}
+
+/* Short landscape keeps the narrow side-by-side dossier: stack each rail label under its number (as
+   on phones) so the three chapters fit beside the floating Close. */
+@media (max-height: 500px) and (min-width: 701px) {
+  .railButton {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    min-height: 3.1rem;
+  }
+
+  .railSlash {
+    display: none;
+  }
+}
+
 @keyframes panel-up {
   from {
     opacity: 0;

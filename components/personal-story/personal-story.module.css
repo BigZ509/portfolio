@@ -134,6 +134,95 @@
   aspect-ratio: 9 / 16;
 }
 
+/* Safari can still paint its start-playback glyph on a control-less video when autoplay is refused
+   (Low Power Mode); the toggle below replaces it. */
+.storyVideo::-webkit-media-controls,
+.storyVideo::-webkit-media-controls-start-playback-button,
+.storyVideo::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+/* The boomerang's own control: a small gilt seal in the corner, never over the face or the water.
+   The visible disc is 2.25rem; the button itself is a 44px touch target. */
+.videoToggle {
+  position: absolute;
+  z-index: 2;
+  right: .35rem;
+  bottom: .35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #f1d7a4;
+  cursor: pointer;
+  transition: opacity 200ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.videoToggle::before {
+  position: absolute;
+  inset: .25rem;
+  border: 1px solid rgb(223 190 137 / 70%);
+  border-radius: 999px;
+  background: rgb(9 11 26 / 62%);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 35%);
+  content: "";
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.videoToggle svg {
+  position: relative;
+  width: .95rem;
+  height: .95rem;
+  fill: currentColor;
+}
+
+.videoToggle[data-state="paused"] svg,
+.videoToggle[data-state="blocked"] svg {
+  margin-left: .12rem;
+}
+
+.videoToggle:focus-visible {
+  outline: 2px solid #f1d7a4;
+  outline-offset: -2px;
+  border-radius: 999px;
+}
+
+/* Autoplay refused: a labelled, centred Play over the poster, so it is obvious the video exists. */
+.videoToggle[data-state="blocked"] {
+  right: 50%;
+  bottom: 50%;
+  padding: 0 1.15rem 0 1rem;
+  transform: translate(50%, 50%);
+}
+
+.videoToggleText {
+  position: relative;
+  font-size: .78rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+/* Mouse and trackpad: the control appears on hover or focus, as the native one did, so the pinned
+   desktop scene stays clean. Touch screens always show it (there is no hover to reveal it). */
+@media (hover: hover) and (pointer: fine) {
+  .videoToggle[data-state="playing"] {
+    opacity: 0;
+  }
+
+  .videoFrame:hover .videoToggle,
+  .videoToggle:focus-visible {
+    opacity: 1;
+  }
+}
+
 .nightFrame {
   width: min(39%, 34svh);
   aspect-ratio: 3 / 4;
@@ -253,11 +342,38 @@
   .actionFrame {
     width: 46%;
   }
+
+  /* Heights follow the viewport, not just its width: on a landscape phone (844x390) the 9:16
+     boomerang was ~800px tall and every photo taller than the screen. Portrait phones are
+     unaffected because the width percentages above are the smaller limit there. */
+  .videoFrame {
+    max-width: calc(78svh * 9 / 16);
+  }
+
+  .nightFrame {
+    max-width: calc(62svh * 3 / 4);
+  }
+
+  .coatFrame {
+    max-width: calc(80svh * 3 / 4);
+  }
+
+  .portraitFrame,
+  .actionFrame {
+    max-width: calc(66svh * 3 / 4);
+  }
+
+  /* The longest heading: keep it inside a 320px screen instead of losing the question mark. */
+  .adventure h3 {
+    font-size: min(clamp(4.5rem, 15vw, 7rem), 19vw);
+  }
 }
 
 @media (max-width: 480px) {
+  /* Each chapter gets close to a screen of its own: the Style heading no longer arrives while the
+     Fun video is still mid-screen. */
   .chapter {
-    padding: 3.2rem 0 4rem;
+    padding: 3.6rem 0 6rem;
   }
 
   .funMedia,

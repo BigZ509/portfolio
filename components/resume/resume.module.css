@@ -349,6 +349,34 @@
   }
 }
 
+/* Phone landscape (e.g. 844x390): a compact header, and the PDF takes whatever height remains
+   instead of its 18rem minimum, which pushed the frame past the bottom of the dialog. */
+@media (max-height: 500px) {
+  .dialog {
+    height: calc(100dvh - 1rem);
+  }
+
+  .sheet {
+    gap: 0.6rem;
+    padding: 0.7rem max(1rem, env(safe-area-inset-right)) 0.7rem max(1rem, env(safe-area-inset-left));
+  }
+
+  .eyebrow,
+  .seal {
+    display: none;
+  }
+
+  .sheetTitle {
+    margin: 0;
+    font-size: 1.3rem;
+  }
+
+  .sheetPaper .document,
+  .sheetPaper .fallback {
+    min-height: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dialog[open] {
     animation: none;

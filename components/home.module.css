@@ -1090,3 +1090,64 @@
   }
 
 }
+
+/*
+ * Phones: the portrait joins the column after the actions instead of being pinned to the hero's
+ * bottom-right corner. On tall phones `margin-top:auto` still settles it in that corner; on short
+ * phones (320x568, 375x667) the copy reached the pinned photo, so the photo covered the lede and
+ * the Explore/About actions. In flow it can only follow them.
+ */
+@media(max-width:700px) {
+  .copy {
+    margin-bottom:1.75rem
+  }
+  .portrait {
+    position:relative;
+    right:auto;
+    bottom:auto;
+    align-self:flex-end;
+    margin:auto -1vw 0 0
+  }
+  .actions a {
+    font-size:.72rem
+  }
+  .eyebrow {
+    font-size:.66rem
+  }
+}
+
+/*
+ * The "scroll to explore" rule sits just under the hero in normal flow on phones and on short
+ * landscape screens, where the hero can be taller than the viewport; pinned at 100svh it crossed
+ * the title (844x390) or the portrait.
+ */
+@media(max-width:700px),(max-height:500px) and (min-width:701px) {
+  .footerRule {
+    position:relative;
+    top:auto;
+    bottom:auto;
+    left:auto;
+    right:auto;
+    width:92vw;
+    margin:-3.4rem auto 0
+  }
+}
+
+/* Phone landscape: the desktop two-column hero, compacted so title and actions fit the first screen. */
+@media(max-height:500px) and (min-width:701px) {
+  .hero {
+    min-height:100svh;
+    padding:5.25rem 0 4.75rem;
+    gap:2rem
+  }
+  .title {
+    font-size:clamp(3.4rem,7.5vw,4.8rem)
+  }
+  .lede {
+    margin:1rem 0 1.1rem;
+    font-size:1.15rem
+  }
+  .portrait {
+    max-width:44svh
+  }
+}

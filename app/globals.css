@@ -136,8 +136,15 @@ body {
  * rule now applies on every route rather than only the one that was checked.
  */
 @media (max-width: 700px) {
-  nav[aria-label="Main navigation"] > div { padding-left: 10px; padding-right: 10px; }
+  nav[aria-label="Main navigation"] > div { padding: 4px 10px; }
   nav[aria-label="Main navigation"] > div > a { display: none; }
   nav[aria-label="Main navigation"] ul { width: 100%; justify-content: space-between; gap: 0; }
-  nav[aria-label="Main navigation"] li a { padding: 6px 5px; font-size: clamp(11px, 3.3vw, 13px); }
+  /* Full 44px touch targets with labels that stay readable (12px at 320, 15px from 390). */
+  nav[aria-label="Main navigation"] li a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 5px;
+    font-size: clamp(12px, 3.85vw, 15px);
+  }
 }

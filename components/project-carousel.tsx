@@ -5,7 +5,7 @@ import * as THREE from "three";
 import type { Project } from "@/data/projects";
 import { clamp, isEditableTarget, isLikelyTrackpad, normalizeWheelDelta, visibleHeightRatio } from "./carousel-input";
 import { ProjectDetails } from "./project-details";
-import { ProjectMediaProvider } from "./project-media";
+import { ProjectMediaProvider, projectMedia } from "./project-media";
 import { ProjectMediaGallery } from "./project-media-gallery";
 import { ProjectShowcaseEnvironment } from "./project-showcase-environment";
 import { createSelectionGlowTexture } from "./selection-glow-texture";
@@ -164,6 +164,19 @@ type PointerSample = { time: number; x: number };
 
 const selectedMessage = (project: Project) => `Selected ${project.tarotIdentity}: ${project.title}`;
 const CLEARED_MESSAGE = "Selection cleared";
+
+/** Rendered and visible: a control hidden at this breakpoint (display: none) has no boxes. */
+const isShown = (element: HTMLElement) => element.getClientRects().length > 0;
+
+/**
+ * The stage's proportions on stacked (phone) layouts, fixed per project so the thumbnail strip never
+ * moves while flipping through media: "tall" if any item is portrait, "wide" if all are landscape.
+ */
+function mediaShape(project: Project): "tall" | "wide" | "empty" {
+  const media = projectMedia(project);
+  if (media.length === 0) return "empty";
+  return media.some((item) => item.height > item.width) ? "tall" : "wide";
+}
 
 export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: ProjectCarouselProps) {
   const sectionRef = useRef<HTMLElement>(null);
@@ -967,7 +980,8 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
     root.style.overflow = "hidden";
     if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
     if (!dialog.open) dialog.showModal();
-    dialog.querySelector<HTMLElement>("[data-dialog-initial-focus]")?.focus();
+    // Phones use the floating Close and the dossier's own Close is hidden; focus whichever is shown.
+    [...dialog.querySelectorAll<HTMLElement>("[data-dialog-initial-focus]")].find(isShown)?.focus();
     if (ready) controlsRef.current?.setExpanded(index, stageTargetRef.current);
 
     return () => {
@@ -1015,7 +1029,7 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
     if (event.key !== "Tab") return;
     const focusable = [...event.currentTarget.querySelectorAll<HTMLElement>(
       'button:not([disabled]), a[href], iframe, [tabindex]:not([tabindex="-1"])',
-    )];
+    )].filter(isShown);
     if (focusable.length === 0) return;
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
@@ -1199,9 +1213,17 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
           // One media state for the gallery and the dossier's Watch Demo; discarded on close, which
           // also unmounts any playing embed.
           <ProjectMediaProvider project={expandedProject}>
+            {/* Phones, portrait tablets and short landscape screens: one Close that stays put in the
+                top-right safe area while the showcase scrolls (the dossier's own Close is hidden there). */}
+            <button type="button" className={styles.dialogClose} onClick={closeExpanded} aria-label="Close project" data-dialog-initial-focus="">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M6 6l12 12M18 6 6 18" />
+              </svg>
+            </button>
             <div className={styles.dialogLayout}>
               <div
                 className={styles.stage}
+                data-media-shape={mediaShape(expandedProject)}
                 onPointerMove={onStagePointerMove}
                 onPointerLeave={onStagePointerLeave}
               >

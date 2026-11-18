@@ -248,13 +248,99 @@
   to { transform: translate3d(0, 0.5cqh, 0) rotate(-0.4deg); }
 }
 
-@media (max-width: 700px) {
+/* Floating Close for stacked and short layouts (shown below); desktop uses the dossier's own Close. */
+.dialogClose {
+  position: absolute;
+  z-index: 10;
+  top: max(0.4rem, env(safe-area-inset-top));
+  right: max(0.6rem, env(safe-area-inset-right));
+  display: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgb(201 174 120 / 75%);
+  border-radius: 50%;
+  background: rgb(10 12 33 / 80%);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 45%), 0 0 0 4px rgb(10 12 33 / 35%);
+  color: #e4cd98;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dialogClose svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+
+.dialogClose:focus-visible {
+  outline: 2px solid #e4cd98;
+  outline-offset: 2px;
+}
+
+/*
+ * Phones and portrait tablets: media above, dossier below, in ONE scrolling column. The old split
+ * (a 54dvh media pane over an independently scrolling dossier) gave two scroll regions fighting for
+ * the same swipe, squeezed both halves, and scrolled Close off screen. Now a swipe anywhere scrolls
+ * the showcase; the dossier's progress thread and chapter rail stick to the top of the screen, and
+ * Close floats in the top-right safe area at every scroll position.
+ */
+@media (max-width: 700px), (max-width: 900px) and (orientation: portrait) {
   .dialogLayout {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: 54dvh minmax(0, 1fr);
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
   }
 
-  /* Phones: the screenshots get the whole stage. */
+  .dialogLayout::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dialogClose {
+    display: grid;
+  }
+
+  /* The stage is a size container, so it needs a definite height: sized to the project's media. */
+  .stage {
+    height: clamp(26rem, 80svh, 48rem);
+  }
+
+  .stage[data-media-shape="wide"] {
+    height: clamp(20rem, calc(54vw + 11rem), 88svh);
+  }
+
+  .stage[data-media-shape="empty"] {
+    height: clamp(17rem, 44svh, 24rem);
+  }
+}
+
+/* Small phones held sideways (stacked, but under 500px tall): the stage is one screen high, so the
+   media, caption and thumbnails are all visible together before the dossier. */
+@media (max-width: 700px) and (max-height: 500px) {
+  .stage,
+  .stage[data-media-shape="wide"],
+  .stage[data-media-shape="empty"] {
+    height: max(17rem, 100svh);
+  }
+}
+
+/* Short landscape screens keep the side-by-side split, but Close still must not scroll away. */
+@media (max-height: 500px) and (min-width: 701px) {
+  .dialogClose {
+    display: grid;
+  }
+}
+
+/* Phones: the screenshots get the whole stage (portrait tablets keep the tarot emblem). */
+@media (max-width: 700px) {
   .stageCard {
     display: none;
   }
