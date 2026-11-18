@@ -23,6 +23,8 @@ The [optional SVG Scroll Reveal](https://github.com/tahabakri/scroll-reveal/tree
 
 The six optimized files were copied unchanged from the user's Phase 11 kit into `public/media/personal/`; their SHA-256 hashes matched `docs/MEDIA-MANIFEST.json` in the kit. The four original photos and original MP4 remain outside `public/`.
 
+Phase 13 re-encoded `jamaica-boomerang.mp4` from that kit file (3.7 Mbps, keyframes ~4 s apart) to H.264 High, CRF 27 capped at 1.5 Mbps, 1 s keyframes, faststart, no audio, same 720×1280 / 30 fps / 11.6 s (5,356,471 → 2,239,096 bytes; SSIM 0.980 against the kit file). See `docs/phase13-completion-report.md`. The kit file's hash therefore no longer matches the served file.
+
 ## MIT notice retained for reused GSAP Vault code
 
 MIT License

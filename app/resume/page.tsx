@@ -1,57 +1,49 @@
 import { AtmosphericBackground } from "@/components/atmospheric-background";
-import { DecorativeFrame } from "@/components/decorative-frame";
-import { PageContainer } from "@/components/page-container";
-import { SectionHeading } from "@/components/section-heading";
-import { socialLinks } from "@/data/social-links";
+import { RESUME, ResumeActions, ResumeDocument } from "@/components/resume/resume-document";
+import styles from "@/components/resume/resume.module.css";
+import { publicSocialLinks } from "@/data/social-links";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Resume — MARC'S WORLD",
+  description: "Preview or download Marc Alexis's one-page resume.",
 };
 
+/**
+ * Direct, shareable resume route. Works on refresh and without JavaScript; the navbar opens the
+ * same viewer as a dialog on other pages.
+ */
 export default function ResumePage() {
   return (
-    <main className="relative isolate min-h-screen overflow-hidden pt-20 pb-[var(--space-5)] sm:pt-24 sm:pb-[var(--space-6)]">
+    <main className={styles.page}>
       <AtmosphericBackground />
-      <PageContainer>
-        <SectionHeading as="h1" className="mb-[var(--space-5)] text-center text-4xl sm:text-5xl">
-          Resume
-        </SectionHeading>
-
-        <div className="mx-auto max-w-2xl">
-          <DecorativeFrame className="text-center">
-            <p className="mb-[var(--space-3)] text-lg text-[var(--color-ivory)]">
-              A downloadable resume will be available here soon.
+      <div className={styles.pageInner}>
+        <header className={styles.pageHead}>
+          <div>
+            <p className={styles.eyebrow}>The Record · one page</p>
+            <h1 className={styles.pageTitle}>{RESUME.title}</h1>
+            <p className={styles.pageLede}>
+              Education, projects and experience on a single page. Read it here, or take the PDF with you.
             </p>
-            <p className="mb-[var(--space-4)] text-[var(--color-text-muted)]">
-              In the meantime, you can explore my projects, experience, and skills through the other
-              sections of this portfolio, or connect with me directly.
-            </p>
+          </div>
+          <ResumeActions />
+        </header>
 
-            {/* Action links */}
-            <div className="flex flex-wrap justify-center gap-3">
-              {socialLinks
-                .filter((link) => link.icon === "email" || link.icon === "linkedin")
-                .map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    target={link.icon === "email" ? undefined : "_blank"}
-                    rel={link.icon === "email" ? undefined : "noopener noreferrer"}
-                    className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-antique-gold)] bg-[rgb(201_174_120_/_8%)] px-5 py-2.5 text-[var(--color-antique-gold)] no-underline transition-colors hover:bg-[rgb(201_174_120_/_15%)] hover:text-[var(--color-ivory)]"
-                  >
-                    {link.label === "Email" ? "Get in Touch" : link.label}
-                  </a>
-                ))}
-            </div>
-          </DecorativeFrame>
+        <ResumeDocument className={styles.pagePaper} />
 
-          {/* PDF placeholder note */}
-          <p className="mt-[var(--space-4)] text-center text-sm text-[var(--color-text-muted)] italic">
-            A PDF resume will be added once finalized. Check back soon.
-          </p>
-        </div>
-      </PageContainer>
+        {publicSocialLinks.length > 0 && (
+          <ul className={styles.connect} aria-label="Elsewhere">
+            {publicSocialLinks.map((link) => (
+              <li key={link.href}>
+                <a href={link.href} target="_blank" rel="noopener noreferrer">
+                  {link.label}
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </main>
   );
 }

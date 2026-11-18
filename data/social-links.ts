@@ -1,12 +1,12 @@
 /**
  * Contact destinations.
  *
- * Only entries marked `verified: true` are rendered publicly. The rest were template placeholders
- * that shipped as working-looking links — `https://github.com/`, `https://linkedin.com/in/` and
- * `mailto:contact@example.com` — which send visitors nowhere. They are kept here, unpublished, so
- * the owner can fill in real destinations rather than have them silently reinvented.
+ * Only entries marked `verified: true` are rendered publicly, and every one of them must be the
+ * owner's real destination. Earlier template placeholders (`https://linkedin.com/in/` and
+ * `mailto:contact@example.com`) sent visitors nowhere; they have been removed rather than kept as
+ * working-looking links. No public email address has been supplied, so none is listed.
  *
- * To publish one: replace `href` with the real destination and set `verified: true`.
+ * To add one: use the real destination and set `verified: true`. Never publish a guessed address.
  */
 
 export type SocialLink = {
@@ -26,7 +26,8 @@ export type SocialLink = {
 export const socialLinks: readonly SocialLink[] = [
   {
     label: "GitHub",
-    // Evidenced by this repository's own origin remote, which the owner pushes to.
+    // Evidenced by this repository's own origin remote, which the owner pushes to, and printed on
+    // the owner's resume.
     href: "https://github.com/BigZ509",
     icon: "github",
     verified: true,
@@ -34,17 +35,11 @@ export const socialLinks: readonly SocialLink[] = [
   },
   {
     label: "LinkedIn",
-    href: "https://linkedin.com/in/",
+    // Exact profile URL printed on the owner's supplied resume (public/resume/Marc-Alexis-Resume.pdf).
+    href: "https://www.linkedin.com/in/marc-alexis-6714b6191/",
     icon: "linkedin",
-    verified: false,
-    note: "Add a real profile URL to publish this.",
-  },
-  {
-    label: "Email",
-    href: "mailto:contact@example.com",
-    icon: "email",
-    verified: false,
-    note: "Add the address you want shown publicly to publish this.",
+    verified: true,
+    note: "Experience, coursework and updates.",
   },
 ];
 

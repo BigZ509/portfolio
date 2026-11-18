@@ -193,6 +193,12 @@
   border: 0;
 }
 
+/* While pinned, every frame is clipped to its border box, which hides the outer shadow and ring
+   entirely; dropping them saves a large blurred repaint on every frame of each clip reveal. */
+.story[data-enhanced="true"] .mediaFrame {
+  box-shadow: none;
+}
+
 .story[data-enhanced="true"] .chapter h3 {
   padding-left: 2%;
 }

@@ -1,0 +1,360 @@
+/*
+ * Resume viewer: the same midnight/violet paper and antique-gold hairlines as the project dossier,
+ * framing the owner's real PDF. Shared by the navbar dialog and the /resume page.
+ */
+
+/* ---- Actions ---- */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.actions[data-compact="true"] {
+  justify-content: center;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border: 1px solid rgb(201 174 120 / 55%);
+  border-radius: 2px;
+  background: rgb(10 12 33 / 45%);
+  color: #ead9b0;
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.action:hover {
+  border-color: var(--color-antique-gold);
+  background: rgb(201 174 120 / 12%);
+  color: #f6e7c2;
+}
+
+.action[data-primary="true"] {
+  border-color: #dcc28a;
+  background: linear-gradient(180deg, #dcc28a, #c4a66e);
+  color: #14122a;
+  font-weight: 600;
+}
+
+.action[data-primary="true"]:hover {
+  background: linear-gradient(180deg, #e6cf9b, #cdb07a);
+  color: #14122a;
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- The paper the PDF sits on ---- */
+.paper {
+  position: relative;
+  min-height: 0;
+  padding: 6px;
+  border: 1px solid rgb(201 174 120 / 50%);
+  background: linear-gradient(180deg, #171b3f, #0d1029);
+  box-shadow: 0 0 0 4px rgb(16 18 44 / 70%), 0 30px 70px rgb(0 0 0 / 45%);
+}
+
+/* Gilt corner ticks, as on the project gallery frame. */
+.paper::before,
+.paper::after {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--color-antique-gold);
+  border-style: solid;
+  pointer-events: none;
+  content: "";
+}
+
+.paper::before {
+  top: -6px;
+  left: -6px;
+  border-width: 2px 0 0 2px;
+}
+
+.paper::after {
+  right: -6px;
+  bottom: -6px;
+  border-width: 0 2px 2px 0;
+}
+
+.document {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 18rem;
+  border: 0;
+  background: #f4f1ea;
+}
+
+.fallback {
+  display: flex;
+  height: 100%;
+  min-height: 18rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2rem 1.25rem;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgb(126 98 222 / 18%), transparent 70%),
+    linear-gradient(180deg, #151a3c, #0b0e26);
+  color: var(--color-ivory);
+  text-align: center;
+}
+
+.fallbackSeal {
+  color: var(--color-antique-gold);
+  font-size: 1.4rem;
+}
+
+.fallbackTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+
+.fallbackText {
+  max-width: 30ch;
+  margin: 0 0 0.6rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* ---- Dialog ---- */
+.dialog {
+  width: min(64rem, calc(100vw - 2rem));
+  max-width: none;
+  height: min(60rem, calc(100dvh - 2rem));
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgb(201 174 120 / 55%);
+  border-radius: var(--radius-sm);
+  background:
+    radial-gradient(ellipse 80% 30% at 100% 0%, rgb(126 98 222 / 22%), transparent 72%),
+    linear-gradient(180deg, #151a3c 0%, #0f1331 50%, #0a0c21 100%);
+  box-shadow: 0 40px 120px rgb(0 0 0 / 60%);
+  color: var(--color-ivory);
+}
+
+.dialog[open] {
+  animation: sheet-in 320ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.dialog::backdrop {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 40%, rgb(70 52 150 / 30%), transparent 75%),
+    rgb(5 3 15 / 80%);
+}
+
+.sheet {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 1rem;
+  height: 100%;
+  padding: clamp(1rem, 2.5vw, 1.6rem) clamp(1rem, 3vw, 1.9rem) clamp(1rem, 2.5vw, 1.6rem);
+}
+
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.seal {
+  display: grid;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+  place-items: center;
+  border: 1px solid rgb(201 174 120 / 60%);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 3px rgb(201 174 120 / 12%);
+  color: var(--color-antique-gold);
+}
+
+.eyebrow {
+  margin: 0;
+  color: #b9acec;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.sheetTitle {
+  margin: 0.15rem 0 0;
+  color: #fbf6ea;
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.close {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.95rem;
+  border: 1px solid rgb(201 174 120 / 60%);
+  border-radius: 2px;
+  background: rgb(10 12 33 / 55%);
+  color: var(--color-antique-gold);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.close:hover {
+  border-color: var(--color-antique-gold);
+  background: rgb(201 174 120 / 12%);
+}
+
+.close svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.sheetPaper {
+  height: 100%;
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem) scale(0.985);
+  }
+}
+
+/* ---- /resume page ---- */
+.page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  padding: clamp(6rem, 11vw, 8rem) 0 clamp(3rem, 6vw, 5rem);
+}
+
+.pageInner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.4rem;
+  width: min(60rem, calc(100vw - 2.5rem));
+  margin: 0 auto;
+}
+
+.pageHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+
+.pageTitle {
+  margin: 0.35rem 0 0;
+  color: #fbf6ea;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+.pageLede {
+  max-width: 46ch;
+  margin: 0.6rem 0 0;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+}
+
+/* Letter-size page: tall enough to read at full width without scrolling inside a tiny frame. */
+.pagePaper {
+  height: min(calc((min(60rem, 100vw - 2.5rem) - 14px) * 1.294 + 14px), 82rem);
+}
+
+.connect {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.25rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  list-style: none;
+}
+
+.connect a {
+  color: var(--color-antique-gold);
+  text-underline-offset: 3px;
+}
+
+.connect a:hover {
+  color: var(--color-ivory);
+}
+
+@media (max-width: 700px) {
+  .dialog {
+    width: 100vw;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .sheet {
+    padding:
+      max(0.9rem, env(safe-area-inset-top)) max(0.9rem, env(safe-area-inset-right))
+      max(0.9rem, env(safe-area-inset-bottom)) max(0.9rem, env(safe-area-inset-left));
+  }
+
+  .action {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .seal {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog[open] {
+    animation: none;
+  }
+
+  .action {
+    transition: none;
+  }
+}

@@ -1019,10 +1019,15 @@ export function ProjectCarousel({ projects, config = DEFAULT_CAROUSEL_CONFIG }: 
     if (focusable.length === 0) return;
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
+    // Focus can also rest on a programmatic target (a dossier chapter the rail jumped to), which
+    // is not in the list; wrap from anything past the last or before the first item as well.
+    const active = document.activeElement;
+    const pastLast = active !== null && active !== last && !last.contains(active) && Boolean(last.compareDocumentPosition(active) & Node.DOCUMENT_POSITION_FOLLOWING);
+    const beforeFirst = active !== null && active !== first && Boolean(first.compareDocumentPosition(active) & Node.DOCUMENT_POSITION_PRECEDING);
+    if (event.shiftKey && (active === first || beforeFirst)) {
       event.preventDefault();
       last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
+    } else if (!event.shiftKey && (active === last || pastLast)) {
       event.preventDefault();
       first.focus();
     }

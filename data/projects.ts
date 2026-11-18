@@ -403,6 +403,12 @@ const projectRecords: readonly Project[] = [
         text:
           "XP is granted by the database, not the browser. Completing a quest calls a Supabase function that returns the XP it actually awarded; the app shows that number and refreshes the profile. Levels (one per 100 XP) and E-to-S ranks both derive from that single total, so every activity feeds one progression.",
       },
+      // The award path for quests and workouts (complete_quest, log_workout RPCs). The focus timer
+      // is deliberately not a step here: the repository does not route it through these RPCs.
+      flow: {
+        label: "XP Path",
+        steps: ["Quest or workout", "Supabase award RPC", "XP result", "Profile refresh", "Level and rank"],
+      },
     },
     techStack: [
       { label: "Frontend", items: ["React", "JavaScript"] },
@@ -412,6 +418,62 @@ const projectRecords: readonly Project[] = [
     status: "to-confirm",
     githubUrl: "https://github.com/BigZ509/Productivity-WebApp",
     demoUrl: "https://zbxp.vercel.app",
+    // Screenshots supplied by the owner (ZBXP-portfolio-repair-kit.zip; SHA-256 per its
+    // docs/asset-manifest.json). The demo is the owner's own YouTube upload; the poster is a local
+    // copy of its thumbnail so nothing is requested from YouTube until the visitor presses Play.
+    media: [
+      {
+        kind: "image",
+        src: "/images/projects/zbxp/trial-scrolls.webp",
+        alt: "ZBXP Trial Scrolls board: quest cards such as Night Audit, Memory Vault and Pipeline Cleanup, each with an XP value, difficulty and an Accept button, beside an empty Active panel.",
+        width: 1290,
+        height: 718,
+        caption: "Trial Scrolls quest board",
+      },
+      youtubeVideo({
+        youtubeId: "c4OYbEZnBus",
+        title: "ZBXP demo",
+        caption: "Demo video",
+        poster: {
+          src: "/images/projects/zbxp/zbxp-demo-poster.jpg",
+          alt: "ZBXP demo video: the Focus Chamber timer running for the quest Ship 1 Small Feature.",
+          width: 1280,
+          height: 720,
+        },
+      }),
+      {
+        kind: "image",
+        src: "/images/projects/zbxp/sign-in.webp",
+        alt: "ZBXP landing page: the line “Turn the work you need to do into progress you can see.” beside a sign-in form.",
+        width: 1290,
+        height: 712,
+        caption: "Sign-in",
+      },
+      {
+        kind: "image",
+        src: "/images/projects/zbxp/choose-your-path.webp",
+        alt: "Character creation: choosing between the Hunter and Heavenly Demon paths and entering a display name.",
+        width: 1248,
+        height: 675,
+        caption: "Choose your path",
+      },
+      {
+        kind: "image",
+        src: "/images/projects/zbxp/focus-reward.webp",
+        alt: "A Reward Claimed panel over the Focus Chamber: +42 XP for the completed quest Ship 1 Small Feature and a rank-up to D-Rank Hunter.",
+        width: 1290,
+        height: 701,
+        caption: "Quest reward",
+      },
+      {
+        kind: "image",
+        src: "/images/projects/zbxp/character-progression.webp",
+        alt: "Cultivation Record character page: level, total XP and workout streak, a rank ladder from Mortal Disciple to Heavenly Demon, category mastery and an all-time record.",
+        width: 1280,
+        height: 744,
+        caption: "Character progression",
+      },
+    ],
   },
 ];
 

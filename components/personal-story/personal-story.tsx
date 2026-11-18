@@ -99,6 +99,20 @@ export function PersonalStory() {
       { threshold: 0.4 },
     );
     if (fun) observer.observe(fun);
+
+    // Buffer the boomerang while the visitor approaches the story, so Fun starts from data that is
+    // already downloaded instead of opening the stream at the moment the chapter appears. Until
+    // then only metadata is fetched, so readers who never scroll this far download nothing more.
+    const approach = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        video.preload = "auto";
+        approach.disconnect();
+      },
+      { rootMargin: "100% 0px" },
+    );
+    approach.observe(root);
+
     document.addEventListener("visibilitychange", syncPlayback);
     desktopQuery.addEventListener("change", syncPlayback);
     reducedQuery.addEventListener("change", syncPlayback);
@@ -187,10 +201,29 @@ export function PersonalStory() {
           delete root.dataset.enhanced;
         };
       });
+
+      // Phones and tablets keep normal scrolling (no pin), but each photograph still opens with
+      // the same aperture reveal as it enters the viewport, and closes again on the way back up.
+      mm.add("(max-width: 900px) and (prefers-reduced-motion: no-preference)", () => {
+        const directions: Record<string, keyof typeof CLOSED_CLIPS> = {
+          video: "up",
+          night: "right",
+          coat: "left",
+          portrait: "up",
+          action: "right",
+        };
+        gsap.utils.toArray<HTMLElement>("[data-story-media]", root).forEach((frame) => {
+          const reveal = gsap.timeline({
+            scrollTrigger: { trigger: frame, start: "top 88%", toggleActions: "play none none reverse" },
+          });
+          addReveal(reveal, frame, directions[frame.dataset.storyMedia ?? ""] ?? "up", 0, 1);
+        });
+      });
     }, root);
 
     return () => {
       observer.disconnect();
+      approach.disconnect();
       document.removeEventListener("visibilitychange", syncPlayback);
       desktopQuery.removeEventListener("change", syncPlayback);
       reducedQuery.removeEventListener("change", syncPlayback);

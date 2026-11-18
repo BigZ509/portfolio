@@ -32,7 +32,12 @@
   position: absolute;
   inset: 0;
   opacity: .05;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+  /* The same fractal noise as the former inline feTurbulence SVG (baseFrequency .7, 3 octaves,
+     stitched, .45 opacity), rendered once to a tile. As a size-less SVG it was drawn one page-width
+     square at a time down the whole page, and Safari ran the filter on the CPU for every tile that
+     scrolled in, stalling frames below the personal story. Same tile geometry: page-width squares. */
+  background-image: url("/images/about/ground-noise.webp");
+  background-size: 100% auto;
 }
 
 .inner {

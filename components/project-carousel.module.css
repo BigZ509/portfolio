@@ -193,7 +193,8 @@
 
 .dialogLayout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(23rem, 37vw, 33rem);
+  /* Slightly wider than before so the fieldbook's rail, folios and data path read without clipping. */
+  grid-template-columns: minmax(0, 1fr) clamp(24rem, 39vw, 36rem);
   height: 100%;
 }
 
