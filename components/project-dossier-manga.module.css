@@ -1,0 +1,245 @@
+/*
+ * Manga-ink atmosphere for one dossier chapter (see docs/project-dossier-manga.md).
+ *
+ * Layering: the root is absolutely positioned at z-index -1 inside the chapter's .folioGroup, which
+ * isolates its own stacking context, so the ink paints above the panel's paper and beneath every
+ * folio line, flow node and focus ring. Nothing here changes layout, creates a scroll container or
+ * receives pointer events.
+ *
+ * All intensity lives in the custom properties on .root; tune those rather than individual paths.
+ */
+.root {
+  /* Overall strength of the composition (0-1). Mobile lowers it. */
+  --ink-strength: 1;
+  /* Charcoal-violet ink: darker than the panel's indigo, never pure black. */
+  --ink-shadow: #06051a;
+  --ink-line: #b9acec;
+  --ink-scratch: #f4ecda;
+  --ink-gilt: #c9ae78;
+  --ink-glow: rgb(126 98 222 / 30%);
+  --ink-scratch-rest: 0.42;
+
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: calc(var(--pad-x, 1.4rem) * -1);
+  bottom: 0;
+  width: calc(100% + var(--pad-x, 1.4rem));
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  /* Soft top and bottom so a tall plume never ends in a hard line against the next chapter. */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 2.5rem, #000 calc(100% - 1.25rem), transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 2.5rem, #000 calc(100% - 1.25rem), transparent 100%);
+  transition: opacity 700ms ease 120ms;
+}
+
+/*
+ * The artwork box: a 6:5 canvas pinned to the outer right edge. Its radial mask keeps the ink
+ * strongest at the edge and lets it dissolve before it reaches the middle of the text column.
+ */
+.art {
+  position: absolute;
+  /* Nudged past the edge so the plume reads as entering the folio, not sitting inside it. */
+  right: -5%;
+  bottom: -0.5rem;
+  /* Sized by the chapter's height, so a short chapter gets the whole composition, not a crop. */
+  height: clamp(15rem, 100%, 27rem);
+  max-width: 100%;
+  aspect-ratio: 6 / 5;
+  opacity: var(--ink-strength);
+  transform-origin: 100% 50%;
+  -webkit-mask-image: radial-gradient(ellipse 76% 100% at 100% 72%, #000 30%, rgb(0 0 0 / 45%) 62%, transparent 100%);
+  mask-image: radial-gradient(ellipse 76% 100% at 100% 72%, #000 30%, rgb(0 0 0 / 45%) 62%, transparent 100%);
+}
+
+/* One composition, three placements: the build chapter's ink pours in from the upper edge instead. */
+.root[data-ink-chapter="built"] .art {
+  top: 0;
+  bottom: auto;
+  transform: scale(0.94, -0.94);
+}
+
+.root[data-ink-chapter="decision"] .art {
+  bottom: -1rem;
+  transform: rotate(-2deg) scale(1.03);
+}
+
+.glow,
+.halftone {
+  position: absolute;
+  inset: 0;
+}
+
+/* A faint violet backlight that the dark ink silhouettes against. */
+.glow {
+  background: radial-gradient(ellipse 58% 54% at 88% 68%, var(--ink-glow), transparent 70%);
+  opacity: 0.8;
+}
+
+/* Graduated print halftone, densest in the outer corner. Static by design. */
+.halftone {
+  background-image: radial-gradient(circle, rgb(185 172 236 / 26%) 0.85px, transparent 1.3px);
+  background-size: 6px 6px;
+  -webkit-mask-image: radial-gradient(ellipse 52% 58% at 100% 100%, #000 10%, transparent 72%);
+  mask-image: radial-gradient(ellipse 52% 58% at 100% 100%, #000 10%, transparent 72%);
+}
+
+.plume,
+.scratches {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.plume {
+  transform-origin: 100% 100%;
+}
+
+/* Wet edge: a wide, very faint lavender halo under the ink, as if the wash bled into the paper. */
+.bleed {
+  fill: none;
+  stroke: var(--ink-line);
+  stroke-linejoin: round;
+  stroke-opacity: 0.07;
+  stroke-width: 14;
+}
+
+.fill {
+  fill: var(--ink-shadow);
+  fill-opacity: 0.84;
+}
+
+.brush {
+  fill: none;
+  stroke: var(--ink-shadow);
+  stroke-linecap: round;
+  stroke-opacity: 0.72;
+  stroke-width: 9;
+}
+
+.line,
+.dash {
+  fill: none;
+  stroke: var(--ink-line);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-opacity: 0.18;
+  stroke-width: 1.2;
+}
+
+.dash {
+  stroke-dasharray: 10 13;
+  stroke-opacity: 0.16;
+}
+
+.dot {
+  fill: var(--ink-line);
+  fill-opacity: 0.22;
+}
+
+.scratches {
+  opacity: var(--ink-scratch-rest);
+  transition: opacity 420ms ease;
+}
+
+.root[data-active="true"] .scratches {
+  opacity: 1;
+}
+
+.focus {
+  fill: none;
+  stroke: var(--ink-scratch);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  stroke-opacity: 0.24;
+}
+
+.hatch {
+  fill: none;
+  stroke: var(--ink-gilt);
+  stroke-linecap: round;
+  stroke-opacity: 0.32;
+  stroke-width: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Near-imperceptible drift: a few pixels and half a degree over sixteen seconds. */
+  .plume {
+    animation: ink-drift 16s ease-in-out infinite alternate;
+  }
+
+  .root[data-ink-chapter="built"] .plume {
+    animation-delay: -6s;
+  }
+
+  .root[data-ink-chapter="decision"] .plume {
+    animation-delay: -11s;
+  }
+
+  /* On activation the focus lines are re-ruled from the outer edge inward, once. */
+  .root[data-active="true"] .focus {
+    animation: focus-rule 440ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .root[data-active="true"] .focus:nth-child(3n + 2) {
+    animation-delay: 50ms;
+  }
+
+  .root[data-active="true"] .focus:nth-child(3n) {
+    animation-delay: 95ms;
+  }
+
+  .root[data-active="true"] .glow {
+    animation: glow-pulse 520ms ease-out both;
+  }
+}
+
+@keyframes ink-drift {
+  to {
+    transform: translate3d(-5px, -4px, 0) rotate(-0.6deg);
+  }
+}
+
+@keyframes focus-rule {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes glow-pulse {
+  40% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 700px) {
+  .root {
+    --ink-strength: 0.82;
+  }
+
+  .art {
+    height: clamp(13rem, 100%, 20rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .scratches {
+    transition: none;
+  }
+}
+
+/* High-contrast modes and print get the plain dossier. */
+@media (forced-colors: active), print {
+  .root {
+    display: none;
+  }
+}

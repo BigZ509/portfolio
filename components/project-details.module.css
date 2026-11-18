@@ -464,7 +464,11 @@
   margin-top: 0.6rem;
 }
 
+/* Each chapter isolates its own stacking context so its manga-ink layer (z-index -1, see
+   project-dossier-manga.module.css) paints above the panel paper and below every line of content. */
 .folioGroup {
+  position: relative;
+  isolation: isolate;
   display: grid;
   gap: 1rem;
 }
@@ -573,11 +577,16 @@
   text-wrap: pretty;
 }
 
-/* First-sight reveal; content is never hidden without motion permission. */
+/* First-sight reveal; content is never hidden without motion permission. The chapter's ink
+   arrives with its text rather than ahead of it. */
 @media (prefers-reduced-motion: no-preference) {
   .folio:not([data-seen="true"]) {
     opacity: 0;
     transform: translateY(14px);
+  }
+
+  .folioGroup:has(> .folio:not([data-seen="true"])) > .ink {
+    opacity: 0;
   }
 }
 

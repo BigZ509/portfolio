@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { CardMotif, Project, ProjectStatus } from "@/data/projects";
 import { cardMotifs } from "./card-motifs";
+import { ProjectDossierManga, type DossierChapter } from "./project-dossier-manga";
 import { useOptionalProjectMedia } from "./project-media";
 import styles from "./project-details.module.css";
 
@@ -50,7 +51,7 @@ function MotifGlyph({ motif, className }: { motif: CardMotif; className: string 
   );
 }
 
-type Chapter = { key: string; rail: string; title: string; text: string };
+type Chapter = { key: DossierChapter; rail: string; title: string; text: string };
 
 /**
  * The box that actually scrolls the dossier: the panel itself beside the media (desktop), or the whole
@@ -93,7 +94,7 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
   const status = STATUS_LABELS[project.status];
   const { story } = project;
   const decisionLabel = story.decision?.label;
-  const chapters = [
+  const chapterDrafts: { key: DossierChapter; rail: string; title: string; text: string | null }[] = [
     { key: "problem", rail: "Problem", title: "The Problem", text: verified(story.problem) },
     { key: "built", rail: "Build", title: "What I Built", text: verified(story.built) },
     {
@@ -103,7 +104,8 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
       title: decisionLabel ?? "Engineering Decisions",
       text: verified(story.decision?.text),
     },
-  ].filter((chapter): chapter is Chapter => chapter.text !== null);
+  ];
+  const chapters = chapterDrafts.filter((chapter): chapter is Chapter => chapter.text !== null);
   const flowSteps = (story.flow?.steps ?? []).map(verified).filter((step): step is string => step !== null);
   const showFlow = flowSteps.length > 1 && story.flow !== undefined;
   const techGroups = project.techStack
@@ -309,6 +311,7 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
               const { lead, rest } = splitLead(chapter.text);
               return (
                 <div key={chapter.key} className={styles.folioGroup}>
+                  <ProjectDossierManga motif={project.motif} chapter={chapter.key} active={active === index} className={styles.ink} />
                   <section
                     id={chapterId(chapter.key)}
                     className={styles.folio}
