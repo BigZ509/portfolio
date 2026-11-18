@@ -3,10 +3,10 @@ import Link from "next/link";
 import { AtmosphericBackground } from "@/components/atmospheric-background";
 import type { Metadata } from "next";
 import { AboutMotion } from "@/components/about-motion";
-import { MangaGrid, MangaPanel } from "@/components/manga-panel";
 import { MirrorDivider } from "@/components/mirror-divider";
+import { PersonalStory } from "@/components/personal-story/personal-story";
 import { ChakraSkills } from "@/components/skills/chakra-skills";
-import { aboutIntro, connect, photoPanels } from "@/data/about";
+import { aboutIntro, connect } from "@/data/about";
 import { publicSocialLinks } from "@/data/social-links";
 import styles from "@/components/about.module.css";
 
@@ -96,30 +96,11 @@ export default function AboutPage() {
 
           {/* ---- Outside the Screen ---- */}
           <MirrorDivider text="BEYOND THE SCREEN" />
+        </div>
 
-          <section className={styles.section} aria-labelledby="life-heading">
-            <header className={styles.chapterHead}>
-              <p className={styles.chapterTag}>Outside the Screen</p>
-              <h2 id="life-heading">Away from the Keyboard</h2>
-              <p>
-                Coursework and commits are only part of it. Here&rsquo;s the rest — campus, the coast,
-                and the rooms worth showing up for.
-              </p>
-            </header>
+        <PersonalStory />
 
-            <MangaGrid>
-              {photoPanels.map((panel, index) => (
-                <MangaPanel
-                  key={panel.id}
-                  span={panel.span}
-                  numeral={String(index + 1).padStart(2, "0")}
-                  label={panel.label}
-                  caption={panel.caption}
-                  image={{ src: panel.src, alt: panel.alt, width: panel.width, height: panel.height }}
-                />
-              ))}
-            </MangaGrid>
-          </section>
+        <div className={styles.inner}>
 
           {/* ---- The Process ---- */}
           <MirrorDivider text="TOOLS OF THE TRADE" />

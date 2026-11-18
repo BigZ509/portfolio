@@ -1,0 +1,274 @@
+.story {
+  position: relative;
+  z-index: 1;
+  padding-top: clamp(1rem, 3vw, 2.5rem);
+}
+
+.sectionHead {
+  width: min(1180px, 92vw);
+  margin: 0 auto clamp(1.5rem, 3vw, 3rem);
+}
+
+.chapterTag {
+  display: inline-block;
+  margin: 0 0 1rem;
+  padding: 5px 12px;
+  border: 1px solid rgb(180 155 255 / 40%);
+  border-radius: 999px;
+  background: rgb(124 104 220 / 14%);
+  color: #cdbcff;
+  font-size: .64rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+}
+
+.sectionHead h2 {
+  margin: .4rem 0;
+  color: #fbf3e2;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4.3rem);
+  font-weight: 400;
+  letter-spacing: -.025em;
+  line-height: 1.02;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  border-block: 1px solid rgb(214 179 115 / 25%);
+  background:
+    radial-gradient(ellipse 52% 64% at 78% 42%, rgb(88 76 154 / 14%), transparent 78%),
+    linear-gradient(180deg, rgb(13 15 35 / 36%), rgb(15 19 42 / 58%));
+}
+
+.stageInner {
+  width: min(1360px, 92vw);
+  margin: 0 auto;
+}
+
+.question {
+  padding: clamp(5rem, 10vw, 10rem) 0 clamp(3rem, 6vw, 6rem);
+}
+
+.question p {
+  max-width: 15ch;
+  margin: 0;
+  color: #fbf3e2;
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6.4vw, 6.6rem);
+  font-weight: 400;
+  letter-spacing: -.035em;
+  line-height: .98;
+  text-shadow: 0 12px 34px rgb(5 8 28 / 65%);
+}
+
+.question span {
+  display: inline-block;
+  margin-top: 2rem;
+  color: #f1d7a4;
+  font-size: .78rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.chapter {
+  display: grid;
+  grid-template-columns: minmax(0, .46fr) minmax(0, .54fr);
+  align-items: center;
+  gap: clamp(1rem, 3vw, 3.5rem);
+  min-height: min(780px, 95svh);
+  padding: clamp(3rem, 6vw, 6rem) 0;
+  border-top: 1px solid rgb(214 179 115 / 22%);
+}
+
+.chapter h3 {
+  align-self: center;
+  margin: 0;
+  color: #fbf3e2;
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 9vw, 10rem);
+  font-weight: 400;
+  letter-spacing: -.055em;
+  line-height: .85;
+  text-shadow: 0 10px 32px rgb(6 8 29 / 70%);
+}
+
+.adventure h3 {
+  font-size: clamp(3.8rem, 7vw, 7rem);
+}
+
+.funMedia,
+.adventureMedia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(.8rem, 2vw, 2rem);
+  min-width: 0;
+}
+
+.styleMedia {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.mediaFrame {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  border: 1px solid rgb(223 190 137 / 65%);
+  background: rgb(15 18 39 / 85%);
+  box-shadow: 0 24px 65px rgb(4 6 20 / 42%), 0 0 0 5px rgb(22 24 51 / 52%);
+}
+
+.mediaFrame img,
+.mediaFrame video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.videoFrame {
+  width: min(53%, 44svh);
+  aspect-ratio: 9 / 16;
+}
+
+.nightFrame {
+  width: min(39%, 34svh);
+  aspect-ratio: 3 / 4;
+  margin-top: 16%;
+}
+
+.coatFrame {
+  width: min(70%, 48svh);
+  aspect-ratio: 3 / 4;
+}
+
+.coatFrame img {
+  object-fit: contain;
+}
+
+.portraitFrame,
+.actionFrame {
+  width: min(44%, 39svh);
+  aspect-ratio: 3 / 4;
+}
+
+.actionFrame {
+  margin-top: 15%;
+}
+
+.actionFrame img {
+  object-position: center 18%;
+}
+
+/* GSAP adds this attribute only after the pinned timeline is ready. Without
+   JavaScript, and for reduced motion, all four beats remain readable in flow. */
+.story[data-enhanced="true"] .stage {
+  height: 100svh;
+  overflow: hidden;
+}
+
+.story[data-enhanced="true"] .stageInner {
+  position: relative;
+  height: 100%;
+}
+
+.story[data-enhanced="true"] .question {
+  position: absolute;
+  top: 50%;
+  left: 2%;
+  z-index: 2;
+  width: 90%;
+  padding: 0;
+  transform: translateY(-50%);
+}
+
+.story[data-enhanced="true"] .chapter {
+  position: absolute;
+  inset: 7svh 0 3svh;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+}
+
+.story[data-enhanced="true"] .chapter h3 {
+  padding-left: 2%;
+}
+
+.story[data-enhanced="true"] .funMedia,
+.story[data-enhanced="true"] .styleMedia,
+.story[data-enhanced="true"] .adventureMedia {
+  max-height: 79svh;
+}
+
+@media (max-width: 900px) {
+  .story {
+    padding-top: 1.5rem;
+  }
+
+  .sectionHead {
+    margin-bottom: 1.5rem;
+  }
+
+  .question {
+    padding: 5rem 0 4rem;
+  }
+
+  .question p {
+    font-size: clamp(2.6rem, 9vw, 5rem);
+  }
+
+  .chapter {
+    display: block;
+    min-height: 0;
+    padding: 4rem 0 5rem;
+  }
+
+  .chapter h3 {
+    margin-bottom: 2.3rem;
+    font-size: clamp(4.5rem, 15vw, 7rem);
+  }
+
+  .videoFrame {
+    width: 54%;
+  }
+
+  .nightFrame {
+    width: 38%;
+  }
+
+  .coatFrame {
+    width: min(76%, 440px);
+  }
+
+  .portraitFrame,
+  .actionFrame {
+    width: 46%;
+  }
+}
+
+@media (max-width: 480px) {
+  .chapter {
+    padding: 3.2rem 0 4rem;
+  }
+
+  .funMedia,
+  .adventureMedia {
+    gap: .7rem;
+  }
+
+  .nightFrame {
+    margin-top: 32%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mediaFrame,
+  .mediaFrame img,
+  .mediaFrame video {
+    transform: none !important;
+    clip-path: none !important;
+  }
+}

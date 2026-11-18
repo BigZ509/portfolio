@@ -9,7 +9,7 @@
 .page {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
+  overflow-x: clip;
 }
 
 /* A lighter ground than the other routes: this chapter should not read as another dark dashboard. */
