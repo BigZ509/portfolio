@@ -16,6 +16,15 @@ Last updated: 2026-11-17 (Phase 7).
 
 Source page: [Cards of Blasphemy](https://lordofmysteries.store/pages/cards-of-blasphemy). Output dimensions and file integrity were checked with Sharp after conversion. No source images were taken from Daniel's reference repository.
 
+## Derived dossier plates
+
+`public/images/dossier-manga/<slug>-upper.webp` and `<slug>-lower.webp` (ten files) are derivatives
+of the five cards above, made by `scripts/build-dossier-manga-plates.mjs` for the dossier backdrop
+(see `docs/project-dossier-manga.md`). They are cropped (inside the painted frame), mirrored for The
+Fool and The World, converted to greyscale and re-rendered as lavender-gray screentone.
+**Authorization status: to be confirmed by the owner.** The permission recorded above covers these
+exact images. Confirm that it also covers cropped and stylized derivatives.
+
 ## Pipeline test files (not project artwork)
 
 These are original test images made for this project in Phase 5A to validate the pipeline. Each is visibly labelled "PIPELINE TEST" and includes proportion markers. They are used only when the site is built with `NEXT_PUBLIC_TAROT_ARTWORK_TEST=1`. A normal build uses the five illustrations above.

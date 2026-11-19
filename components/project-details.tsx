@@ -216,6 +216,8 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
   return (
     // Focusable so keyboard users can scroll long details; the dialog moves initial focus to Close.
     <article ref={panelRef} className={styles.panel} tabIndex={0} aria-labelledby={titleId}>
+      {/* The illustrated manga backdrop: first, sticky and one screen tall, behind everything. */}
+      <ProjectDossierManga motif={project.motif} chapter={chapters[active]?.key ?? "problem"} />
       <span ref={progressRef} className={styles.progress} aria-hidden="true" />
       <MotifGlyph motif={project.motif} className={styles.watermark} />
 
@@ -311,7 +313,6 @@ export function ProjectDetails({ project, titleId, summaryId, onClose }: Project
               const { lead, rest } = splitLead(chapter.text);
               return (
                 <div key={chapter.key} className={styles.folioGroup}>
-                  <ProjectDossierManga motif={project.motif} chapter={chapter.key} active={active === index} className={styles.ink} />
                   <section
                     id={chapterId(chapter.key)}
                     className={styles.folio}

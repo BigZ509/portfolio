@@ -1,149 +1,125 @@
-# Project dossier: manga-ink atmosphere
+# Project dossier: illustrated manga backdrop
 
-The right-hand dossier panel in each expanded project showcase carries a quiet, original manga-ink
-layer behind every chapter (Problem / Build / Decision). It gives the flat indigo panel some depth
-next to the cinematic purple scene on the left, without touching the masthead, title, CTAs or the
-reading column.
+The right-hand dossier panel in each expanded project showcase is backed by a **manga illustration**:
+two screentoned manga panels drawn from the project's own tarot card, bleeding off the dossier's
+upper-right and lower-right corners, split by a slanted antique-gold gutter. It replaces the earlier
+procedural "ink plume" (commit `edf9a7d`), which was too faint to notice.
+
+## Why the earlier version failed, and what changed
+
+| Earlier (`edf9a7d`) | Now |
+| --- | --- |
+| One small SVG composition per chapter, scrolled away with its chapter | One stage for the whole dossier, sticky and one screen tall, so the art is always in frame |
+| Charcoal ink (`#06051a`) on an indigo panel: dark on dark | Lavender-gray paper tones that carry the light; ink is the panel's own indigo |
+| Two stacked masks, low opacity on every layer | One wash per panel and one scrim; plates at 68% / 46% opacity |
+| Pushed against the right edge | Upper panel is 76% × 56% of the dossier, lower panel 82% × 50% |
+| Thin procedural scratches | Real illustration: figures, faces, hands, props, rendered as a manga print |
 
 ## What it looks like
 
-Each chapter (`.folioGroup`) gets one composition, strongest at the folio's **outer right edge** and
-dissolving before it reaches the middle of the text column:
+- **Upper panel (top right):** the card's figure, face toward the dossier's outer edge, framed by
+  faint focus lines (shūchūsen) converging on the face.
+- **Lower panel (bottom right):** a detail from the same card: hands, props or a companion.
+- **Gutter:** each panel's inner edges are cut on a slant and drawn as a dark gutter with a thin
+  antique-gold rule, like a manga page layout.
+- **Plates:** lavender-gray manga prints of the illustrations, with ink line work, a 45° halftone
+  screen in the mid-tones, and solid ink in the shadows. The ink is transparent, so the panel's
+  indigo shows through as the ink colour.
+- **Readability:** each panel fades toward the reading column, and a stage-wide scrim darkens the left
+  of the dossier. Every glyph in the dossier also carries a soft paper-coloured halo (`text-shadow`
+  on `.panel`), and the outline buttons, flow nodes and stack plates have near-opaque fills.
 
-- **Ink plume**: a charcoal-violet (`#06051a`, never pure black) brush mass entering from the edge,
-  breaking into three tapered tongues, plus two detached wisps and a few dry-brush shards. A wide,
-  very faint lavender stroke under the main masses reads as a wet edge bleeding into the paper.
-- **Backlight**: a soft violet radial glow behind the plume, so the dark ink reads as a silhouette.
-- **Focus lines**: nine hand-ruled ivory scratches with uneven spacing, length and weight, starting
-  at the outer edge and converging toward a point far inside the text column. They stop well short of it.
-- **Halftone**: a static, graduated dot screen in the outer corner (about 0.03–0.05 perceived).
-- **Hatching**: a small gilt cross-hatch patch in the corner.
-- **Motif echo**: an abstract gesture derived from the project's tarot motif (see below), drawn in
-  the same brush grammar, region, weight and colours.
-
-Placement varies slightly by chapter so the three spreads relate without repeating:
-`problem` sits on the bottom edge; `built` is flipped vertically so the ink pours in from the top
-edge (keeping the flow diagram below it clear); `decision` sits on the bottom edge with a -2° tilt.
+The dossier's paper, gold borders, ivory type, seals, chapter rail, demo buttons and content are
+unchanged.
 
 ## Architecture
 
 | File | Role |
 | --- | --- |
-| `components/project-dossier-manga.tsx` | Pure presentational component. Props: `motif`, `chapter`, `active`, optional `className`. No state, effects, IDs, filters, `<image>` tags or randomness. |
-| `components/project-dossier-manga-presets.ts` | All geometry in one 600 × 500 canvas: `SHARED` (plume), `MOTIF_INK: Record<CardMotif, InkLayer>`, `FOCUS_LINES`, `HATCH`. Arcs and rays are computed deterministically at module load. |
-| `components/project-dossier-manga.module.css` | All decorative styling, masking, intensity tokens and motion. |
-| `components/project-details.tsx` | Renders `<ProjectDossierManga motif={project.motif} chapter={chapter.key} active={active === index} />` as the first child of each `.folioGroup`. |
-| `components/project-details.module.css` | `.folioGroup { position: relative; isolation: isolate }`, plus a rule that keeps a chapter's ink hidden until its folio has been revealed (`.ink`). |
+| `components/project-dossier-manga.tsx` | Shared component. Props: `motif`, `chapter`, optional `className`. Renders the stage, the two panels (`next/image`, `alt=""`), gutter SVGs, focus lines and scrim. No state or effects. |
+| `components/project-dossier-manga-presets.ts` | `DOSSIER_MANGA_PRESETS: Record<CardMotif, DossierMangaPreset>`. A preset is only the two plate paths, their `object-position` focus, and the focus-line centre. |
+| `components/project-dossier-manga.module.css` | All shared geometry, palette, gradients, motion and responsive rules, as custom properties on `.root`. |
+| `components/project-details.tsx` | Renders `<ProjectDossierManga motif={project.motif} chapter={chapters[active].key} />` once, as the panel's first child. |
+| `components/project-details.module.css` | `.panel { isolation: isolate }` plus the inherited text halo. Halos are turned off on the gold primary buttons and on the outlined chapter numerals. |
+| `scripts/build-dossier-manga-plates.mjs` | Builds the ten plates in `public/images/dossier-manga/` from `public/images/tarot/*.webp`. |
 
-**Layering.** `.folioGroup` isolates its own stacking context, and the decor root sits at
-`z-index: -1` inside it. The ink therefore paints above the panel's paper and below every folio
-line, flow node, border, pseudo-element and focus ring. The panel's sticky `.progress` (z 3) and
-`.rail` (z 2) are unaffected.
+**Layering.** `.panel` is an isolated stacking context, and the backdrop sits inside it at
+`z-index: -1`. It paints above the panel's paper and below every line of content. The sticky
+progress thread (z 3) and chapter rail (z 2) are unaffected.
 
-**Scrolling.** The decor is absolutely positioned inside each chapter, so it scrolls with the
-chapter in both scroll modes: the panel as scroll root on desktop, and `.dialogLayout` on phones and
-portrait tablets. There are no fixed overlays, no `background-attachment: fixed`, no new listeners
-and no layout changes. The root clips its own contents (`overflow: hidden` plus a vertical mask),
-so the composition never adds horizontal or vertical scroll overflow.
+**Scrolling.** `.root` is `position: sticky; top: 0`, one screen tall (`100dvh`, falling back to
+`100vh`), with an equal negative bottom margin, so it takes no space in the flow. On desktop and short
+landscape screens the panel is the scroll root. On phones and portrait tablets `.dialogLayout` is
+the scroll root. Sticky follows whichever box scrolls, so one rule covers both, with no listeners and
+no layout change. At the very end of a dossier, the stage rises by the panel's bottom padding
+(about 2.5rem). That is how sticky works, and it is not noticeable.
 
-**Data attributes.** The root exposes `data-dossier-manga`, `data-motif`, `data-ink-chapter` and
-`data-active`. Do **not** rename `data-ink-chapter` to `data-chapter`: `ProjectDetails` queries
-`[data-chapter]` to find the folios for its IntersectionObservers.
+**Data attributes.** `data-dossier-manga`, `data-motif` and `data-ink-chapter`. Do **not** rename
+`data-ink-chapter` to `data-chapter`: `ProjectDetails` queries `[data-chapter]` for its
+IntersectionObservers.
 
-## Motif map
+## Presets
 
-Variation comes only from the existing `project.motif` (`CardMotif`). There are no per-project
-fields, image URLs or CSS overrides.
+| Motif | Project | Upper plate | Lower plate |
+| --- | --- | --- | --- |
+| `threshold` | SpeakLab AI | The Fool: gentleman in the top hat (mirrored) | Cape and waistcoat |
+| `orbit` | Autonomous Delivery Rover | The World: sleeper among mushrooms (mirrored) | Folded hands |
+| `spark` | Guiding Hands | The Magician: face under the hat brim | Hands, pen and lace |
+| `balance` | Road Report | Justice: woman with the umbrella | The golden retriever |
+| `star` | ZBXP | The Star: writer under the lamp | Typewriter and gloved hands |
 
-| Motif | Project | Ink gesture |
-| --- | --- | --- |
-| `threshold` | SpeakLab AI | Elongated waveform ribbon with interrupted wave traces and a small loop |
-| `orbit` | Autonomous Delivery Rover | Concentric arc cuts with gaps, radial tick scratches, two satellites |
-| `spark` | Guiding Hands | Angular branching zig-zag gesture with a four-point spark |
-| `balance` | Road Report | Two offset sweeping routes, each a ribbon plus a parallel slash and a dashed centre line |
-| `star` | ZBXP | Fragmented starburst (split rays and brush flicks) with a hatch patch |
+To add a project: add crops for its card to `PLATES` in the build script, run it, and add one
+`DOSSIER_MANGA_PRESETS` entry. Do not add per-project CSS.
 
-A new motif needs one entry in `MOTIF_INK` and nothing else. Keep it inside the same region
-(x 300–600, y 150–480), with similar total ink area and the same classes.
+## Regenerating the plates
+
+```sh
+node scripts/build-dossier-manga-plates.mjs              # all ten plates
+node scripts/build-dossier-manga-plates.mjs road-report  # one project
+```
+
+The script uses the `sharp` that ships with Next.js. It is deterministic. Crops are in source-card
+pixels (751 × 1051), inside the painted frame. Output: upper 880 × 960 and lower 880 × 760 RGBA WebP,
+76–235 KB each. Each dossier loads two plates.
 
 ## Motion
 
-- **Ambient**: the plume layer drifts by about 5 px and 0.6° over 16 s (`alternate`). Each chapter
-  starts at a different phase. This is a transform on a composited layer, not an rAF loop.
-- **Chapter activation**: when the existing `active` index lands on a chapter, its focus lines are
-  re-ruled from the outer edge inward once (440 ms, slightly staggered via `stroke-dashoffset`
-  with `pathLength=1`), the scratch layer rises from 42% to full strength, and the backlight
-  swells briefly (520 ms). Nothing flashes, inverts, shakes or touches text.
-- **First sight**: a chapter's ink fades in with its folio text (`:has()` on the existing
-  `data-seen`). Browsers without `:has()` simply show the ink immediately.
-- **`prefers-reduced-motion: reduce`**: same static composition, with every keyframe and transition
-  disabled (verified: 0 running animations on the decor).
-- **`forced-colors` / print**: the decor is not rendered.
+- **Entrance:** each panel slides in from the outer edge as the dossier opens (900 ms; upper at
+  380 ms, lower at 520 ms), and the gold gutter rule draws in (1.1 s).
+- **Ambient:** a slow camera drift on each plate (scale 1 → 1.04 and about 1% translate, over 30 s,
+  `alternate`).
+- **Chapter:** when the rail's active chapter changes, both plates pan vertically by 2.5% or 5% over
+  1.6 s.
+- **`prefers-reduced-motion: reduce`:** the same static composition. No keyframes, and no pan
+  transition.
+- **`forced-colors` / print:** not rendered.
 
-## Tuning intensity
+## Tuning
 
-All tokens live on `.root` in `project-dossier-manga.module.css`. Change them there, not per path:
+On `.root` in `project-dossier-manga.module.css`:
 
-- `--ink-strength`: overall opacity of the composition (1 on desktop, 0.82 at ≤700 px).
-- `--ink-shadow`, `--ink-line`, `--ink-scratch`, `--ink-gilt`: colours.
-- `--ink-glow`: backlight colour and alpha (the main brightness lever behind text).
-- `--ink-scratch-rest`: how present the focus lines are on inactive chapters.
-- Per-element opacity: `.fill`, `.bleed`, `.line`, `.dash`, `.dot`, `.focus`, `.hatch`.
-- Reach into the text column: the radial `mask-image` on `.art`. A larger first ellipse radius
-  reaches further left.
-- Size: `.art { height: clamp(15rem, 100%, 27rem) }`. The box follows the chapter's height, so a
-  short chapter gets the whole composition rather than a crop.
+- `--upper-strength` / `--lower-strength`: plate opacity (desktop 0.68 / 0.46; phones 0.62 / 0.44).
+- `--upper-w`, `--upper-h`, `--lower-w`, `--lower-h`: panel sizes (overridden for portrait tablets and
+  phones).
+- `.scrim` and `.shade`: the readability gradients.
+- Panel shapes: the `clip-path` polygons on `.upper .cut` and `.lower .cut`, kept in step with
+  `UPPER_EDGE` and `LOWER_EDGE` in the component.
 
-When raising anything, re-run the contrast probe (below). Lavender and ivory line work is what
-lowers contrast behind text; the dark ink raises it.
+When raising strengths, re-run the contrast probe (see Verification).
 
 ## Rights and assets
 
-All artwork here is original vector work written for this repository. It is inspired by, but not
-derived from, the general grammar of manga ink: brush tongues, shūchūsen focus lines and screentone.
-No image, panel, character, logo, GIF, video or audio from any franchise or third-party repository
-is used, traced or embedded. No new runtime dependencies, fetches or WebGL contexts were added.
+The plates are **derivatives of the five tarot illustrations** in `public/images/tarot/` (Cards of
+Blasphemy, Lord of the Mysteries). They are cropped, in two cases mirrored, converted to greyscale and
+re-rendered as screentone. The owner's permission for those exact images is recorded in
+`docs/tarot-artwork-manifest.md`. It is an owner assertion, not an independently verified licence,
+and it was given for displaying the cards. **Outstanding:** the owner should confirm that it also
+covers these cropped and stylized derivatives.
 
-The "Liquid Ink Surge" plate (`chimera-shadow/frame_1.jpg`) was a moodboard reference only. It was
-not downloaded, embedded, transformed or traced. Behavioural references, consulted for behaviour
-only with no code copied: the impact-frame and focus-ray idea in
-`Nafiz001/jjk-domain-expansion` (`src/engine/renderer.ts`, `drawImpactFrame`), its film grain in
-`src/style.css`, and the manga panel layering in `GarunJad/Anime-Portfolio` (`style.css`).
-The owner-held code authorization in `docs/source-permissions.md` does not cover franchise imagery,
-and none is used.
+Everything else is original: panel geometry, gutters, focus lines, gradients and the plate
+treatment. No JJK or other franchise imagery is used. From the reference projects, only ideas were
+taken, not code or assets:
 
-## Verification (2026-11-18, branch `feat/manga-dossier-atmosphere`)
-
-Environment: local `next dev` on port 3105, headless Chromium 1248 driven by Playwright 1.65.1
-from the local npx cache (not added to `package.json`). In headless Chromium the carousel ran its
-non-WebGL card grid. The showcase scene itself rendered.
-
-| Check | Result |
-| --- | --- |
-| `npm run typecheck` | pass |
-| `npm run lint` | pass |
-| `npm run build` | pass (all 7 routes static) |
-| All 5 projects × 1440×900, 1280×800, 768×1024, 390×844, 360×740, 844×390 | 3 ink layers each; no document or panel horizontal overflow |
-| Active ink follows the rail (`aria-current`) | pass in every run |
-| Observers still see exactly 3 `[data-chapter]` folios | pass |
-| Decor takes no pointer hits (`elementFromPoint`), is `aria-hidden`, and has no focusables | pass |
-| Real pointer click on rail → chapter active and focused | pass (Road Report, Guiding Hands, ZBXP; desktop and phone) |
-| Dossier "Watch Demo" → embedded player | pass (same set) |
-| Live app / GitHub links rendered with original hrefs | pass |
-| Escape closes the dialog | pass |
-| Page errors | none |
-| Reduced motion (1440 and 390; Guiding Hands, ZBXP, SpeakLab) | identical static art, 0 running decor animations |
-| Body-text contrast (`#d3d7e6`), text hidden, background sampled behind folios | 99th-percentile background: ≥11.5:1 with ink vs ≈12.3:1 without. Brightest single hairline pixel: ≥4.6:1 (ZBXP desktop), ≥6.0:1 elsewhere. |
-
-Screenshots and the three probe scripts (`shoot.mjs`, `interact.mjs`, `contrast.mjs`) are in
-`output/playwright/manga-dossier/` (untracked, like earlier phases' captures):
-`before-*` (baseline), `final-*` (desktop and phone, normal and `-rm` reduced motion), `v6-*` (the
-other viewports) and `v5p-*` (2× panel crops).
-
-**Not verified:** real Safari or iOS Safari, or Firefox (Chromium only; masks use both `mask-image`
-and `-webkit-mask-image`); a physical device; a screen reader (semantics were checked
-structurally, not with VoiceOver); GPU cost of the 16 s drift on low-end phones; the deployed Vercel
-site (only local).
-
-**Pre-existing, unchanged:** at scroll-top in short dossiers such as SpeakLab, the rail can show
-"02" because the Build chapter sits on the 32% reading line. The baseline does the same.
+- the manga panel grid with slanted gutters and image panels under gradient overlays
+  (`GarunJad/Anime-Portfolio`, already adapted in `components/manga-panel.tsx`);
+- the impact-frame and focus-line idea (`Nafiz001/jjk-domain-expansion`).

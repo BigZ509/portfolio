@@ -1,92 +1,150 @@
 /*
- * Manga-ink atmosphere for one dossier chapter (see docs/project-dossier-manga.md).
+ * Illustrated manga backdrop for the project dossier (see docs/project-dossier-manga.md).
  *
- * Layering: the root is absolutely positioned at z-index -1 inside the chapter's .folioGroup, which
- * isolates its own stacking context, so the ink paints above the panel's paper and beneath every
- * folio line, flow node and focus ring. Nothing here changes layout, creates a scroll container or
- * receives pointer events.
+ * Layering: .root is the first child of the dossier panel (an isolated stacking context), at
+ * z-index -1, so the artwork paints above the panel's paper and beneath every line of content. It is
+ * sticky and exactly one screen tall, with an equal negative bottom margin, so it takes no space in
+ * the flow and stays framed in the visible dossier while the chapters scroll over it. That works in
+ * both scroll modes: the panel scrolls itself beside the media (desktop, landscape), or the whole
+ * showcase scrolls (phones, portrait tablets), and sticky follows whichever box scrolls.
  *
- * All intensity lives in the custom properties on .root; tune those rather than individual paths.
+ * All shared tuning lives in the custom properties on .root; per-project choices live in
+ * project-dossier-manga-presets.ts.
  */
 .root {
-  /* Overall strength of the composition (0-1). Mobile lowers it. */
-  --ink-strength: 1;
-  /* Charcoal-violet ink: darker than the panel's indigo, never pure black. */
-  --ink-shadow: #06051a;
-  --ink-line: #b9acec;
-  --ink-scratch: #f4ecda;
-  --ink-gilt: #c9ae78;
-  --ink-glow: rgb(126 98 222 / 30%);
-  --ink-scratch-rest: 0.42;
+  /* One screen: the dialog is fixed to the viewport. */
+  --stage-h: 100vh;
+  /* Opacity of the two plates. The upper plate sits beside the large display type of the masthead,
+     the lower one behind body copy, so it is quieter. */
+  --upper-strength: 0.68;
+  --lower-strength: 0.46;
+  /* Upper panel box (bleeds off the top-right corner). */
+  --upper-w: 76%;
+  --upper-h: 56%;
+  /* Lower panel box (bleeds off the bottom-right corner). */
+  --lower-w: 82%;
+  --lower-h: 50%;
+  /* The panel paper, used by the gradients so they melt into it. */
+  --paper: 15 19 49;
+  --gilt: #c9ae78;
+  --pan-y: 0%;
 
-  position: absolute;
+  position: sticky;
   z-index: -1;
   top: 0;
-  right: calc(var(--pad-x, 1.4rem) * -1);
-  bottom: 0;
-  width: calc(100% + var(--pad-x, 1.4rem));
+  display: block;
+  height: var(--stage-h);
+  margin: 0 calc(var(--pad-x, 1.4rem) * -1) calc(var(--stage-h) * -1);
   overflow: hidden;
   pointer-events: none;
   user-select: none;
-  /* Soft top and bottom so a tall plume never ends in a hard line against the next chapter. */
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 2.5rem, #000 calc(100% - 1.25rem), transparent 100%);
-  mask-image: linear-gradient(180deg, transparent 0, #000 2.5rem, #000 calc(100% - 1.25rem), transparent 100%);
-  transition: opacity 700ms ease 120ms;
 }
 
-/*
- * The artwork box: a 6:5 canvas pinned to the outer right edge. Its radial mask keeps the ink
- * strongest at the edge and lets it dissolve before it reaches the middle of the text column.
- */
-.art {
-  position: absolute;
-  /* Nudged past the edge so the plume reads as entering the folio, not sitting inside it. */
-  right: -5%;
-  bottom: -0.5rem;
-  /* Sized by the chapter's height, so a short chapter gets the whole composition, not a crop. */
-  height: clamp(15rem, 100%, 27rem);
-  max-width: 100%;
-  aspect-ratio: 6 / 5;
-  opacity: var(--ink-strength);
-  transform-origin: 100% 50%;
-  -webkit-mask-image: radial-gradient(ellipse 76% 100% at 100% 72%, #000 30%, rgb(0 0 0 / 45%) 62%, transparent 100%);
-  mask-image: radial-gradient(ellipse 76% 100% at 100% 72%, #000 30%, rgb(0 0 0 / 45%) 62%, transparent 100%);
+@supports (height: 100dvh) {
+  .root {
+    --stage-h: 100dvh;
+  }
 }
 
-/* One composition, three placements: the build chapter's ink pours in from the upper edge instead. */
-.root[data-ink-chapter="built"] .art {
-  top: 0;
-  bottom: auto;
-  transform: scale(0.94, -0.94);
-}
-
-.root[data-ink-chapter="decision"] .art {
-  bottom: -1rem;
-  transform: rotate(-2deg) scale(1.03);
-}
-
-.glow,
-.halftone {
+.stage {
   position: absolute;
   inset: 0;
 }
 
-/* A faint violet backlight that the dark ink silhouettes against. */
-.glow {
-  background: radial-gradient(ellipse 58% 54% at 88% 68%, var(--ink-glow), transparent 70%);
-  opacity: 0.8;
+.panel {
+  position: absolute;
+  right: 0;
 }
 
-/* Graduated print halftone, densest in the outer corner. Static by design. */
-.halftone {
-  background-image: radial-gradient(circle, rgb(185 172 236 / 26%) 0.85px, transparent 1.3px);
-  background-size: 6px 6px;
-  -webkit-mask-image: radial-gradient(ellipse 52% 58% at 100% 100%, #000 10%, transparent 72%);
-  mask-image: radial-gradient(ellipse 52% 58% at 100% 100%, #000 10%, transparent 72%);
+.upper {
+  top: 0;
+  width: var(--upper-w);
+  height: var(--upper-h);
 }
 
-.plume,
-.scratches {
+.lower {
+  bottom: 0;
+  width: var(--lower-w);
+  height: var(--lower-h);
+}
+
+/* The panel shape. Keep these polygons in step with UPPER_EDGE / LOWER_EDGE in the component. */
+.cut {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: rgb(var(--paper));
+}
+
+.upper .cut {
+  clip-path: polygon(18% 0, 100% 0, 100% 84%, 0 100%);
+}
+
+.lower .cut {
+  clip-path: polygon(0 18%, 100% 0, 100% 100%, 10% 100%);
+}
+
+/* Oversized so the chapter pan and the ambient drift never reveal an edge. */
+.pan {
+  position: absolute;
+  inset: -6% -4%;
+  opacity: var(--upper-strength);
+  transform: translate3d(0, var(--pan-y), 0);
+  transition: transform 1600ms cubic-bezier(0.25, 0.6, 0.2, 1);
+}
+
+.lower .pan {
+  opacity: var(--lower-strength);
+}
+
+.plate {
+  object-fit: cover;
+}
+
+.root[data-ink-chapter="built"] {
+  --pan-y: -2.5%;
+}
+
+.root[data-ink-chapter="decision"] {
+  --pan-y: -5%;
+}
+
+/* Focus lines around the figure: thin ivory wedges, clipped to the panel. */
+.focus {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.focus path {
+  fill: #f4ecda;
+  fill-opacity: 0.2;
+}
+
+/*
+ * Inside each panel, a wash from the reading side: the plate is strongest at the dossier's outer
+ * edge and sinks into the paper toward the text column, so the art reads as entering the page.
+ */
+.shade {
+  position: absolute;
+  inset: 0;
+}
+
+.upper .shade {
+  background:
+    linear-gradient(100deg, rgb(var(--paper) / 88%) 0%, rgb(var(--paper) / 50%) 30%, rgb(var(--paper) / 0%) 62%),
+    linear-gradient(180deg, rgb(var(--paper) / 0%) 60%, rgb(var(--paper) / 55%) 100%);
+}
+
+.lower .shade {
+  background:
+    linear-gradient(100deg, rgb(var(--paper) / 88%) 0%, rgb(var(--paper) / 45%) 32%, rgb(var(--paper) / 0%) 64%),
+    linear-gradient(0deg, rgb(var(--paper) / 0%) 62%, rgb(var(--paper) / 50%) 100%);
+}
+
+/* The inner edges as a manga gutter: a dark channel with an antique-gold rule along it. */
+.edge {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -94,145 +152,115 @@
   overflow: visible;
 }
 
-.plume {
-  transform-origin: 100% 100%;
-}
-
-/* Wet edge: a wide, very faint lavender halo under the ink, as if the wash bled into the paper. */
-.bleed {
+.gutter,
+.gilt {
   fill: none;
-  stroke: var(--ink-line);
-  stroke-linejoin: round;
-  stroke-opacity: 0.07;
-  stroke-width: 14;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
 }
 
-.fill {
-  fill: var(--ink-shadow);
-  fill-opacity: 0.84;
-}
-
-.brush {
-  fill: none;
-  stroke: var(--ink-shadow);
-  stroke-linecap: round;
-  stroke-opacity: 0.72;
+.gutter {
+  stroke: rgb(var(--paper));
   stroke-width: 9;
 }
 
-.line,
-.dash {
-  fill: none;
-  stroke: var(--ink-line);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-opacity: 0.18;
-  stroke-width: 1.2;
-}
-
-.dash {
-  stroke-dasharray: 10 13;
-  stroke-opacity: 0.16;
-}
-
-.dot {
-  fill: var(--ink-line);
-  fill-opacity: 0.22;
-}
-
-.scratches {
-  opacity: var(--ink-scratch-rest);
-  transition: opacity 420ms ease;
-}
-
-.root[data-active="true"] .scratches {
-  opacity: 1;
-}
-
-.focus {
-  fill: none;
-  stroke: var(--ink-scratch);
+.gilt {
+  stroke: var(--gilt);
   stroke-dasharray: 1;
   stroke-dashoffset: 0;
-  stroke-linecap: round;
-  stroke-opacity: 0.24;
+  stroke-opacity: 0.78;
+  stroke-width: 1.25;
 }
 
-.hatch {
-  fill: none;
-  stroke: var(--ink-gilt);
-  stroke-linecap: round;
-  stroke-opacity: 0.32;
-  stroke-width: 1;
+/*
+ * The readability gradient over the whole stage: dark across the left of the reading column,
+ * clearing toward the right edge, where the artwork carries the composition.
+ */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(var(--paper) / 74%) 0%, rgb(var(--paper) / 46%) 36%, rgb(var(--paper) / 8%) 70%, rgb(var(--paper) / 0%) 86%);
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* Near-imperceptible drift: a few pixels and half a degree over sixteen seconds. */
-  .plume {
-    animation: ink-drift 16s ease-in-out infinite alternate;
+  /* Entrance: each panel slides in from the outer edge as the dossier opens, the gilt rule is drawn. */
+  .panel {
+    animation: panel-enter 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
 
-  .root[data-ink-chapter="built"] .plume {
-    animation-delay: -6s;
+  .upper {
+    animation-delay: 380ms;
   }
 
-  .root[data-ink-chapter="decision"] .plume {
-    animation-delay: -11s;
+  .lower {
+    animation-delay: 520ms;
   }
 
-  /* On activation the focus lines are re-ruled from the outer edge inward, once. */
-  .root[data-active="true"] .focus {
-    animation: focus-rule 440ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  .gilt {
+    animation: rule-draw 1100ms cubic-bezier(0.3, 0.6, 0.2, 1) 760ms both;
   }
 
-  .root[data-active="true"] .focus:nth-child(3n + 2) {
-    animation-delay: 50ms;
+  /* Ambient: a slow camera drift on the plates, a few pixels over half a minute. */
+  .plate {
+    animation: plate-drift 30s ease-in-out infinite alternate;
   }
 
-  .root[data-active="true"] .focus:nth-child(3n) {
-    animation-delay: 95ms;
-  }
-
-  .root[data-active="true"] .glow {
-    animation: glow-pulse 520ms ease-out both;
+  .lower .plate {
+    animation-delay: -12s;
   }
 }
 
-@keyframes ink-drift {
-  to {
-    transform: translate3d(-5px, -4px, 0) rotate(-0.6deg);
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(8%, 0, 0);
   }
 }
 
-@keyframes focus-rule {
+@keyframes rule-draw {
   from {
     stroke-dashoffset: 1;
   }
+}
+
+@keyframes plate-drift {
+  from {
+    transform: scale(1);
+  }
 
   to {
-    stroke-dashoffset: 0;
+    transform: scale(1.04) translate3d(-1%, 0.6%, 0);
   }
 }
 
-@keyframes glow-pulse {
-  40% {
-    opacity: 1;
+/* Portrait tablets: a wider dossier, so the panels take less of its width. */
+@media (min-width: 701px) and (max-width: 900px) and (orientation: portrait) {
+  .root {
+    --upper-w: 58%;
+    --upper-h: 46%;
+    --lower-w: 64%;
+    --lower-h: 46%;
   }
 }
 
+/* Phones: the reading column is the full width, so the art is smaller and quieter. */
 @media (max-width: 700px) {
   .root {
-    --ink-strength: 0.82;
+    --upper-strength: 0.62;
+    --lower-strength: 0.44;
+    --upper-w: 74%;
+    --upper-h: 40%;
+    --lower-w: 80%;
+    --lower-h: 38%;
   }
 
-  .art {
-    height: clamp(13rem, 100%, 20rem);
+  .scrim {
+    background: linear-gradient(90deg, rgb(var(--paper) / 78%) 0%, rgb(var(--paper) / 50%) 40%, rgb(var(--paper) / 12%) 80%);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .root,
-  .scratches {
+  .pan {
     transition: none;
   }
 }
